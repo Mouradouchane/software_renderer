@@ -1,3 +1,0 @@
-﻿  rasterizer.cpp
-C:\Users\devc\Desktop\cpp\rendering\rasterizer\rasterizer.cpp(26,20): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-  rasterizer.vcxproj -> C:\Users\devc\Desktop\cpp\rendering\Debug\rasterizer.exe
