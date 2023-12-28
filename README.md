@@ -1,2 +1,2 @@
-# rasterizer
-A small personal project for learning computer graphics .
+# Software Renderer
+my place where i implement what i learned in "computer graphics" .
