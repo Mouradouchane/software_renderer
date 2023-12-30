@@ -1,11 +1,22 @@
 # Prerequisites
 *.d
 
+# visual studio files
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+build/
+.vs/
+*.swp
+
 # Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
+obj/
+object/
 
 # Precompiled Headers
 *.gch
