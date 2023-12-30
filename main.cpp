@@ -24,9 +24,9 @@ int WINAPI wWinMain(
 			
 		// process input
 
-		// update 
+		// update
 
-		// render 
+		// render
 
 		// process window
 		if( GetMessage( &(main_window.msg) , NULL, 0, 0) > 0 ) {
@@ -39,8 +39,8 @@ int WINAPI wWinMain(
 	}
 
 	
-
 	return 0;
+
 }
 
 
@@ -53,6 +53,7 @@ LRESULT CALLBACK win_proc (
 		case WM_DESTROY: {
 
 			PostQuitMessage(0);
+			ExitProcess(0);
 			return 0;
 	
 		}

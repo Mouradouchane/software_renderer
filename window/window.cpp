@@ -41,7 +41,8 @@ window::window(
 
 	this->wc.hInstance = this->hinst;
 	this->wc.lpfnWndProc = this->proc;
-	this->wc.lpszClassName = (LPWSTR)&(this->name);
+
+	this->wc.lpszClassName = (LPCWSTR)this->name.c_str();
 
 	// window registeration
 
@@ -51,8 +52,8 @@ window::window(
 
 	this->hwnd = CreateWindowEx(
 		0 , 
-		(LPCWSTR)(&this->name) ,
-		(LPCWSTR)(&this->name) ,
+		(LPCWSTR)(LPCWSTR)this->name.c_str(),
+		(LPCWSTR)(LPCWSTR)this->name.c_str(),
 
 		this->style , this->x , this->y , 
 		this->width , this->height ,
