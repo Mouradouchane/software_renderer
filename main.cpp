@@ -1,22 +1,23 @@
 
+
 #include <windows.h>
 #include "window/window.hpp"
+
 
 LRESULT CALLBACK win_proc(
 	HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 );
 
-int WINAPI wWinMain(
-	HINSTANCE h_instance , HINSTANCE h_prev_instance , PWSTR p_cmd_line , int n_cmd_show
-) {
-
+int WINAPI WinMain(
+	HINSTANCE h_instance, HINSTANCE h_prev_instance, LPSTR p_cmd_line, int n_cmd_show
+){
 	// the main loop
 	
 	bool running = true;
-	window main_window(h_instance , win_proc, n_cmd_show , L"software - renderer" , 800 , 600);
+	window main_window(h_instance , win_proc, n_cmd_show , "software - renderer" , 800 , 600);
 	
 	if (main_window.is_window_created() == false) {
-		MessageBox(0, "window creation error !", 0, MB_OK);
+		MessageBoxA(0, "window creation error !", 0, MB_OK);
 		return 0;
 	}
 

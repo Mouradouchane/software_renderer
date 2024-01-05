@@ -22,15 +22,18 @@ class window {
 
 private : 
 
-	std::wstring name = L"default";
-	size_t height = 128;
-	size_t width = 128;
+	std::string name = "default";
+
 	size_t x = 10;
 	size_t y = 10;
+
+	size_t height = 128;
+	size_t width = 128;
+
 	bool fullscreen = false;
 	bool visible = false;
 
-	WNDCLASS wc = { };
+	WNDCLASSW wc = { };
 	HWND hwnd = NULL;
 	HINSTANCE hinst;
 
@@ -49,7 +52,7 @@ public :
 	// constructor
 	window(
 		HINSTANCE hinst , window_proc proc , int n_cmd_show , 
-		std::wstring const& name , 
+		std::string const& name , 
 		size_t width , size_t height
 	);
 
@@ -58,13 +61,13 @@ public :
 
 	// method's
 	
-	std::wstring get_name( );
+	std::string get_name( );
 	size_t      get_height( );
 	size_t      get_width( );
 	size_t      get_x( );
 	size_t      get_y( );
 
-	void        set_name( std::wstring const& new_name );
+	void        set_name( std::string const& new_name );
 	void        set_height( size_t new_height );
 	void        set_width ( size_t new_width );
 	void        set_x( size_t new_x );

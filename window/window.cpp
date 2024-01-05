@@ -20,18 +20,16 @@
 /*
    ========== constructor ========== 
 */
-LRESULT CALLBACK pgg(HWND h_wnd, UINT u_msg, WPARAM w_param, LPARAM l_param);
-
 
 window::window(
 	HINSTANCE hinst, window_proc proc , int n_cmd_show ,
-	std::wstring const& name, 
+	std::string const& name, 
 	size_t width, size_t height
 ){
 
 	// window props setup
 
-	this->name = name;
+	this->name = name.c_str();
 	this->width = width;
 	this->height = height;
 
@@ -42,18 +40,18 @@ window::window(
 	this->wc.hInstance = this->hinst;
 	this->wc.lpfnWndProc = this->proc;
 
-	this->wc.lpszClassName = (LPCWSTR)this->name.c_str();
+	std::wstring stemp = std::wstring(this->name.begin(), this->name.end());
+	this->wc.lpszClassName = stemp.c_str();
 
 	// window registeration
 
-	RegisterClass(&wc);
+	RegisterClassW(&wc);
 
 	// window creation
 
-	this->hwnd = CreateWindowEx(
-		0 , 
-		(LPCWSTR)(LPCWSTR)this->name.c_str(),
-		(LPCWSTR)(LPCWSTR)this->name.c_str(),
+	this->hwnd = CreateWindowW(
+		this->wc.lpszClassName,
+		this->wc.lpszClassName,
 
 		this->style , this->x , this->y , 
 		this->width , this->height ,
@@ -98,7 +96,7 @@ bool window::show() {
 	
 }
 
-std::wstring window::get_name() {
+std::string window::get_name() {
 	return this->name;
 }
 
@@ -118,7 +116,7 @@ size_t window::get_y() {
 	return this->y;
 }
 
-void window::set_name(std::wstring const& new_name) {
+void window::set_name(std::string const& new_name) {
 	this->name = new_name;
 }
 
