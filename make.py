@@ -138,9 +138,27 @@ def rebuild( ) : # action
 
 #######################
 
+def run( ) :
+    pass
+
+#######################
+
 
 def help( ) : # action
-    pass
+
+    print("")
+    print("make.py file act like Makefile , you can build,clean,... the project")
+    print("usage : python make.py action compiler_name args")
+    
+    print("")
+    print("actions list : ")
+    print("build   : 'compile&link' the project and put the output in 'build' folder")
+    print("clean   : clean the build output")
+    print("rebuild : clean and build from the project from scratch")
+    
+    print("")
+    print("example : python make.py build g++")
+    print("example : python make.py clean")
 #######################
 
 

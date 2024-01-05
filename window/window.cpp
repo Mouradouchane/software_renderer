@@ -96,6 +96,22 @@ bool window::show() {
 	
 }
 
+bool window::hide() {
+
+	if (this->hwnd == NULL && !(this->visible)) return false;
+
+	else return ShowWindow(this->hwnd , SW_HIDE);
+
+}
+
+bool window::destroy() {
+
+	if (this->hwnd == NULL) return false;
+	else {
+		return DestroyWindow(this->hwnd);
+	}
+}
+
 std::string window::get_name() {
 	return this->name;
 }
@@ -117,23 +133,69 @@ size_t window::get_y() {
 }
 
 void window::set_name(std::string const& new_name) {
+	
 	this->name = new_name;
+
+	if (this->hwnd != NULL) {
+		SetWindowTextW(this->hwnd, (const wchar_t*)this->name.c_str());
+	}
+
 }
 
 void window::set_height(size_t new_height) {
 	this->height = new_height;
+
+	if (this->hwnd != NULL) {
+
+		SetWindowPos(
+			this->hwnd, 0, this->x, this->y,
+			this->width, this->height, SWP_DEFERERASE
+		);
+
+	}
+
 }
 
 void window::set_width(size_t new_width){
 	this->width = new_width;
+
+	if (this->hwnd != NULL) {
+
+		SetWindowPos(
+			this->hwnd, 0, this->x, this->y,
+			this->width, this->height, SWP_DEFERERASE
+		);
+
+	}
+
 }
 
 void window::set_x(size_t new_x){
 	this->x = new_x;
+
+	if (this->hwnd != NULL) {
+
+		SetWindowPos(
+			this->hwnd, 0, this->x, this->y , 
+			this->width , this->height , SWP_DEFERERASE
+		);
+
+	}
+
 }
 
 void window::set_y(size_t new_y){
 	this->y = new_y;
+
+	if (this->hwnd != NULL) {
+
+		SetWindowPos(
+			this->hwnd, 0, this->x, this->y,
+			this->width, this->height, SWP_DEFERERASE
+		);
+
+	}
+
 }
 
 #endif

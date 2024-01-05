@@ -1,4 +1,9 @@
 
+/*
+	==============================================
+	renderer window class for handling main window
+	==============================================
+*/
 
 #ifndef WINDOW_H
 	#define WINDOW_H
@@ -75,8 +80,11 @@ public :
 
 	void        set_proc(window_proc win_proc);
 
-	bool        is_window_created();
+	bool        is_window_created( );
+	bool        destroy( );
+
 	bool		show( );
+	bool        hide( );
 
 };
 
