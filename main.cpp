@@ -16,7 +16,7 @@ int WINAPI wWinMain(
 	window main_window(h_instance , win_proc, n_cmd_show , L"software - renderer" , 800 , 600);
 	
 	if (main_window.is_window_created() == false) {
-		MessageBox(0, L"window creation error !", 0, MB_OK);
+		MessageBox(0, "window creation error !", 0, MB_OK);
 		return 0;
 	}
 

@@ -55,9 +55,10 @@ def build( ) :
 
     try :
 
-        if( subprocess.Popen([compiler , f"{os.path.abspath( os.getcwd() )}\main.cpp" + " -c " ]) == 0 ) :
+        compiler_output = subprocess.Popen( [ compiler , "main.cpp" , "-c" ] , shell=True )
+        
+        if( compiler_output == 0 ) :
             print(f"compiling using { compiler } for { platform.processor() }")    
-
 
 
     except FileNotFoundError as err:
