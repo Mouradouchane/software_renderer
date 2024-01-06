@@ -14,7 +14,6 @@
 
 	#define TYPES_HPP
 
-
 typedef float        float32 , *ptr_float32;
 typedef double       float64 , *ptr_float64;
 typedef long double  float96 , *ptr_float96;
@@ -27,12 +26,17 @@ typedef uint8_t      srgb8[3];
 typedef uint16_t     srgb16[3];
 typedef uint32_t     srgb32[3];
 
+typedef float32      matrix_2x2[2][2];
+typedef float32      matrix_3x3[3][3];
+typedef float32      matrix_4x4[4][4];
+
 class vec2d {
 
 public :
 
 	float32 x = 0;
 	float32 y = 0;
+
 	// constructor's
 	vec2d();
 	vec2d(float32 x , float32 y);
@@ -41,8 +45,7 @@ public :
 	~vec2d() = default;
 
 };
-
-// end : vector 2D 
+// end : class vec2d 
 
 
 class vec3d {
@@ -61,7 +64,7 @@ public :
 	~vec3d() = default;
 
 };
-// end of vec3d class
+// end : class vec3d 
 
 
 class vec4d {
@@ -81,7 +84,7 @@ public :
 	~vec4d() = default;
 
 };
-// end of vec4d class
+// end : class vec4d 
 
 
 class rgba8 { // 8bit rgba representation
@@ -106,7 +109,7 @@ public :
 	static const uint8_t MAX = UINT8_MAX;
 
 };
-// end of rgb8 class
+// end : class rgb8
 
 
 class rgba16 { // 16bit rgba representation
@@ -129,6 +132,16 @@ public:
 
 	static const uint16_t MIN = 0;
 	static const uint16_t MAX = UINT16_MAX;
+
+};
+// end : class rgb16
+
+
+class line2d {
+
+};
+
+class line3d {
 
 };
 
