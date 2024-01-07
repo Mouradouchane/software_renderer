@@ -14,32 +14,58 @@
 
 	#define TYPES_HPP
 
+/*
+	=================================================
+	============== standard types ==================
+	=================================================
+*/
+
 typedef float        float32 , *ptr_float32;
 typedef double       float64 , *ptr_float64;
 typedef long double  float96 , *ptr_float96;
 
-typedef float32      vector2d[2];
-typedef float32      vector3d[3];
-typedef float32      vector4d[4];
+	#define FLOAT_TYPE 32
+
+#if FLOAT_TYPE == 32
+	#define sfloat float32
+#else 
+	#define sfloat float64
+#endif
+
+typedef sfloat       vector2d[2];
+typedef sfloat       vector3d[3];
+typedef sfloat       vector4d[4];
+
+typedef sfloat       matrix_2x2[2][2];
+typedef sfloat       matrix_3x3[3][3];
+typedef sfloat       matrix_4x4[4][4];
 
 typedef uint8_t      srgb8[3];
 typedef uint16_t     srgb16[3];
 typedef uint32_t     srgb32[3];
 
-typedef float32      matrix_2x2[2][2];
-typedef float32      matrix_3x3[3][3];
-typedef float32      matrix_4x4[4][4];
+typedef uint8_t      srgba8[4];
+typedef uint16_t     srgba16[4];
+typedef uint32_t     srgba32[4];
+
+typedef uint32_t     pixle[2];
+typedef float32      sample[2];
+
+/*
+	=================================================
+	====================== vectors ==================
+	=================================================
+*/
 
 class vec2d {
 
 public :
 
-	float32 x = 0;
-	float32 y = 0;
+	vector2d vector;
 
 	// constructor's
 	vec2d();
-	vec2d(float32 x , float32 y);
+	vec2d(sfloat x , sfloat y);
 
 	// destructor
 	~vec2d() = default;
@@ -47,18 +73,15 @@ public :
 };
 // end : class vec2d 
 
-
 class vec3d {
 
 public :
 
-	float32 x = 0;
-	float32 y = 0;
-	float32 z = 1.0f;
+	vector3d vector;
 
 	// constructor's
 	vec3d();
-	vec3d(float32 x , float32 y , float32 z = 1.0f);
+	vec3d(sfloat x , sfloat y , sfloat z = 1.0f);
 
 	// destructor
 	~vec3d() = default;
@@ -66,19 +89,15 @@ public :
 };
 // end : class vec3d 
 
-
 class vec4d {
 
 public : 
 
-	float32 x = 0;
-	float32 y = 0;
-	float32 z = 1.0f;
-	float32 w = 1.0f;
+	vector4d vector;
 	
 	// constructor's
 	vec4d();
-	vec4d(float32 x , float32 y , float32 z = 1.0f , float32 w = 1.0f);
+	vec4d(sfloat x, sfloat y, sfloat z = 1.0f, sfloat w = 1.0f);
 
 	// destructor
 	~vec4d() = default;
@@ -86,6 +105,11 @@ public :
 };
 // end : class vec4d 
 
+/*
+	=================================================
+	====================== colors ===================
+	=================================================
+*/
 
 class rgba8 { // 8bit rgba representation
 
@@ -111,7 +135,6 @@ public :
 };
 // end : class rgb8
 
-
 class rgba16 { // 16bit rgba representation
 
 public:
@@ -136,13 +159,122 @@ public:
 };
 // end : class rgb16
 
+/*
+	=================================================
+	====================== lines ====================
+	=================================================
+*/
 
 class line2d {
 
+public:
+	vector2d points[2];
+
+	// constructor's
+	line2d();
+	line2d(
+		sfloat x1 , sfloat y1 , // point 1
+		sfloat x2 , sfloat y2   // point 2
+	);
+	line2d(vector2d  point_1, vector2d  point_2);
+	line2d(vector2d& point_1, vector2d& point_2);
+
+	// destructor
+	~line2d() = default;
+
 };
+// end : class line2d 
 
 class line3d {
 
+public:
+	vector3d points[2];
+
+	// constructor's
+	line3d();
+	line3d(
+		sfloat x1, sfloat y1, sfloat z1, // point 1
+		sfloat x2, sfloat y2, sfloat z2  // point 2
+	);
+	line3d(vector3d  point_1, vector3d  point_2);
+	line3d(vector3d& point_1, vector3d& point_2);
+
+	// destructor
+	~line3d() = default;
+
 };
+// end : class line3d
+
+/*
+	===================================================
+	====================== triangles ==================
+	===================================================
+*/
+
+class triangle2d {
+
+public :
+	
+	vector2d points[3];
+
+	// constructor's
+	triangle2d();
+
+	triangle2d(
+		sfloat x1, sfloat y1, // point 1
+		sfloat x2, sfloat y2, // point 2  
+		sfloat x3, sfloat y3  // point 3
+	);
+
+	triangle2d(
+		vector2d point_1, 
+		vector2d point_2, 
+		vector2d point_3
+	);
+
+	triangle2d(
+		vector2d& point_1, 
+		vector2d& point_2, 
+		vector2d& point_3
+	);
+
+	// destructor
+	~triangle2d() = default;
+
+};
+// end : class triangle2d
+
+class triangle3d {
+
+public:
+
+	vector3d points[3];
+
+	// constructor's
+	triangle3d();
+
+	triangle3d(
+		sfloat x1, sfloat y1, sfloat z1, // point 1
+		sfloat x2, sfloat y2, sfloat z2, // point 2
+		sfloat x3, sfloat y3, sfloat z3  // point 3
+	);
+
+	triangle3d(
+		vector3d point_1, 
+		vector3d point_2, 
+		vector3d point_3
+	);
+
+	triangle3d(
+		vector3d& point_1, 
+		vector3d& point_2, 
+		vector3d& point_3
+	);
+
+	// destructor
+	~triangle3d() = default;
+
+};
+// end : class triangle3d
 
 #endif

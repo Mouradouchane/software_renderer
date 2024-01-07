@@ -31,9 +31,32 @@ float64 operator * (vec4d const& a, vec4d const& b);
 
 
 namespace math {
-	
+
 	/*
-		scale vector by value 
+		distance between a and b
+		distance = sqrt( (b.x - a.x)² + (b.y - a.y)² )
+	*/
+	float32 distance2d(vec2d const& a , vec2d const& b);
+	float32 distance3d(vec3d const& a , vec3d const& b);
+
+	/*
+		deltha changes between a & b
+		delta = a - b
+	*/
+	float32 slope2d(vec2d const& a, vec2d const& b);
+	float32 slope3d(vec3d const& a, vec3d const& b);
+
+
+	/*
+		slope of the line
+		slope = m * x + b
+	*/
+	float32 slope2d(vec2d const& a, vec2d const& b);
+	float32 slope3d(vec3d const& a, vec3d const& b);
+
+
+	/*
+		scale vector by value
 		a *= scalar;
 	*/
 	void scale(vec2d& a, int32_t scalar);
@@ -49,32 +72,18 @@ namespace math {
 	vec4d cross_product(vec4d const& a, vec4d const& b);
 
 	/*
-		vector length
-		f = ||a||
+		vector length : ||a||
 	*/
 	float32 length(vec2d const& a);
 	float32 length(vec3d const& a);
 	float32 length(vec4d const& a);
 
 	/*
-		unit vector 
-		u = |a|
+		unit vector : |a|
 	*/
 	vec2d unit_vector(vec2d const& a);
 	vec3d unit_vector(vec3d const& a);
 	vec4d unit_vector(vec4d const& a);
-
-	/*
-		distance from a to b
-		d = square_root( (b.x - a.x)² + (b.y - a.y)² )
-	*/
-	float32 distance2d(vec2d const& a , vec2d const& b);
-	float32 distance3d(vec3d const& a , vec3d const& b);
-
-	/*
-		slope
-	*/
-
 
 } 
 // end : namespace math
