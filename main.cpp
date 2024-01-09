@@ -13,7 +13,7 @@ int WINAPI WinMain(
 	HINSTANCE h_instance, HINSTANCE h_prev_instance, LPSTR p_cmd_line, int n_cmd_show
 ){
 
-	vec2d v2(1.54, 0.6589);
+	vec2d v2(1.54f, 0.6589f);
 	vec3d v3(1.54, 0.6589, 789.45);
 	vec4d v4(1.54, 0.6589, 789.45 , 1.111232);
 

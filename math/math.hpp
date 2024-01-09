@@ -60,7 +60,7 @@ namespace math {
 	sfloat x_intercept_at_y0_2d( sfloat y_at_x0 , sfloat slope );
 
 	// find where tow points intersect in 2D 
-	vector2d tow_points_intersection(
+	vector2d* tow_points_intersection(
 		vector2d const& p1 , sfloat p1_slope, 
 		vector2d const& p2 , sfloat p2_slope
 	);
@@ -74,10 +74,10 @@ namespace math {
 	);
 
 	// triangle center of size
-	vector2d centroid( 
+	vector2d* centroid( 
 		vector2d const& p1 , vector2d const& p2 , vector2d const& p3  
 	);
-	vector3d centroid( 
+	vector3d* centroid( 
 		vector3d const& p1 , vector3d const& p2 , vector3d const& p3  
 	);
 
@@ -114,8 +114,8 @@ namespace math {
 		vec4d unit(vec4d const& a);
 		
 		// calc normal between to vectors in 2D or 3D
-		vector2d normal( vector2d const& p1 , vector2d const& p2 );
-		vector3d normal( vector3d const& p1 , vector3d const& p2 );
+		vector2d* normal( vector2d const& p1 , vector2d const& p2 );
+		vector3d* normal( vector3d const& p1 , vector3d const& p2 );
 	
 	}
 	// end : namespace vector

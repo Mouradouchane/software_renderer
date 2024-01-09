@@ -12,46 +12,35 @@
 
 	#define TYPES_CPP
 
+
 /*
 	=================================================
-	====================== VEC 2D ===================
+	===================== vectors ===================
 	=================================================
 */
 
 vec2d::vec2d() { }
 
-vec2d::vec2d(sfloat x, sfloat y){ 
+vec2d::vec2d(sfloat x, sfloat y) {
 
 	this->vector[0] = x;
 	this->vector[1] = y;
 
 }
 
-/*
-	=================================================
-	====================== VEC 3D ===================
-	=================================================
-*/
+vec3d::vec3d() { }
 
-vec3d::vec3d(){ }
+vec3d::vec3d(sfloat x, sfloat y, sfloat z) {
 
-vec3d::vec3d(sfloat x, sfloat y, sfloat z){
-	
 	this->vector[0] = x;
 	this->vector[1] = y;
 	this->vector[2] = z;
 
 }
 
-/*
-	=================================================
-	====================== VEC 4D ===================
-	=================================================
-*/
-
 vec4d::vec4d() { }
 
-vec4d::vec4d(sfloat x, sfloat y, sfloat z , sfloat w){
+vec4d::vec4d(sfloat x, sfloat y, sfloat z, sfloat w) {
 
 	this->vector[0] = x;
 	this->vector[1] = y;
@@ -60,33 +49,29 @@ vec4d::vec4d(sfloat x, sfloat y, sfloat z , sfloat w){
 
 }
 
+
 /*
 	=================================================
-	====================== RGBA 8 ===================
+	==================== colors =====================
 	=================================================
 */
 
 rgba8::rgba8() { }
 
 rgba8::rgba8(uint8_t red, uint8_t green, uint8_t blue)
-	: r{red} , g{green} , b{blue}
+	: r{ red }, g{ green }, b{ blue }
 {
 }
 
-rgba8::rgba8(uint8_t red, uint8_t green, uint8_t blue , float32 alpha)
-	: r{ red }, g{ green }, b{ blue } , a{alpha}
+rgba8::rgba8(uint8_t red, uint8_t green, uint8_t blue, float32 alpha)
+	: r{ red }, g{ green }, b{ blue }, a{ alpha }
 {
 }
 
-/*
-	=================================================
-	====================== RGBA 16 ==================
-	=================================================
-*/
 
 rgba16::rgba16() { }
 
-rgba16::rgba16(uint16_t red, uint16_t green, uint16_t blue) 
+rgba16::rgba16(uint16_t red, uint16_t green, uint16_t blue)
 	: r{ red }, g{ green }, b{ blue }
 {
 }
@@ -107,7 +92,7 @@ line2d::line2d() { }
 
 line2d::line2d(
 	sfloat x1, sfloat y1, sfloat x2, sfloat y2
-){
+) {
 
 	this->points[0][0] = x1;
 	this->points[0][1] = y1;
@@ -121,7 +106,7 @@ line2d::line2d(vector2d point_1, vector2d point_2) {
 
 	this->points[0][0] = point_1[0];
 	this->points[0][1] = point_1[1];
-	
+
 	this->points[1][0] = point_2[0];
 	this->points[1][1] = point_2[1];
 
@@ -137,7 +122,7 @@ line2d::line2d(vector2d& point_1, vector2d& point_2) {
 
 }
 
-line3d::line3d( ) { }
+line3d::line3d() { }
 
 line3d::line3d(
 	sfloat x1, sfloat y1, sfloat z1, // point 1
@@ -191,7 +176,7 @@ triangle2d::triangle2d(
 	sfloat x1, sfloat y1, // point 1
 	sfloat x2, sfloat y2, // point 2  
 	sfloat x3, sfloat y3  // point 3
-){ 
+) {
 
 	this->points[0][0] = x1;
 	this->points[0][1] = y1;
@@ -235,7 +220,7 @@ triangle2d::triangle2d(
 
 }
 
-triangle3d::triangle3d( ) { }
+triangle3d::triangle3d() { }
 
 triangle3d::triangle3d(
 	sfloat x1, sfloat y1, sfloat z1, // point 1
@@ -290,6 +275,55 @@ triangle3d::triangle3d(
 	this->points[2][0] = point_3[0];
 	this->points[2][1] = point_3[1];
 	this->points[2][2] = point_3[2];
+
+}
+
+
+/*
+	===================================================
+	====================== buffers ====================
+	===================================================
+*/
+
+pixels_buffer::pixels_buffer() { }
+
+pixels_buffer::pixels_buffer(uint32_t width, uint32_t height) {
+
+	this->height = height;
+	this->width  = width;
+	this->size   = width * height;
+
+	this->memory = new pixle[this->size * sizeof(pixle)];
+
+}
+
+pixels_buffer::~pixels_buffer() {
+
+	if (this->memory != nullptr) {
+		delete[] this->memory;
+		this->memory = nullptr;
+	}
+
+}
+
+samples_buffer::samples_buffer() { }
+
+samples_buffer::samples_buffer(uint32_t width, uint32_t height) {
+
+	this->height = height;
+	this->width  = width;
+	this->size   = width * height;
+
+	this->memory = new sample[this->size * sizeof(sample)];
+
+}
+
+samples_buffer::~samples_buffer() {
+
+	if (this->memory != nullptr) {
+		delete[] this->memory;
+		this->memory = nullptr;
+	}
 
 }
 
