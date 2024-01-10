@@ -285,44 +285,44 @@ triangle3d::triangle3d(
 	===================================================
 */
 
-pixels_buffer::pixels_buffer() { }
+pixels::pixels() { }
 
-pixels_buffer::pixels_buffer(uint32_t width, uint32_t height) {
+pixels::pixels(uint32_t width, uint32_t height) {
 
 	this->height = height;
 	this->width  = width;
 	this->size   = width * height;
 
-	this->memory = new pixle[this->size * sizeof(pixle)];
+	this->buffer = new pixle[this->size * sizeof(pixle)];
 
 }
 
-pixels_buffer::~pixels_buffer() {
+pixels::~pixels() {
 
-	if (this->memory != nullptr) {
-		delete[] this->memory;
-		this->memory = nullptr;
+	if (this->buffer != nullptr) {
+		delete[] this->buffer;
+		this->buffer = nullptr;
 	}
 
 }
 
-samples_buffer::samples_buffer() { }
+samples::samples() { }
 
-samples_buffer::samples_buffer(uint32_t width, uint32_t height) {
+samples::samples(uint32_t width, uint32_t height) {
 
 	this->height = height;
 	this->width  = width;
 	this->size   = width * height;
 
-	this->memory = new sample[this->size * sizeof(sample)];
+	this->buffer = new sample[this->size * sizeof(sample)];
 
 }
 
-samples_buffer::~samples_buffer() {
+samples::~samples() {
 
-	if (this->memory != nullptr) {
-		delete[] this->memory;
-		this->memory = nullptr;
+	if (this->buffer != nullptr) {
+		delete[] this->buffer;
+		this->buffer = nullptr;
 	}
 
 }

@@ -117,37 +117,46 @@ public:
 	=================================================
 */
 
-class pixels_buffer {
+class pixels {
 
 public : 
 	uint32_t size   = 0;
 	uint32_t height = 0;
 	uint32_t width  = 0;
-	pixle*   memory = nullptr; // heap allocation !
+
+	pixle*   buffer = nullptr; // heap allocation !
 
 	// constructor's
-	pixels_buffer();
-	pixels_buffer(uint32_t width , uint32_t height);
+	pixels();
+	pixels(uint32_t width , uint32_t height);
 	
 	// destructor
-	~pixels_buffer();
+	~pixels();
+
+	// todo 
+	sample get_pixel(uint32_t x, uint32_t y);
+	void   set_pixel(uint32_t x, uint32_t y, pixle new_value);
 
 };
 
-class samples_buffer {
+class samples {
 
 public:
 	uint32_t size   = 0;
 	uint32_t height = 0;
 	uint32_t width  = 0;
-	sample*  memory = nullptr; // heap allocation !
+	sample*  buffer = nullptr; // heap allocation !
 
 	// constructor's
-	samples_buffer();
-	samples_buffer(uint32_t width, uint32_t height);
+	samples();
+	samples(uint32_t width, uint32_t height);
 
 	// destructor
-	~samples_buffer();
+	~samples();
+
+	// todo 
+	sample get_sample(uint32_t x, uint32_t y);
+	void   set_sample(uint32_t x, uint32_t y, sample new_value);
 
 };
 

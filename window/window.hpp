@@ -78,6 +78,8 @@ public :
 	void        set_x( size_t new_x );
 	void        set_y( size_t new_y );
 
+	// todo : setup draw "pixels or bitmaps" to the window buffer
+
 	void        set_proc(window_proc win_proc);
 
 	bool        is_window_created( );
