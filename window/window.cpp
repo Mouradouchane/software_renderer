@@ -22,7 +22,7 @@
 */
 
 window::window(
-	HINSTANCE hinst, window_proc proc , int n_cmd_show ,
+	HINSTANCE hinst, int n_cmd_show ,
 	std::string const& name, 
 	size_t width, size_t height
 ){
@@ -33,11 +33,11 @@ window::window(
 	this->width = width;
 	this->height = height;
 
-	this->proc = proc;
 	this->hinst = hinst;
 	this->n_cmd_show = n_cmd_show;
 
 	this->wc.hInstance = this->hinst;
+
 	this->wc.lpfnWndProc = this->proc;
 
 	std::wstring stemp = std::wstring(this->name.begin(), this->name.end());
@@ -61,6 +61,9 @@ window::window(
 
 	this->visible = (ShowWindow(this->hwnd, this->n_cmd_show) == 0);
 
+	// setup handel devince context
+	this->setup_bitmap_context();
+
 }
 
 /*
@@ -78,9 +81,9 @@ window::~window() {
 
 */
 
-void window::set_proc( window_proc win_proc ) {
+void window::set_proc( WNDPROC win_proc ) {
 
-	this->proc = win_proc;
+	this->ptr_proc = win_proc;
 
 }
 
@@ -195,6 +198,102 @@ void window::set_y(size_t new_y){
 		);
 
 	}
+
+}
+
+void window::setup_bitmap_context() {
+
+	frame_bitmap_info.bmiHeader.biSize = sizeof(frame_bitmap_info.bmiHeader);
+	frame_bitmap_info.bmiHeader.biPlanes = 1;
+	frame_bitmap_info.bmiHeader.biBitCount = 32;
+	frame_bitmap_info.bmiHeader.biCompression = BI_RGB;
+	frame_device_context = CreateCompatibleDC(0);
+	
+}
+
+// force to send mw_paint message for 
+void window::send_update_message() {
+
+	InvalidateRect(this->hwnd, NULL, FALSE);
+	UpdateWindow(this->hwnd);
+
+}
+
+void window::on_paint() {
+
+	HDC device_context;
+
+	device_context = BeginPaint(this->hwnd, &(this->paint_struct));
+	BitBlt(
+		device_context,
+		this->paint_struct.rcPaint.left, 
+		this->paint_struct.rcPaint.top,
+		this->paint_struct.rcPaint.right  - this->paint_struct.rcPaint.left,
+		this->paint_struct.rcPaint.bottom - this->paint_struct.rcPaint.top,
+		this->frame_device_context,
+		this->paint_struct.rcPaint.left, 
+		this->paint_struct.rcPaint.top,
+		SRCCOPY // copy bitmap to window buffer
+	);
+
+	EndPaint(this->hwnd, &(this->paint_struct));
+
+}
+
+void window::on_resize() {
+	/*
+	frame_bitmap_info.bmiHeader.biWidth = LOWORD(lParam);
+	frame_bitmap_info.bmiHeader.biHeight = HIWORD(lParam);
+
+	if (frame_bitmap) DeleteObject(frame_bitmap);
+	frame_bitmap = CreateDIBSection(NULL, &frame_bitmap_info, DIB_RGB_COLORS, (void**)&frame.pixels, 0, 0);
+	SelectObject(frame_device_context, frame_bitmap);
+
+	frame.width = LOWORD(lParam);
+	frame.height = HIWORD(lParam);
+	*/
+
+}
+
+LRESULT CALLBACK window::proc(
+	HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
+) {
+
+	switch (uMsg) {
+
+	case WM_DESTROY: {
+
+		PostQuitMessage(0);
+		ExitProcess(0);
+		return 0;
+
+	}
+
+	case WM_PAINT: {
+		/*
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hwnd, &ps);
+
+		// All painting occurs here, between BeginPaint and EndPaint.
+
+		FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+
+		EndPaint(hwnd, &ps);
+		*/
+
+		this->on_paint();
+
+		return 0;
+	}
+
+	case WM_SIZE: {
+
+		return 0;
+	}
+
+	}
+
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 }
 

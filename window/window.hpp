@@ -15,17 +15,13 @@
 	#include <string>
 #endif
 
-#ifndef WINDOW_CLASS_HPP 
+#ifndef WINDOW_CLASS_HPP
 
 #define WINDOW_CLASS_HPP 
 
-typedef LRESULT (CALLBACK *window_proc)(
-	HWND h_wnd, UINT u_msg, WPARAM w_param, LPARAM l_param
-);
-
 class window {
 
-private : 
+private:
 
 	std::string name = "default";
 
@@ -44,43 +40,55 @@ private :
 
 	DWORD style = WS_OVERLAPPEDWINDOW;
 
-	/*
-		private method's
-	*/
-	window_proc proc = nullptr;
+	BITMAPINFO frame_bitmap_info;
+	HBITMAP frame_bitmap = 0;
+	HDC frame_device_context = 0;
 
-public :
+	PAINTSTRUCT paint_struct;
+
+	WNDPROC ptr_proc = nullptr;
+
+public:
 
 	MSG msg;
 	int n_cmd_show = 0;
 
 	// constructor
 	window(
-		HINSTANCE hinst , window_proc proc , int n_cmd_show , 
-		std::string const& name , 
-		size_t width , size_t height
+		HINSTANCE hinst, int n_cmd_show,
+		std::string const& name,
+		size_t width, size_t height
 	);
 
 	// destructor
 	~window();
 
 	// method's
-	
-	std::string get_name( );
-	size_t      get_height( );
-	size_t      get_width( );
-	size_t      get_x( );
-	size_t      get_y( );
 
-	void        set_name( std::string const& new_name );
-	void        set_height( size_t new_height );
-	void        set_width ( size_t new_width );
-	void        set_x( size_t new_x );
-	void        set_y( size_t new_y );
+	std::string get_name();
+	size_t      get_height();
+	size_t      get_width();
+	size_t      get_x();
+	size_t      get_y();
+
+	void        set_name(std::string const& new_name);
+	void        set_height(size_t new_height);
+	void        set_width(size_t new_width);
+	void        set_x(size_t new_x);
+	void        set_y(size_t new_y);
 
 	// todo : setup draw "pixels or bitmaps" to the window buffer
+	void        setup_bitmap_context();
+	void        send_update_message();
 
-	void        set_proc(window_proc win_proc);
+	void        on_paint();
+	void        on_resize();
+
+	LRESULT CALLBACK proc(
+		HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
+	);
+	
+	void        set_proc(WNDPROC win_proc);
 
 	bool        is_window_created( );
 	bool        destroy( );
