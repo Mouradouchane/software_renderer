@@ -69,7 +69,7 @@ def build( ) : # action
 
         files = [ 
             { "inp" : "main.cpp" , "out" : "build/main.o" },
-            { "inp" : "window/window.cpp" , "out" : "build/window.o" } ,
+# { "inp" : "window/window.cpp" , "out" : "build/window.o" } ,
         ]
 
         # compiling
@@ -187,7 +187,7 @@ else :
 
 
 math   = folder( "math"   , ["math/math.hpp" , "math/math.cpp"] )
-window = folder( "window" , ["window/window.hpp" , "window/window.cpp"] )
+# window = folder( "window" , ["window/window.hpp" , "window/window.cpp"] )
 
 
 # main entry point of the build script

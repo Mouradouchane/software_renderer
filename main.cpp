@@ -1,96 +1,78 @@
 
-
 #include <windows.h>
-#include "window/window.hpp"
+#include "sdl2/include/SDL.h"
+
 #include "types/types.hpp"
 
-// main window messaging handler
-LRESULT CALLBACK window_proc(
-	HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
-);
-
-window * main_window = nullptr;
 
 int WINAPI WinMain(
 	HINSTANCE h_instance, HINSTANCE h_prev_instance, LPSTR p_cmd_line, int n_cmd_show
 ){
 
-	vec2d v2(1.54f, 0.6589f);
-	vec3d v3(1.54, 0.6589, 789.45);
-	vec4d v4(1.54, 0.6589, 789.45 , 1.111232);
-
-	vector2d v2arr = { 32.2 , 359.45 };
-	vector3d v3arr = { 32.2 , 359.45 , 459.5689 };
-	vector4d v4arr = { 32.2 , 359.45 , 89.99901 , 0.54};
-
-	// the main loop
-
-	main_window = new window(h_instance, window_proc, n_cmd_show , "software - renderer" , 800 , 600);
-	bool running = true;
-	
-	if (main_window->is_window_created() == false) {
-		MessageBoxA(0, "window creation error !", 0, MB_OK);
-		return 0;
+	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+		MessageBoxA(NULL, "SDL Failed to INIT Because : " + *SDL_GetError(), 0, MB_ICONERROR);
+		return 1;
 	}
 
-	while( running ) {
+	SDL_Window* window = SDL_CreateWindow(
+		"Software - Renderer", // Title 
+		20, 20,     // X and Y 
+		800, 600, // width and height
+		0 // flags 
+	);
+
+	if (window == NULL) {
+		MessageBoxA(NULL, "SDL Failed to Create Window Because : " + *SDL_GetError() , 0, MB_ICONERROR);
+		return 1;
+	}
+
+	SDL_Renderer* renderer = SDL_CreateRenderer( window , -1, SDL_RENDERER_SOFTWARE);
+
+	if (renderer == NULL) {
+		MessageBoxA(NULL, "SDL Failed to Create Renderer Because : " + *SDL_GetError() , 0, MB_ICONERROR);
+		return 1;
+	}
+
+	bool quit = false;
+	SDL_Event sdl_event;
+
+	// main loop 
+	while ( !quit ) {
+		
+		if (SDL_PollEvent(&sdl_event)) {
+
+		switch (sdl_event.type) {
 			
-		// process input
+			case SDL_QUIT: {
+				quit = true;
+			} break;
 
-		// update
+			case SDL_WINDOWEVENT: {
 
-		// render
+				switch (sdl_event.window.event) {
 
-		// process window
-		if( GetMessage( &(main_window->msg) , NULL, 0, 0) > 0 ) {
+					case SDL_WINDOWEVENT_CLOSE: {
+						quit = true;
+					} break;
 
-			TranslateMessage( &(main_window->msg) );
-			DispatchMessage ( &(main_window->msg) );
-			
+				}
+
+			} break;
+
 		}
 
-		main_window->send_update_message();
-
+		}
+	
 	}
 
-	delete main_window;
-	return 0;
+	// free sdl stuff
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
 
+	// Shuts down all SDL subsystems 
+	SDL_Quit();
+
+	return 0;
 }
 // end : main function
 
-
-LRESULT CALLBACK window_proc(
-	HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
-) {
-
-	switch (uMsg) {
-
-	case WM_DESTROY: {
-
-		PostQuitMessage(0);
-		ExitProcess(0);
-		return 0;
-
-	}
-
-	case WM_PAINT: {
-
-		main_window->on_paint();
-		return 0;
-
-	}
-
-	case WM_SIZE: {
-
-		// main_window->on_paint();
-		return 0;
-
-	}
-
-	}
-
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
-
-} 
-// end : proc function
