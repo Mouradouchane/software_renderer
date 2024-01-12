@@ -22,23 +22,26 @@
 */
 
 window::window(
-	HINSTANCE hinst, int n_cmd_show ,
+	HINSTANCE hinst, WNDPROC proc_function , int n_cmd_show ,
 	std::string const& name, 
 	size_t width, size_t height
 ){
 
 	// window props setup
 
-	this->name = name.c_str();
-	this->width = width;
+	this->name   = name.c_str();
+	this->width  = width;
 	this->height = height;
+
+	this->frame_buffer = pixels(width, height);
 
 	this->hinst = hinst;
 	this->n_cmd_show = n_cmd_show;
 
 	this->wc.hInstance = this->hinst;
 
-	this->wc.lpfnWndProc = this->proc;
+	this->ptr_proc = proc_function;
+	this->wc.lpfnWndProc = this->ptr_proc;
 
 	std::wstring stemp = std::wstring(this->name.begin(), this->name.end());
 	this->wc.lpszClassName = stemp.c_str();
@@ -81,11 +84,11 @@ window::~window() {
 
 */
 
+/*
 void window::set_proc( WNDPROC win_proc ) {
-
 	this->ptr_proc = win_proc;
-
 }
+*/
 
 bool window::is_window_created() {
 	return (this->hwnd != NULL);
@@ -203,12 +206,22 @@ void window::set_y(size_t new_y){
 
 void window::setup_bitmap_context() {
 
-	frame_bitmap_info.bmiHeader.biSize = sizeof(frame_bitmap_info.bmiHeader);
-	frame_bitmap_info.bmiHeader.biPlanes = 1;
-	frame_bitmap_info.bmiHeader.biBitCount = 32;
-	frame_bitmap_info.bmiHeader.biCompression = BI_RGB;
-	frame_device_context = CreateCompatibleDC(0);
+	this->bitmap_info.bmiHeader.biSize = sizeof(
+		this->bitmap_info.bmiHeader
+	);
+	this->bitmap_info.bmiHeader.biPlanes = 1;
+	this->bitmap_info.bmiHeader.biBitCount = 32;
+	this->bitmap_info.bmiHeader.biCompression = BI_RGB;
+	window_hdc = CreateCompatibleDC(0);
 	
+	this->h_bitmap = CreateDIBSection(
+		this->window_hdc ,
+		&(this->bitmap_info) ,
+		DIB_RGB_COLORS ,
+		(void**)this->frame_buffer.buffer ,
+		NULL , 0 
+	);
+
 }
 
 // force to send mw_paint message for 
@@ -221,18 +234,24 @@ void window::send_update_message() {
 
 void window::on_paint() {
 
-	HDC device_context;
+	RECT rect; int width = 0, height = 0;
 
-	device_context = BeginPaint(this->hwnd, &(this->paint_struct));
+	if (GetWindowRect(this->hwnd, &rect)) {
+		width  = rect.right - rect.left;
+		height = rect.bottom - rect.top;
+	}
+
+	HDC dest_hdc;
+
+	dest_hdc = BeginPaint(this->hwnd, &(this->paint_struct));
+	
 	BitBlt(
-		device_context,
-		this->paint_struct.rcPaint.left, 
-		this->paint_struct.rcPaint.top,
-		this->paint_struct.rcPaint.right  - this->paint_struct.rcPaint.left,
-		this->paint_struct.rcPaint.bottom - this->paint_struct.rcPaint.top,
-		this->frame_device_context,
-		this->paint_struct.rcPaint.left, 
-		this->paint_struct.rcPaint.top,
+		dest_hdc,
+		0, 0, // x , y
+		this->frame_buffer.width , 
+		this->frame_buffer.height, // w , h
+		this->window_hdc, // source hdc
+		0,0,
 		SRCCOPY // copy bitmap to window buffer
 	);
 
@@ -240,60 +259,20 @@ void window::on_paint() {
 
 }
 
-void window::on_resize() {
-	/*
-	frame_bitmap_info.bmiHeader.biWidth = LOWORD(lParam);
-	frame_bitmap_info.bmiHeader.biHeight = HIWORD(lParam);
+void window::on_resize(LPARAM lp) {
 
-	if (frame_bitmap) DeleteObject(frame_bitmap);
-	frame_bitmap = CreateDIBSection(NULL, &frame_bitmap_info, DIB_RGB_COLORS, (void**)&frame.pixels, 0, 0);
-	SelectObject(frame_device_context, frame_bitmap);
+	RECT rect; int width = 0, height = 0;
 
-	frame.width = LOWORD(lParam);
-	frame.height = HIWORD(lParam);
-	*/
-
-}
-
-LRESULT CALLBACK window::proc(
-	HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
-) {
-
-	switch (uMsg) {
-
-	case WM_DESTROY: {
-
-		PostQuitMessage(0);
-		ExitProcess(0);
-		return 0;
-
+	if (GetWindowRect(this->hwnd, &rect)) {
+		width = rect.right - rect.left;
+		height = rect.bottom - rect.top;
 	}
 
-	case WM_PAINT: {
-		/*
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hwnd, &ps);
-
-		// All painting occurs here, between BeginPaint and EndPaint.
-
-		FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-
-		EndPaint(hwnd, &ps);
-		*/
-
-		this->on_paint();
-
-		return 0;
-	}
-
-	case WM_SIZE: {
-
-		return 0;
-	}
-
-	}
-
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	FillRect(
+		this->window_hdc,
+		&rect ,
+		(HBRUSH)(100)
+	);
 
 }
 

@@ -15,9 +15,14 @@
 	#include <string>
 #endif
 
+#ifndef TYPES_HPP
+	#include "../types/types.hpp"
+#endif
+
 #ifndef WINDOW_CLASS_HPP
 
 #define WINDOW_CLASS_HPP 
+
 
 class window {
 
@@ -40,13 +45,16 @@ private:
 
 	DWORD style = WS_OVERLAPPEDWINDOW;
 
-	BITMAPINFO frame_bitmap_info;
-	HBITMAP frame_bitmap = 0;
-	HDC frame_device_context = 0;
+	// window proc "messaging handler"
+	WNDPROC ptr_proc = nullptr;
 
+	// rendering stuff
+	BITMAPINFO bitmap_info;
+	HBITMAP h_bitmap = 0;
+	HDC window_hdc = 0;
 	PAINTSTRUCT paint_struct;
 
-	WNDPROC ptr_proc = nullptr;
+	pixels frame_buffer;
 
 public:
 
@@ -55,7 +63,7 @@ public:
 
 	// constructor
 	window(
-		HINSTANCE hinst, int n_cmd_show,
+		HINSTANCE hinst, WNDPROC proc_function , int n_cmd_show,
 		std::string const& name,
 		size_t width, size_t height
 	);
@@ -82,13 +90,9 @@ public:
 	void        send_update_message();
 
 	void        on_paint();
-	void        on_resize();
+	void        on_resize(LPARAM lp);
 
-	LRESULT CALLBACK proc(
-		HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
-	);
-	
-	void        set_proc(WNDPROC win_proc);
+//  void        set_proc(WNDPROC win_proc);
 
 	bool        is_window_created( );
 	bool        destroy( );

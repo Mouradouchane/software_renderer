@@ -4,8 +4,8 @@
 #include "window/window.hpp"
 #include "types/types.hpp"
 
-
-LRESULT CALLBACK win_proc(
+// main window messaging handler
+LRESULT CALLBACK window_proc(
 	HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 );
 
@@ -25,7 +25,7 @@ int WINAPI WinMain(
 
 	// the main loop
 
-	main_window = new window(h_instance , n_cmd_show , "software - renderer" , 800 , 600);
+	main_window = new window(h_instance, window_proc, n_cmd_show , "software - renderer" , 800 , 600);
 	bool running = true;
 	
 	if (main_window->is_window_created() == false) {
@@ -57,4 +57,40 @@ int WINAPI WinMain(
 	return 0;
 
 }
+// end : main function
 
+
+LRESULT CALLBACK window_proc(
+	HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
+) {
+
+	switch (uMsg) {
+
+	case WM_DESTROY: {
+
+		PostQuitMessage(0);
+		ExitProcess(0);
+		return 0;
+
+	}
+
+	case WM_PAINT: {
+
+		main_window->on_paint();
+		return 0;
+
+	}
+
+	case WM_SIZE: {
+
+		// main_window->on_paint();
+		return 0;
+
+	}
+
+	}
+
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
+} 
+// end : proc function
