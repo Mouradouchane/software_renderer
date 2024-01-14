@@ -26,9 +26,9 @@ object/
 *.pch
 
 # Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# *.so
+# *.dylib
+# *.dll
 
 # Fortran module files
 *.mod
@@ -38,7 +38,7 @@ object/
 *.lai
 *.la
 *.a
-*.lib
+# .lib
 
 # Executables
 *.exe
