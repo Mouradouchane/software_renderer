@@ -14,6 +14,16 @@
 	#include <windows.h>
 #endif
 
+#ifndef GDI_PLUS_H
+#define GDI_PLUS_H
+	#include <gdiplus.h>
+#endif
+
+#ifndef RANDOM_H
+	#define RANDOM_H
+	#include <random>
+#endif
+
 #ifndef TYPES_HPP
 	#include "../types/types.hpp"
 #endif
@@ -21,6 +31,8 @@
 #ifndef WINDOW_HPP
 
 #define WINDOW_HPP
+
+namespace gdi = Gdiplus;
 
 namespace window {
 
@@ -49,8 +61,14 @@ namespace window {
 	extern HWND handle; // window handel
 	extern WNDCLASS wnd_class; // window register class
 
+	extern gdi::Bitmap* bitmap;
+	extern gdi::GdiplusStartupInput gdiplusStartupInput;
+	extern ULONG_PTR gdiplusToken;
+	extern gdi::Graphics* renderer;
+
 	extern PAINTSTRUCT paint_struct;
 	extern HDC hdc; // handle device context
+
 
 	// window initializer
 	bool init(HINSTANCE h_instance , int n_cmd_show);

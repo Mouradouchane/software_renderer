@@ -4,6 +4,11 @@
     #include <windows.h>
 #endif
 
+#ifndef GDI_PLUS_H
+#define GDI_PLUS_H
+    #include <gdiplus.h>
+#endif
+
 #ifndef TIME_H
 #define TIME_H
     #include <time.h>
@@ -36,7 +41,6 @@ int WINAPI WinMain(
 
     running = true;
 
-       
     // main loop 
     while (running){
 
@@ -50,6 +54,9 @@ int WINAPI WinMain(
             DispatchMessage(&window::msg);
 
         }
+
+        SendMessage(window::handle, WM_PAINT, 0, 0);
+        //Sleep(15);
 
     }
 
