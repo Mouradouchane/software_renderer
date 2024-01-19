@@ -4,9 +4,17 @@
     #include <windows.h>
 #endif
 
-#ifndef GDI_PLUS_H
-#define GDI_PLUS_H
-    #include <gdiplus.h>
+#ifndef D2D_H
+#define D2D_H
+    #include <d2d1.h>
+    #include <d2d1_1.h>
+    #include <d3d9.h> // directx 9
+    #include <d2d1helper.h>
+    #include <dwrite.h>
+    #include <wincodec.h>
+
+    #pragma comment(lib, "d2d1.lib")
+    #pragma comment(lib, "d3d9.lib")
 #endif
 
 #ifndef TIME_H
@@ -30,6 +38,7 @@
 // global variables
 bool running;
 
+
 int WINAPI WinMain(
 	HINSTANCE h_instance, HINSTANCE h_prev_instance, LPSTR p_cmd_line, int n_cmd_show
 ){
@@ -50,7 +59,7 @@ int WINAPI WinMain(
             // note : this handel keys messages
             TranslateMessage(&window::msg);
 
-            // note : this call 'proc'
+            // note : this call 'window::proc'
             DispatchMessage(&window::msg);
 
         }
@@ -65,3 +74,13 @@ int WINAPI WinMain(
 	return 0;
 }
 // end : main function
+
+// todo : move this to math library
+uint32_t random32(uint32_t min = 0, uint32_t max = UINT32_MAX) {
+
+    std::random_device random_device;
+    std::mt19937 engine(random_device());
+    std::uniform_int_distribution<std::mt19937::result_type> dist(min, max);
+
+    return (uint32_t)dist(engine);
+}
