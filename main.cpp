@@ -8,8 +8,11 @@
 #define D2D_H
     #include <d2d1.h>
     #include <d2d1_1.h>
-    #include <d3d9.h> // directx 9
     #include <d2d1helper.h>
+    
+    #include <d3d9.h> // directx 9
+    #include <d3d9types.h>
+    
     #include <dwrite.h>
     #include <wincodec.h>
 
@@ -65,7 +68,7 @@ int WINAPI WinMain(
         }
 
         SendMessage(window::handle, WM_PAINT, 0, 0);
-        //Sleep(15);
+        Sleep(30);
 
     }
 
@@ -78,9 +81,28 @@ int WINAPI WinMain(
 // todo : move this to math library
 uint32_t random32(uint32_t min = 0, uint32_t max = UINT32_MAX) {
 
+    // kind of heavy
+    /*
     std::random_device random_device;
     std::mt19937 engine(random_device());
     std::uniform_int_distribution<std::mt19937::result_type> dist(min, max);
 
     return (uint32_t)dist(engine);
+    */
+    return (uint32_t)(std::rand() * (max - min) + max);
+
+}
+
+uint8_t random8(uint8_t min = 0, uint8_t max = UINT8_MAX) {
+    
+    // kind of heavy
+    /*
+    std::random_device random_device;
+    std::mt19937 engine(random_device());
+    std::uniform_int_distribution<std::mt19937::result_type> dist(min, max);
+    
+    return (uint8_t)dist(engine);
+    */
+
+    return (uint8_t)(std::rand() * (max - min) + max);
 }

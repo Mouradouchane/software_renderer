@@ -17,9 +17,12 @@
 #ifndef D2D_H
 #define D2D_H
 	#include <d2d1.h>
-    #include <d2d1_1.h>
-    #include <d3d9.h> // directx 9
+	#include <d2d1_1.h>
 	#include <d2d1helper.h>
+
+	#include <d3d9.h> // directx 9
+	#include <d3d9types.h>
+
 	#include <dwrite.h>
 	#include <wincodec.h>
 
@@ -54,8 +57,9 @@ namespace window {
 	// window {width , height}
 	extern size_t width;
 	extern size_t height;
-	
+
 	extern uint32_t* buffer;
+	extern size_t size;
 
 	// winapi sutff
 	extern MSG msg; // window messagin variable
@@ -74,6 +78,8 @@ namespace window {
 	extern PDIRECT3DDEVICE9 d3d_device;
 	extern D3DPRESENT_PARAMETERS d3d_device_info; // device information
 	extern D3DCOLOR clear_color;
+	extern IDirect3DSurface9* d3d_surface; // d3d buck buffer
+	extern RECT rect;
 
 	// method's
 	bool init(HINSTANCE h_instance , int n_cmd_show);
