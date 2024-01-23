@@ -4,22 +4,6 @@
     #include <windows.h>
 #endif
 
-#ifndef D2D_H
-#define D2D_H
-    #include <d2d1.h>
-    #include <d2d1_1.h>
-    #include <d2d1helper.h>
-    
-    #include <d3d9.h> // directx 9
-    #include <d3d9types.h>
-    
-    #include <dwrite.h>
-    #include <wincodec.h>
-
-    #pragma comment(lib, "d2d1.lib")
-    #pragma comment(lib, "d3d9.lib")
-#endif
-
 #ifndef TIME_H
 #define TIME_H
     #include <time.h>
@@ -54,7 +38,7 @@ int WINAPI WinMain(
     running = true;
 
     // main loop 
-    while (running){
+    while( running ){
 
         // handle window messages 
         if (GetMessage(&window::msg, NULL, 0, 0) > 0) {
