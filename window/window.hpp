@@ -11,28 +11,22 @@
 	#define UNICODE
 #endif
 
+// winapi
 #ifndef WINDOWS_H
 #define WINDOWS_H
 	#include <windows.h>
 #endif
 
+// directx 9
 #ifndef D3D_H
 #define D3D_H
-	// directx 9
 	#include <d3d9.h> 
 	#include <d3d9types.h>
-
-	#pragma comment(lib, "d3d9.lib")
 #endif
 
-#ifndef RANDOM_H
-#define RANDOM_H
-	#include <random>
-#endif
-
-#ifndef TYPES_HPP
-	#include "../types/types.hpp"
-#endif
+#include "../types/types.hpp"
+#include "../exceptions/exceptions.hpp"
+#include "../configs/configs.hpp"
 
 #ifndef WINDOW_HPP
 
@@ -52,8 +46,11 @@ namespace window {
 	extern size_t height;
 
 	extern float dpi;
+
+	// style to create window with
 	extern DWORD style;
 
+	// a pointer to window pixels 
 	extern uint32_t* buffer;
 	extern size_t size;
 
@@ -68,9 +65,6 @@ namespace window {
 
 	extern HWND handle; // window handel
 	extern WNDCLASSW window_class; // window register class
-	
-	// extern PAINTSTRUCT paint_struct;
-	// extern HDC hdc; // handle device context
 	
 	/*
 		=========== directx variables ===========
@@ -94,7 +88,6 @@ namespace window {
 	bool init(HINSTANCE h_instance , int n_cmd_show);
 
 	void destroy();
-	void destroy_resource();
 
 	// window messages handler
 	LRESULT CALLBACK proc(
@@ -104,8 +97,14 @@ namespace window {
 	bool lock_buffer();
 	bool unlock_buffer();
 
-	void on_resize();
+	/* 
+	// TODO : in futuer
+		void on_resize();
+		void on_keypressed();
+		void on_mouseclick();
+	*/
 
+	void handle_message();
 	void show();
 	void hide();
 

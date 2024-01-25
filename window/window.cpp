@@ -1,17 +1,14 @@
 
 #pragma once 
 
-#ifndef WINDOW_HPP 
-	#include "window.hpp"
-#endif
+#include "window.hpp"
+
+// we need directx9 for window buffer access + speed 
+#pragma comment(lib, "d3d9.lib")
 
 #ifndef WINDOW_CPP
 
 #define WINDOW_CPP
-
-extern bool running;
-extern uint8_t random8(uint8_t min = 0, uint8_t max = UINT8_MAX);
-extern uint32_t random32(uint32_t min = 0, uint32_t max = UINT32_MAX);
 
 namespace window{
 
@@ -26,7 +23,7 @@ size_t width  = 800;
 size_t height = 600;
 size_t size   = window::width * window::height;
 
-DWORD style = WS_OVERLAPPEDWINDOW;
+DWORD style = CS_HREDRAW | CS_VREDRAW | (WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME);
 MSG msg;
 
 int n_cmd_show = 0;
@@ -36,9 +33,6 @@ HWND handle = NULL;
 WNDCLASSW window_class = {};
 
 uint32_t* buffer = nullptr;
-
-// PAINTSTRUCT paint_struct;
-// HDC hdc; 
 
 // directx 9
 namespace d3d {
@@ -56,29 +50,7 @@ namespace d3d {
 /*
     ============= function's =============
 */
-std::string get_last_error_string(){
 
-    //Get the error message ID, if any.
-    DWORD errorMessageID = ::GetLastError();
-    if (errorMessageID == 0) {
-        return std::string(); //No error message has been recorded
-    }
-
-    LPSTR messageBuffer = nullptr;
-
-    //Ask Win32 to give us the string version of that message ID.
-    //The parameters we pass in, tell Win32 to create the buffer that holds the message for us (because we don't yet know how long the message string will be).
-    size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
-
-    //Copy the error message into a std::string.
-    std::string message(messageBuffer, size);
-
-    //Free the Win32's string's buffer.
-    LocalFree(messageBuffer);
-
-    return message;
-}
 
 namespace { // private functions 
 
@@ -87,18 +59,26 @@ namespace { // private functions
         // setup window
         window::window_class.lpszClassName = window::name;
         window::window_class.hInstance     = window::h_instance;
-        window::window_class.style         = window::style;
+        window::window_class.style         = CS_GLOBALCLASS;
         window::window_class.lpfnWndProc   = window::proc;
 
         // resigster window
-        RegisterClassW( &window::window_class );
+        if (RegisterClassW(&(window::window_class)) == NULL) {
+            
+            std::string err = exceptions::get_last_error_window();
+            
+            exceptions::show_error(
+                "window register error", err
+            );
+            return false;
+        }
 
         // create window
-        window::handle = CreateWindowEx(
-            NULL, // optional window styles.
+        window::handle = CreateWindowExW(
+            NULL , // optional window styles.
             window::name,  // Window class
             window::title, // Window text
-            WS_OVERLAPPEDWINDOW, // Window style
+            window::style, // Window style
 
             // size and position
             window::x, window::y,
@@ -111,13 +91,22 @@ namespace { // private functions
         );
 
         if (window::handle == NULL) {
-            std::string err = get_last_error_string();
-            MessageBoxA(NULL, err.c_str() , 0, MB_OK);
+
+            std::string err = exceptions::get_last_error_window();
+
+            exceptions::show_error(
+                "create window error", err
+            );
             return false;
         }
 
         if (!GetWindowRect(window::handle, &window::d3d::rect)) {
-            MessageBoxA(NULL, "failed to get 'window rect' !", 0, MB_OK);
+
+            std::string err = exceptions::get_last_error_window();
+
+            exceptions::show_error(
+                "window rect error", err
+            );
             return false;
         }
 
@@ -162,16 +151,11 @@ namespace { // private functions
         // TODO : error handling
         if ( FAILED(hr) ) { 
 
-            switch (hr) {
+            std::string err = exceptions::get_last_error_window();
 
-                case D3DERR_NOTAVAILABLE: { } break;
-
-                case D3DERR_INVALIDCALL: { } break;
-
-                default : { } break;
-
-            }
-
+            exceptions::show_error(
+                "d3d9 create device error", err
+            );
             return false;
         }
 
@@ -186,8 +170,11 @@ namespace { // private functions
 
         if ( FAILED(hr) ) {
 
-            // TODO : handle errors
-            
+            std::string err = exceptions::get_last_error_window();
+
+            exceptions::show_error(
+                "d3d9 get back buffer error", err
+            );
             return false;
         }
 
@@ -202,7 +189,7 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
     window::n_cmd_show = n_cmd_show;
 
     if ( !init_window() ) return false;
-    if ( !init_d3d() ) return false;
+    if ( !init_d3d() )    return false;
 
     window::show();
     return true;
@@ -212,22 +199,44 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
 void destroy() {
 
     // free window stuff
+
     if (window::handle != NULL) {
+        UnregisterClassW(window::name, window::h_instance);
         DestroyWindow(window::handle);
-        UnregisterClass(window::name, window::h_instance);
     }
 
     if (window::buffer != nullptr) {
         delete[] window::buffer;
+        window::buffer = nullptr;
     }
 
     // free Direct3D stuff
-    if (window::d3d::device != nullptr) {
-        window::d3d::device->Release();
-    }   
-
+    
     if (window::d3d::inter_face != nullptr) {
         window::d3d::inter_face->Release();
+    }
+
+    if (window::d3d::device != nullptr) {
+        window::d3d::device->Release();
+    }
+
+    if (window::d3d::surface != nullptr) {
+        window::d3d::surface->Release();
+    }
+
+}
+
+void handle_message() {
+
+    // handle window messages 
+    if (GetMessage(&window::msg, NULL, 0, 0) > 0) {
+
+        // note : this handel keys messages
+        TranslateMessage(&window::msg);
+
+        // note : this call 'window::proc'
+        DispatchMessage(&window::msg);
+
     }
 
 }
@@ -251,10 +260,7 @@ bool lock_buffer() {
         D3DLOCK_DONOTWAIT
     );
 
-    if (FAILED(hr)) {
-        // TODO : handle errors
-        return false;
-    }
+    if (FAILED(hr)) return false;
     
     return true;
 }
@@ -264,10 +270,7 @@ bool unlock_buffer() {
     // try to unlock d3d buffer
     LRESULT hr = window::d3d::surface->UnlockRect();
 
-    if (FAILED(hr)) {
-        // TODO : handle error -> "invalid call" only
-        return false;
-    }
+    if (FAILED(hr)) return false;
     
     return true;
 }
@@ -297,6 +300,7 @@ LRESULT CALLBACK proc(
         ZeroMemory(window::buffer , window::size);
 
         // begin the scene
+        BeginPaint(window::handle, 0);
         window::d3d::device->BeginScene();
 
         // do rendering here
@@ -304,6 +308,7 @@ LRESULT CALLBACK proc(
 
         // end the scene
         window::d3d::device->EndScene();
+        EndPaint(window::handle, 0);
         
         // unlook buffer
         window::unlock_buffer();
