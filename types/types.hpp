@@ -32,6 +32,7 @@ typedef long double  float96 , *ptr_float96;
 	#define sfloat float64
 #endif
 
+// vector's based on array
 typedef sfloat       vector2d[2];
 typedef sfloat       vector3d[3];
 typedef sfloat       vector4d[4];
@@ -60,56 +61,28 @@ typedef struct sample {
 	srgba8 color = { 0,0,0,0 };
 };
 
-// vector2d wrapper
-class vec2d {
-
-public:
-
-	vector2d vector;
-
-	// constructor's
-	vec2d();
-	vec2d(sfloat x, sfloat y);
-
-	// destructor
-	~vec2d() = default;
-
+// vector's based on struct
+typedef struct vec2d {
+	sfloat x = 0;
+	sfloat y = 0;
 };
-// end : class vec2d 
 
-// vector3d wrapper
-class vec3d {
+typedef struct vec3d {
+	sfloat x = 0;
+	sfloat y = 0;
+	sfloat z = 1;
+}; 
 
-public:
-
-	vector3d vector;
-
-	// constructor's
-	vec3d();
-	vec3d(sfloat x, sfloat y, sfloat z = 1.0f);
-
-	// destructor
-	~vec3d() = default;
-
+typedef struct vec4d {
+	sfloat x = 0;
+	sfloat y = 0;
+	sfloat z = 1;
+	sfloat w = 1;
 };
-// end : class vec3d 
 
-// vector4d wrapper
-class vec4d {
-
-public:
-
-	vector4d vector;
-
-	// constructor's
-	vec4d();
-	vec4d(sfloat x, sfloat y, sfloat z = 1.0f, sfloat w = 1.0f);
-
-	// destructor
-	~vec4d() = default;
-
-};
-// end : class vec4d 
+vec2d create_vec2d(sfloat x=0, sfloat y=0);
+vec3d create_vec3d(sfloat x=0, sfloat y=0, sfloat z=1);
+vec4d create_vec4d(sfloat x=0, sfloat y=0, sfloat z=1, sfloat w=1);
 
 /*
 	=================================================

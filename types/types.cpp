@@ -10,8 +10,7 @@
 
 #ifndef TYPES_CPP
 
-	#define TYPES_CPP
-
+#define TYPES_CPP
 
 /*
 	=================================================
@@ -19,36 +18,20 @@
 	=================================================
 */
 
-vec2d::vec2d() { }
-
-vec2d::vec2d(sfloat x, sfloat y) {
-
-	this->vector[0] = x;
-	this->vector[1] = y;
-
+vec2d create_vec2d(sfloat x, sfloat y){
+	vec2d  vector = { x = x , y = y };
+	return vector;
 }
 
-vec3d::vec3d() { }
-
-vec3d::vec3d(sfloat x, sfloat y, sfloat z) {
-
-	this->vector[0] = x;
-	this->vector[1] = y;
-	this->vector[2] = z;
-
+vec3d create_vec3d(sfloat x, sfloat y, sfloat z) {
+	vec3d  vector = { x = x , y = y , z = z };
+	return vector;
 }
 
-vec4d::vec4d() { }
-
-vec4d::vec4d(sfloat x, sfloat y, sfloat z, sfloat w) {
-
-	this->vector[0] = x;
-	this->vector[1] = y;
-	this->vector[2] = z;
-	this->vector[3] = w;
-
+vec4d create_vec4d(sfloat x, sfloat y, sfloat z , sfloat w) {
+	vec4d  vector = { x = x , y = y , z = z , w = w};
+	return vector;
 }
-
 
 /*
 	=================================================

@@ -3,6 +3,9 @@
 	all the includes for main.cpp
 */
 
+#ifndef INCLUDES_HPP
+#define INCLUDES_HPP
+
 #pragma once 
 
 #ifndef UNICODE
@@ -30,3 +33,5 @@
 #ifndef WINDOW_HPP 
 	#include "window/window.hpp"
 #endif
+
+#endif 
