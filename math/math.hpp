@@ -29,7 +29,7 @@
 
 #ifndef MATH_HPP
 	
-	#define MATH_HPP
+#define MATH_HPP
 
 /*
 	global vector operators 
@@ -56,29 +56,29 @@ sfloat operator * (vec4d const& a, vec4d const& b);
 
 namespace math {
 
-extern uint16_t max_slope;
+	extern uint16_t max_slope;
 
-/* 
-	class for random generation based on time function
-*/
-class random {
+	/* 
+		class for random generation based on time function
+	*/
+	class random {
 
-public :
+		public :
 
-	// unsigned 
-	static uint8_t  uint8 (uint8_t  min=0, uint8_t  max=UINT8_MAX);
-	static uint16_t uint16(uint16_t min=0, uint16_t max=UINT16_MAX);
-	static uint32_t uint32(uint32_t min=0, uint32_t max=UINT32_MAX);
-	static uint64_t uint64(uint64_t min=0, uint64_t max=UINT64_MAX);
+		// unsigned 
+		static uint8_t  uint8 (uint8_t  min=0, uint8_t  max=UINT8_MAX);
+		static uint16_t uint16(uint16_t min=0, uint16_t max=UINT16_MAX);
+		static uint32_t uint32(uint32_t min=0, uint32_t max=UINT32_MAX);
+		static uint64_t uint64(uint64_t min=0, uint64_t max=UINT64_MAX);
 	
-	// signed
-	static int8_t  int8 (int8_t  min=0, int8_t  max=INT8_MAX);
-	static int16_t int16(int16_t min=0, int16_t max=INT16_MAX);
-	static int32_t int32(int32_t min=0, int32_t max=INT32_MAX);
-	static int64_t int64(int64_t min=0, int64_t max=INT64_MAX);
+		// signed
+		static int8_t  int8 (int8_t  min=0, int8_t  max=INT8_MAX);
+		static int16_t int16(int16_t min=0, int16_t max=INT16_MAX);
+		static int32_t int32(int32_t min=0, int32_t max=INT32_MAX);
+		static int64_t int64(int64_t min=0, int64_t max=INT64_MAX);
 
-};
-// end : class random
+	};
+	// end : class random
 
 	// calc the change of deltha from v1 to v2 
 	// dt = v1 - v2
@@ -167,19 +167,22 @@ public :
 		sfloat cross_product(vec4d const& target, vec4d const& p1, vec4d const& p2);
 
 		// note : length of the vector based on the origin(0,0)
-		// vector length : ||a||
+		// formula :: len = sqrt( x² + y² )
 		sfloat length(vec2d const& a);
 		sfloat length(vec3d const& a);
 		sfloat length(vec4d const& a);
 
-		// unit vector : |a|
+		// note : none zero vector length
+		// formula :: |a| =  a / ||a||
 		vec2d unit(vec2d const& a);
 		vec3d unit(vec3d const& a);
 		vec4d unit(vec4d const& a);
 		
-		// calc normal between to vectors in 2D or 3D
-		vector2d* normal( vector2d const& p1 , vector2d const& p2 );
-		vector3d* normal( vector3d const& p1 , vector3d const& p2 );
+		// get normals between vectors in 2D or 3D
+		vec2d left_normal(vec2d const& p1, vec2d const& p2);
+		vec3d left_normal(vec3d const& p1, vec3d const& p2);
+		vec2d right_normal(vec2d const& p1 , vec2d const& p2);
+		vec3d right_normal(vec3d const& p1 , vec3d const& p2);
 	
 	}
 	// end : namespace vector

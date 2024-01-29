@@ -8,9 +8,51 @@
     
 #define MATH_CPP
 
+/*
+    global vector operators
+*/
+vec2d operator + (vec2d const& a, vec2d const& b) {
+    return {
+        a.x + b.x,
+        a.y + b.y
+    };
+}
+
+vec3d operator + (vec3d const& a, vec3d const& b) {
+    return {
+      a.x + b.x,
+      a.y + b.y,
+      a.z + b.z
+    };
+}
+
+vec2d operator - (vec2d const& a, vec2d const& b) {
+    return {
+        a.x - b.x,
+        a.y - b.y
+    };
+}
+
+vec3d operator - (vec3d const& a, vec3d const& b) {
+    return {
+      a.x - b.x,
+      a.y - b.y,
+      a.z - b.z
+    };
+}
+
+sfloat operator * (vec2d const& a, vec2d const& b) {
+    return (a.x * b.x) + (a.y * b.y);
+}
+
+sfloat operator * (vec3d const& a, vec3d const& b) {
+    return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+}
+
+
 namespace math {
 
-uint16_t max_slope = 1000;
+uint16_t max_slope = 1024;
 
 namespace vector {
 
@@ -43,15 +85,74 @@ void scale(vec4d& a, sfloat scalar) {
 }
 
 sfloat length(vec2d const& a) {
-    return math::distance2d(vec2d{ 0,0 }, a);
+    return std::sqrtf(
+        (a.x * a.x) + (a.y * a.y)
+    );
 }
 
 vec2d unit(vec2d const& a) {
 
+    sfloat length = math::vector::length(a);
+
+    if (length == 0) return {0,0};
+
+    return {
+        a.x / length ,
+        a.y / length
+    };
+
 }
+
+vec2d left_normal(vec2d const& p1, vec2d const& p2) {
+
+    return { -(p1.y - p2.y) ,  (p1.x - p2.x) };
+}
+
+vec2d right_normal(vec2d const& p1, vec2d const& p2) {
+ 
+    return { (p1.y - p2.y) ,  -(p1.x - p2.x) };
+}
+
+// TODO : implements those functions 
+
+vec3d left_normal(vec3d const& p1, vec3d const& p2) {
+    std::runtime_error("not implemented yet :(");
+    return { 0,0,0 };
+}
+
+vec3d right_normal(vec3d const& p1, vec3d const& p2) {
+    std::runtime_error("not implemented yet :(");
+    return { 0,0,0 };
+}
+
+vec3d unit(vec3d const& a) {
+    std::runtime_error("not implemented yet :(");
+    return {0,0,0};
+}
+
+vec4d unit(vec4d const& a) {
+    std::runtime_error("not implemented yet :(");
+    return { 0,0,0,0 };
+}
+
+sfloat cross_product(
+    vec3d const& target, vec3d const& p1, vec3d const& p2
+) {
+    std::runtime_error("not implemented yet :(");
+    return NULL;
+}
+
+sfloat cross_product(
+    vec4d const& target, vec4d const& p1, vec4d const& p2
+) {
+    std::runtime_error("not implemented yet :(");
+    return NULL;
+}
+
 
 } 
 // end : namespace vector
+
 
 /*
     math function's    
@@ -71,9 +172,9 @@ sfloat slope2d(vec2d const& a, vec2d const& b) {
 // distance = sqrt((b.x - a.x)² + (b.y - a.y)²)
 sfloat distance2d(vec2d const& a, vec2d const& b) {
     return std::sqrtf( 
-        std::powf(b.x - a.x , 2) 
-                + 
-        std::powf(b.y - a.y , 2)
+        (sfloat)std::pow(b.x - a.x , 2) 
+                    + 
+        (sfloat)std::pow(b.y - a.y , 2)
     );
 }
 
