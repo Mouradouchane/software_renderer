@@ -24,7 +24,7 @@ typedef float        float32 , *ptr_float32;
 typedef double       float64 , *ptr_float64;
 typedef long double  float96 , *ptr_float96;
 
-	#define FLOAT_TYPE 32
+#define FLOAT_TYPE 32
 
 #if FLOAT_TYPE == 32
 	#define sfloat float32
@@ -41,24 +41,43 @@ typedef sfloat       matrix_2x2[2][2];
 typedef sfloat       matrix_3x3[3][3];
 typedef sfloat       matrix_4x4[4][4];
 
-typedef uint8_t      srgb8[3];
-typedef uint16_t     srgb16[3];
-typedef uint32_t     srgb32[3];
+typedef uint8_t      rgb8[3];
+typedef uint16_t     rgb16[3];
+typedef uint32_t     rgb32[3];
 
-typedef uint8_t      srgba8[4];
-typedef uint16_t     srgba16[4];
-typedef uint32_t     srgba32[4];
+typedef uint8_t      rgba8[4];
+typedef uint16_t     rgba16[4];
+typedef uint32_t     rgba32[4];
+
+// define standard type of rgb/rgba 
+// to be the main coloring system
+#define STANDARD_RGB 8
+
+#if STANDARD_RGB == 8
+
+	typedef rgb8  srgb;
+	typedef rgba8 srgba;
+
+#elif STANDARD_RGB == 16
+
+	typedef rgb16  srgb;
+	typedef rgba16 srgba;
+
+#else
+	typedef rgb32  srgb;
+	typedef rgba32 srgba;
+#endif
 
 typedef struct pixle {
-	uint32_t x = 0;
-	uint32_t y = 0;
-	srgba8 color = { 0,0,0,0 };
+	uint16_t x = 0;
+	uint16_t y = 0;
+	srgb color;
 };
 
-typedef struct sample {
+template<typename type> struct sample {
 	sfloat x = 0;
 	sfloat y = 0;
-	srgba8 color = { 0,0,0,0 };
+	type value;
 };
 
 // vector's based on struct
@@ -86,52 +105,32 @@ vec4d create_vec4d(sfloat x=0, sfloat y=0, sfloat z=1, sfloat w=1);
 
 /*
 	=================================================
-	==================== buffers ====================
+	=============== template buffer =================
 	=================================================
 */
 
-class pixels {
+template<typename type> class buffer {
 
 public : 
-	uint32_t x = 0;
-	uint32_t y = 0;
-	uint32_t size   = 0;
-	uint32_t height = 0;
-	uint32_t width  = 0;
+	
+	uint16_t x = 0;
+	uint16_t y = 0;
 
-	pixle*   buffer = nullptr; // heap allocation !
+	uint16_t height = 1;
+	uint16_t width  = 1;
+
+	uint32_t size   = 0;
+	type *   memory = nullptr; // heap allocation !
 
 	// constructor's
-	pixels();
-	pixels(uint32_t width , uint32_t height);
+	buffer(uint16_t width=1 , uint16_t height=1);
+	buffer(
+		uint16_t x = 0, uint16_t y = 0,
+		uint16_t width = 1, uint16_t height = 1
+	);
 	
 	// destructor
-	~pixels();
-
-	// todo 
-	sample get_pixel(uint32_t x, uint32_t y);
-	void   set_pixel(uint32_t x, uint32_t y, pixle new_value);
-
-};
-
-class samples {
-
-public:
-	uint32_t size   = 0;
-	uint32_t height = 0;
-	uint32_t width  = 0;
-	sample*  buffer = nullptr; // heap allocation !
-
-	// constructor's
-	samples();
-	samples(uint32_t width, uint32_t height);
-
-	// destructor
-	~samples();
-
-	// todo 
-	sample get_sample(uint32_t x, uint32_t y);
-	void   set_sample(uint32_t x, uint32_t y, sample new_value);
+	~buffer();
 
 };
 
@@ -141,7 +140,6 @@ public:
 	=================================================
 */
 
-// TODO : make rgba classes wrappers for srgba
 class rgba8 { // 8bit rgba representation
 
 public:
@@ -196,10 +194,11 @@ public:
 	====================== lines ====================
 	=================================================
 */
+
 class line2d {
 
 public:
-	vector2d points[2];
+	vec2d points[2];
 
 	// constructor's
 	line2d();
@@ -207,8 +206,7 @@ public:
 		sfloat x1, sfloat y1, // point 1
 		sfloat x2, sfloat y2  // point 2
 	);
-	line2d(vector2d  point_1, vector2d  point_2);
-	line2d(vector2d& point_1, vector2d& point_2);
+	line2d(vec2d const& point_1, vec2d const& point_2);
 
 	// destructor
 	~line2d() = default;
@@ -219,7 +217,7 @@ public:
 class line3d {
 
 public:
-	vector3d points[2];
+	vec3d points[2];
 
 	// constructor's
 	line3d();
@@ -227,8 +225,9 @@ public:
 		sfloat x1, sfloat y1, sfloat z1, // point 1
 		sfloat x2, sfloat y2, sfloat z2  // point 2
 	);
-	line3d(vector3d  point_1, vector3d  point_2);
-	line3d(vector3d& point_1, vector3d& point_2);
+	line3d(
+		vec3d const& point_1, vec3d const& point_2
+	);
 
 	// destructor
 	~line3d() = default;
@@ -246,7 +245,7 @@ class triangle2d {
 
 public:
 
-	vector2d points[3];
+	vec2d points[3];
 
 	// constructor's
 	triangle2d();
@@ -258,15 +257,9 @@ public:
 	);
 
 	triangle2d(
-		vector2d point_1,
-		vector2d point_2,
-		vector2d point_3
-	);
-
-	triangle2d(
-		vector2d& point_1,
-		vector2d& point_2,
-		vector2d& point_3
+		vec2d const& point_1,
+		vec2d const& point_2,
+		vec2d const& point_3
 	);
 
 	// destructor
@@ -279,7 +272,7 @@ class triangle3d {
 
 public:
 
-	vector3d points[3];
+	vec3d points[3];
 
 	// constructor's
 	triangle3d();
@@ -291,15 +284,9 @@ public:
 	);
 
 	triangle3d(
-		vector3d point_1,
-		vector3d point_2,
-		vector3d point_3
-	);
-
-	triangle3d(
-		vector3d& point_1,
-		vector3d& point_2,
-		vector3d& point_3
+		vec3d const& point_1,
+		vec3d const& point_2,
+		vec3d const& point_3
 	);
 
 	// destructor

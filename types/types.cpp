@@ -19,7 +19,7 @@
 */
 
 vec2d create_vec2d(sfloat x, sfloat y){
-	vec2d  vector = { x = x , y = y };
+	vec2d  vector = { x , y };
 	return vector;
 }
 
@@ -77,31 +77,18 @@ line2d::line2d(
 	sfloat x1, sfloat y1, sfloat x2, sfloat y2
 ) {
 
-	this->points[0][0] = x1;
-	this->points[0][1] = y1;
+	this->points[0].x = x1;
+	this->points[0].y = y1;
 
-	this->points[1][0] = x2;
-	this->points[1][1] = y2;
-
-}
-
-line2d::line2d(vector2d point_1, vector2d point_2) {
-
-	this->points[0][0] = point_1[0];
-	this->points[0][1] = point_1[1];
-
-	this->points[1][0] = point_2[0];
-	this->points[1][1] = point_2[1];
+	this->points[1].x = x2;
+	this->points[1].y = y2;
 
 }
 
-line2d::line2d(vector2d& point_1, vector2d& point_2) {
+line2d::line2d(vec2d const& point_1, vec2d const& point_2) {
 
-	this->points[0][0] = point_1[0];
-	this->points[0][1] = point_1[1];
-
-	this->points[1][0] = point_2[0];
-	this->points[1][1] = point_2[1];
+	this->points[0] = point_1;
+	this->points[1] = point_2;
 
 }
 
@@ -112,40 +99,24 @@ line3d::line3d(
 	sfloat x2, sfloat y2, sfloat z2  // point 2
 ) {
 
-	this->points[0][0] = x1;
-	this->points[0][1] = y1;
-	this->points[0][2] = z1;
+	this->points[0].x = x1;
+	this->points[0].y = y1;
+	this->points[0].z = z1;
 
-	this->points[1][0] = x2;
-	this->points[1][1] = y2;
-	this->points[1][2] = z2;
-
-}
-
-line3d::line3d(vector3d point_1, vector3d point_2) {
-
-	this->points[0][0] = point_1[0];
-	this->points[0][1] = point_1[1];
-	this->points[0][2] = point_1[2];
-
-	this->points[1][0] = point_2[0];
-	this->points[1][1] = point_2[1];
-	this->points[1][2] = point_2[2];
+	this->points[1].x = x2;
+	this->points[1].y = y2;
+	this->points[1].z = z2;
 
 }
 
-line3d::line3d(vector3d& point_1, vector3d& point_2) {
+line3d::line3d(
+	vec3d const& point_1, vec3d const& point_2
+) {
 
-	this->points[0][0] = point_1[0];
-	this->points[0][1] = point_1[1];
-	this->points[0][2] = point_1[2];
-
-	this->points[1][0] = point_2[0];
-	this->points[1][1] = point_2[1];
-	this->points[1][2] = point_2[2];
+	this->points[0] = point_1;
+	this->points[1] = point_2;
 
 }
-
 
 /*
 	===================================================
@@ -161,47 +132,27 @@ triangle2d::triangle2d(
 	sfloat x3, sfloat y3  // point 3
 ) {
 
-	this->points[0][0] = x1;
-	this->points[0][1] = y1;
+	this->points[0].x = x1;
+	this->points[0].y = y1;
 
-	this->points[1][0] = x2;
-	this->points[1][1] = y2;
+	this->points[1].x = x2;
+	this->points[1].y = y2;
 
-	this->points[2][0] = x3;
-	this->points[2][1] = y3;
+	this->points[2].x = x3;
+	this->points[2].y = y3;
 
 }
 
 triangle2d::triangle2d(
-	vector2d point_1, vector2d point_2, vector2d point_3
-) {
+	vec2d const& point_1 , vec2d const& point_2 , vec2d const& point_3
+){
 
-	this->points[0][0] = point_1[0];
-	this->points[0][1] = point_1[1];
-
-	this->points[1][0] = point_2[0];
-	this->points[1][1] = point_2[1];
-
-	this->points[2][0] = point_3[0];
-	this->points[2][1] = point_3[1];
+	this->points[0] = point_1;
+	this->points[1] = point_2;
+	this->points[2] = point_3;
 
 }
 
-
-triangle2d::triangle2d(
-	vector2d& point_1, vector2d& point_2, vector2d& point_3
-) {
-
-	this->points[0][0] = point_1[0];
-	this->points[0][1] = point_1[1];
-
-	this->points[1][0] = point_2[0];
-	this->points[1][1] = point_2[1];
-
-	this->points[2][0] = point_3[0];
-	this->points[2][1] = point_3[1];
-
-}
 
 triangle3d::triangle3d() { }
 
@@ -211,103 +162,77 @@ triangle3d::triangle3d(
 	sfloat x3, sfloat y3, sfloat z3  // point 3
 ) {
 
-	this->points[0][0] = x1;
-	this->points[0][1] = y1;
-	this->points[0][2] = z1;
+	this->points[0].x = x1;
+	this->points[0].y = y1;
+	this->points[0].z = z1;
 
-	this->points[1][0] = x2;
-	this->points[1][1] = y2;
-	this->points[1][2] = z2;
+	this->points[1].x = x2;
+	this->points[1].y = y2;
+	this->points[1].z = z2;
 
-	this->points[2][0] = x3;
-	this->points[2][1] = y3;
-	this->points[2][2] = z3;
-
-}
-
-triangle3d::triangle3d(
-	vector3d point_1, vector3d point_2, vector3d point_3
-) {
-
-	this->points[0][0] = point_1[0];
-	this->points[0][1] = point_1[1];
-	this->points[0][2] = point_1[2];
-
-	this->points[1][0] = point_2[0];
-	this->points[1][1] = point_2[1];
-	this->points[1][2] = point_2[2];
-
-	this->points[2][0] = point_3[0];
-	this->points[2][1] = point_3[1];
-	this->points[2][2] = point_3[2];
+	this->points[2].x = x3;
+	this->points[2].y = y3;
+	this->points[2].z = z3;
 
 }
 
 triangle3d::triangle3d(
-	vector3d& point_1, vector3d& point_2, vector3d& point_3
+	vec3d const& point_1,
+	vec3d const& point_2,
+	vec3d const& point_3
 ) {
 
-	this->points[0][0] = point_1[0];
-	this->points[0][1] = point_1[1];
-	this->points[0][2] = point_1[2];
-
-	this->points[1][0] = point_2[0];
-	this->points[1][1] = point_2[1];
-	this->points[1][2] = point_2[2];
-
-	this->points[2][0] = point_3[0];
-	this->points[2][1] = point_3[1];
-	this->points[2][2] = point_3[2];
+	this->points[0] = point_1;
+	this->points[1] = point_2;
+	this->points[2] = point_3;
 
 }
 
 
 /*
 	===================================================
-	====================== buffers ====================
+	================ template buffer ==================
 	===================================================
 */
 
-pixels::pixels() { }
-
-pixels::pixels(uint32_t width, uint32_t height) {
+template<typename type> buffer<type>::buffer(
+	uint16_t width, uint16_t height
+){
 
 	this->height = height;
 	this->width  = width;
+
 	this->size   = width * height;
 
-	this->buffer = new pixle[this->size * sizeof(pixle)];
+	this->memory = new type[ this->size ];
 
 }
 
-pixels::~pixels() {
+template<typename type> buffer<type>::buffer(
+	uint16_t x , uint16_t y ,
+	uint16_t width , uint16_t height
+) {
 
-	if (this->buffer != nullptr) {
-		delete[] this->buffer;
-		this->buffer = nullptr;
+	this->x = x;
+	this->y = y;
+
+	this->height = height;
+	this->width = width;
+
+	this->size = width * height;
+
+	this->memory = new type[this->size];
+
+}
+
+template<typename type> buffer<type>::~buffer() {
+
+	if (this->memory != nullptr) {
+		delete[] this->memory;
+		this->memory = nullptr;
 	}
 
 }
 
-samples::samples() { }
-
-samples::samples(uint32_t width, uint32_t height) {
-
-	this->height = height;
-	this->width  = width;
-	this->size   = width * height;
-
-	this->buffer = new sample[this->size * sizeof(sample)];
-
-}
-
-samples::~samples() {
-
-	if (this->buffer != nullptr) {
-		delete[] this->buffer;
-		this->buffer = nullptr;
-	}
-
-}
 
 #endif

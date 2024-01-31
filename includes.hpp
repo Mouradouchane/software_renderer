@@ -34,4 +34,8 @@
 	#include "window/window.hpp"
 #endif
 
+#ifndef RENDER_HPP
+	#include "render/render.hpp"
+#endif 
+
 #endif 

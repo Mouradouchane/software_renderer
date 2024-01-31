@@ -14,9 +14,12 @@ int WINAPI WinMain(
 
         window::handle_message();
 
-        SendMessage(window::handle, WM_PAINT, 0, 0);
+        // update 
+
+        // render 
         
         // todo : time-elapse fps control 
+        SendMessage(window::handle, WM_PAINT, 0, 0);
         Sleep(30);
 
     }
