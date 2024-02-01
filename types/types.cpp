@@ -1,21 +1,11 @@
 
-#ifndef _stdint
-	#define _stdint	
-	#include <stdint.h>
-#endif
-
-#ifndef TYPES_HPP
-	#include "types.hpp"
-#endif
+#include "types.hpp"
 
 #ifndef TYPES_CPP
-
 #define TYPES_CPP
 
 /*
-	=================================================
-	===================== vectors ===================
-	=================================================
+	few function for vector's creation
 */
 
 vec2d create_vec2d(sfloat x, sfloat y){
@@ -34,36 +24,37 @@ vec4d create_vec4d(sfloat x, sfloat y, sfloat z , sfloat w) {
 }
 
 /*
-	=================================================
-	==================== colors =====================
-	=================================================
+	few functions for colors creation
 */
 
-rgba8::rgba8() { }
-
-rgba8::rgba8(uint8_t red, uint8_t green, uint8_t blue)
-	: r{ red }, g{ green }, b{ blue }
-{
+rgb8 create_rgb8(uint8_t  red, uint8_t  green, uint8_t  blue) {
+	return { red , green , blue };
 }
 
-rgba8::rgba8(uint8_t red, uint8_t green, uint8_t blue, float32 alpha)
-	: r{ red }, g{ green }, b{ blue }, a{ alpha }
-{
+rgb16 create_rgb16(uint16_t red, uint16_t green, uint16_t blue) {
+	return { red , green , blue };
 }
 
-
-rgba16::rgba16() { }
-
-rgba16::rgba16(uint16_t red, uint16_t green, uint16_t blue)
-	: r{ red }, g{ green }, b{ blue }
-{
+rgb32 create_rgb32(uint32_t red, uint32_t green, uint32_t blue) {
+	return { red , green , blue };
 }
 
-rgba16::rgba16(uint16_t red, uint16_t green, uint16_t blue, float32 alpha)
-	: r{ red }, g{ green }, b{ blue }, a{ alpha }
-{
+rgba8  create_rgba8(
+	uint8_t  red, uint8_t  green, uint8_t  blue, float32 alpha
+) {
+	return { red , green , blue , alpha };
+}
+rgba16 create_rgba16(
+	uint16_t red, uint16_t green, uint16_t blue, float32 alpha
+){
+	return { red , green , blue , alpha };
 }
 
+rgba32 create_rgba32(
+	uint32_t red, uint32_t green, uint32_t blue, float32 alpha
+){
+	return { red , green , blue , alpha };
+}
 
 /*
 	=================================================

@@ -8,7 +8,6 @@
 #include "../math/math.hpp"
 
 #ifndef DRAW_HPP
-
 #define DRAW_HPP
 
 namespace draw {
@@ -24,8 +23,8 @@ namespace draw {
 	void curve(curve3d& curve);
 */
 	
-	void set_pixle(sfloat x, sfloat y, srgba& color);
-	void set_sample(sfloat x, sfloat y , srgba& color);
+	void set_pixle(sfloat x, sfloat y, rgba8& color);
+	void set_sample(sfloat x, sfloat y , rgba8& color);
 
 }
 // end : namespace draw

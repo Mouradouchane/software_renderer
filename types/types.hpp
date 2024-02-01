@@ -5,18 +5,19 @@
 	==============================
 */
 
+#pragma once 
+
 #ifndef _stdint
 	#define _stdint	
 	#include <stdint.h> // for int32 int64 ...
 #endif
 
 #ifndef TYPES_HPP
-
-	#define TYPES_HPP
+#define TYPES_HPP
 
 /*
 	=================================================
-	============ standard typedef's =================
+	================ standard types =================
 	=================================================
 */
 
@@ -32,55 +33,65 @@ typedef long double  float96 , *ptr_float96;
 	#define sfloat float64
 #endif
 
-// vector's based on array
-typedef sfloat       vector2d[2];
-typedef sfloat       vector3d[3];
-typedef sfloat       vector4d[4];
+/*
+	==========================================================
+	======================== colors ==========================
+	==========================================================
+*/
 
-typedef sfloat       matrix_2x2[2][2];
-typedef sfloat       matrix_3x3[3][3];
-typedef sfloat       matrix_4x4[4][4];
-
-typedef uint8_t      rgb8[3];
-typedef uint16_t     rgb16[3];
-typedef uint32_t     rgb32[3];
-
-typedef uint8_t      rgba8[4];
-typedef uint16_t     rgba16[4];
-typedef uint32_t     rgba32[4];
-
-// define standard type of rgb/rgba 
-// to be the main coloring system
-#define STANDARD_RGB 8
-
-#if STANDARD_RGB == 8
-
-	typedef rgb8  srgb;
-	typedef rgba8 srgba;
-
-#elif STANDARD_RGB == 16
-
-	typedef rgb16  srgb;
-	typedef rgba16 srgba;
-
-#else
-	typedef rgb32  srgb;
-	typedef rgba32 srgba;
-#endif
-
-typedef struct pixle {
-	uint16_t x = 0;
-	uint16_t y = 0;
-	srgb color;
+typedef struct rgb8 {
+	uint8_t r = 0; // red
+	uint8_t g = 0; // green
+	uint8_t b = 0; // blue
 };
 
-template<typename type> struct sample {
-	sfloat x = 0;
-	sfloat y = 0;
-	type value;
+typedef struct rgb16 {
+	uint16_t r = 0; // red
+	uint16_t g = 0; // green
+	uint16_t b = 0; // blue
 };
 
-// vector's based on struct
+typedef struct rgb32 {
+	uint32_t r = 0; // red
+	uint32_t g = 0; // green
+	uint32_t b = 0; // blue
+};
+
+typedef struct rgba8 {
+	uint8_t r = 0; // red
+	uint8_t g = 0; // green
+	uint8_t b = 0; // blue
+	float32 a = 1.0f; // alpha 
+};
+
+typedef struct rgba16 {
+	uint16_t r = 0; // red
+	uint16_t g = 0; // green
+	uint16_t b = 0; // blue
+	float32  a = 1.0f; // alpha 
+};
+
+typedef struct rgba32 {
+	uint32_t r = 0; // red
+	uint32_t g = 0; // green
+	uint32_t b = 0; // blue
+	float32  a = 1.0f; // alpha 
+};
+
+rgb8  create_rgb8 (uint8_t  red, uint8_t  green, uint8_t  blue);
+rgb16 create_rgb16(uint16_t red, uint16_t green, uint16_t blue);
+rgb32 create_rgb32(uint32_t red, uint32_t green, uint32_t blue);
+
+rgba8  create_rgba8 (uint8_t  red, uint8_t  green, uint8_t  blue, float32 alpha);
+rgba16 create_rgba16(uint16_t red, uint16_t green, uint16_t blue, float32 alpha);
+
+
+/*
+	===================================================
+	====================== vector's ===================
+	===================================================
+*/
+
 typedef struct vec2d {
 	sfloat x = 0;
 	sfloat y = 0;
@@ -105,7 +116,7 @@ vec4d create_vec4d(sfloat x=0, sfloat y=0, sfloat z=1, sfloat w=1);
 
 /*
 	=================================================
-	=============== template buffer =================
+	=================== buffers =====================
 	=================================================
 */
 
@@ -134,60 +145,17 @@ public :
 
 };
 
-/*
-	=================================================
-	==================== colors =====================
-	=================================================
-*/
-
-class rgba8 { // 8bit rgba representation
-
-public:
-
-	uint8_t r = 0; // red
-	uint8_t g = 0; // green
-	uint8_t b = 0; // blue
-
-	float32 a = 1.0f; // alpha
-
-	// constructor's
-	rgba8();
-	rgba8(uint8_t red, uint8_t green, uint8_t blue);
-	rgba8(uint8_t red, uint8_t green, uint8_t blue, float32 alpha = 1.0f);
-
-	// destructor
-	~rgba8() = default;
-
-	static const uint8_t MIN = 0;
-	static const uint8_t MAX = UINT8_MAX;
-
+typedef struct pixle {
+	uint16_t x = 0;
+	uint16_t y = 0;
+	rgb8 color = { 0,0,0 };
 };
-// end : class rgb8
 
-class rgba16 { // 16bit rgba representation
-
-public:
-
-	uint16_t r = 0; // red
-	uint16_t g = 0; // green
-	uint16_t b = 0; // blue
-
-	float32 a = 1.0f; // alpha
-
-	// constructor's
-	rgba16();
-	rgba16(uint16_t red, uint16_t green, uint16_t blue);
-	rgba16(uint16_t red, uint16_t green, uint16_t blue, float32 alpha = 1.0f);
-
-	// destructor
-	~rgba16() = default;
-
-	static const uint16_t MIN = 0;
-	static const uint16_t MAX = UINT16_MAX;
-
+template<typename type> struct sample {
+	sfloat x = 0;
+	sfloat y = 0;
+	type value;
 };
-// end : class rgb16
-
 
 /*
 	=================================================
@@ -241,6 +209,7 @@ public:
 	====================== triangles ==================
 	===================================================
 */
+
 class triangle2d {
 
 public:

@@ -148,7 +148,7 @@ namespace math {
 		vec2d const& p1 , vec2d const& p2 , vec2d const& p3
 	);
 	sfloat triangle_area(
-		vector3d const& p1 , vector3d const& p2 , vector3d const& p3  
+		vec3d const& p1 , vec3d const& p2 , vec3d const& p3
 	);
 
 	namespace vector {
