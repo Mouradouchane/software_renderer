@@ -24,9 +24,10 @@
 	#include <d3d9types.h>
 #endif
 
-#include "../types/types.hpp"
-#include "../exceptions/exceptions.hpp"
 #include "../configs/configs.hpp"
+#include "../types/types.hpp"
+#include "../math/math.hpp"
+#include "../exceptions/exceptions.hpp"
 
 #ifndef WINDOW_HPP
 

@@ -2,10 +2,14 @@
 #pragma once 
 
 #ifndef CONFIGS_CPP
-
 #define CONFIGS_CPP
 
-bool running = true;
+namespace global {
+
+	bool running = true;
+
+} 
+// end : namespace global
 
 namespace config {
 

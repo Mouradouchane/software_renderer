@@ -39,7 +39,7 @@ rgb32 create_rgb32(uint32_t red, uint32_t green, uint32_t blue) {
 	return { red , green , blue };
 }
 
-rgba8  create_rgba8(
+rgba8 create_rgba8(
 	uint8_t  red, uint8_t  green, uint8_t  blue, float32 alpha
 ) {
 	return { red , green , blue , alpha };
@@ -179,51 +179,6 @@ triangle3d::triangle3d(
 
 }
 
-
-/*
-	===================================================
-	================ template buffer ==================
-	===================================================
-*/
-
-template<typename type> buffer<type>::buffer(
-	uint16_t width, uint16_t height
-){
-
-	this->height = height;
-	this->width  = width;
-
-	this->size   = width * height;
-
-	this->memory = new type[ this->size ];
-
-}
-
-template<typename type> buffer<type>::buffer(
-	uint16_t x , uint16_t y ,
-	uint16_t width , uint16_t height
-) {
-
-	this->x = x;
-	this->y = y;
-
-	this->height = height;
-	this->width = width;
-
-	this->size = width * height;
-
-	this->memory = new type[this->size];
-
-}
-
-template<typename type> buffer<type>::~buffer() {
-
-	if (this->memory != nullptr) {
-		delete[] this->memory;
-		this->memory = nullptr;
-	}
-
-}
 
 
 #endif

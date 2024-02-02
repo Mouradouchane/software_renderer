@@ -134,7 +134,6 @@ public :
 	type *   memory = nullptr; // heap allocation !
 
 	// constructor's
-	buffer(uint16_t width=1 , uint16_t height=1);
 	buffer(
 		uint16_t x = 0, uint16_t y = 0,
 		uint16_t width = 1, uint16_t height = 1
@@ -144,6 +143,38 @@ public :
 	~buffer();
 
 };
+
+
+/*
+	buffer template implementation
+*/
+
+template<typename type> buffer<type>::buffer(
+	uint16_t x, uint16_t y,
+	uint16_t width, uint16_t height
+) {
+
+	this->x = x;
+	this->y = y;
+
+	this->height = height;
+	this->width  = width;
+
+	this->size = width * height;
+
+	this->memory = new type[this->size];
+
+}
+
+template<typename type> buffer<type>::~buffer() {
+
+	if (this->memory != nullptr) {
+		delete[] this->memory;
+		this->memory = nullptr;
+	}
+
+}
+
 
 typedef struct pixle {
 	uint16_t x = 0;
@@ -156,6 +187,7 @@ template<typename type> struct sample {
 	sfloat y = 0;
 	type value;
 };
+
 
 /*
 	=================================================

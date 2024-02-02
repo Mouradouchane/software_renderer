@@ -7,7 +7,6 @@
 #pragma comment(lib, "d3d9.lib")
 
 #ifndef WINDOW_CPP
-
 #define WINDOW_CPP
 
 namespace window{
@@ -23,7 +22,7 @@ size_t width  = 800;
 size_t height = 600;
 size_t size   = window::width * window::height;
 
-DWORD style = CS_HREDRAW | CS_VREDRAW | (WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME);
+DWORD style = (WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME);
 MSG msg;
 
 int n_cmd_show = 0;
@@ -32,6 +31,7 @@ HINSTANCE h_instance;
 HWND handle = NULL;
 WNDCLASSW window_class = {};
 
+// window buffer
 uint32_t* buffer = nullptr;
 
 // directx 9
@@ -59,7 +59,7 @@ namespace { // private functions
         // setup window
         window::window_class.lpszClassName = window::name;
         window::window_class.hInstance     = window::h_instance;
-        window::window_class.style         = CS_GLOBALCLASS;
+        //window::window_class.style       = CS_GLOBALCLASS;
         window::window_class.lpfnWndProc   = window::proc;
 
         // resigster window
@@ -78,7 +78,7 @@ namespace { // private functions
             NULL , // optional window styles.
             window::name,  // Window class
             window::title, // Window text
-            window::style, // Window style
+            WS_OVERLAPPEDWINDOW, // Window style
 
             // size and position
             window::x, window::y,
@@ -135,7 +135,7 @@ namespace { // private functions
         // enable back-buffer access
         window::d3d::device_info.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
-        window::d3d::device_info.BackBufferWidth = window::width;
+        window::d3d::device_info.BackBufferWidth  = window::width;
         window::d3d::device_info.BackBufferHeight = window::height;
 
         // create a device using d3d_device_info and 
@@ -282,40 +282,15 @@ LRESULT CALLBACK proc(
 
     case WM_DESTROY: {
 
-        running = false;
+        global::running = false;
         PostQuitMessage(0);
 
         return 0;
     } 
 
+    case WM_ERASEBKGND: return 1;
+
     case WM_PAINT: {
-
-        if ( window::lock_buffer() ) {
-            // get pointer to the buffer 
-            window::buffer = (uint32_t*)window::d3d::lock_rect_rslt.pBits;
-        }
-        else return 0;
-
-        // clear buffer
-        ZeroMemory(window::buffer , window::size);
-
-        // begin the scene
-        BeginPaint(window::handle, 0);
-        window::d3d::device->BeginScene();
-
-        // do rendering here
-
-
-        // end the scene
-        window::d3d::device->EndScene();
-        EndPaint(window::handle, 0);
-        
-        // unlook buffer
-        window::unlock_buffer();
-
-        // displays buffer   
-        window::d3d::device->Present(NULL, NULL, NULL, NULL);
-
         return 0;
     }
 

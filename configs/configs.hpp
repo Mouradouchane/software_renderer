@@ -8,12 +8,16 @@
 #pragma once
 
 #ifndef CONFIGS_HPP
-
 #define CONFIGS_HPP
 
-// global variables
-extern bool running;
+// program global variables
+namespace global {
 
+	extern bool running;
+
+}
+
+// program configs
 namespace config{
 	
 } 
