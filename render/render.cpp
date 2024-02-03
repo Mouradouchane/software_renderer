@@ -34,39 +34,23 @@ void destroy() {
 
 bool raster() {
 
-	if (window::lock_buffer()) {
-		// get pointer to the buffer 
-		window::buffer = (uint32_t*)window::d3d::lock_rect_rslt.pBits;
-	}
-	else return false;
-
 	// clear buffer
-	ZeroMemory(window::buffer, window::size);
+	window::d3d::device->Clear(0, 0, 0,0,0,0);
 
 	// begin the scene
 	window::d3d::device->BeginScene();
-	BeginPaint(window::handle, 0);
 	
-	// copy frame_buffer to window buffer
-
-	for (uint16_t y = 0; y < frame_buffer->height; y += 1) {
-		for (uint16_t x = 0; x < frame_buffer->width; x += 1) {
-			window::buffer[window::width * y + x] = math::random::uint16()*x*y;
-		}
-	}
+	// raster to buffer
+	D3DCOLOR r = math::random::uint16() * math::random::uint16();
+	window::d3d::device->ColorFill(window::d3d::surface , 0 , r);
 
 	// end the scene
-	EndPaint(window::handle, 0);
 	window::d3d::device->EndScene();
-
-	// unlook buffer
-	window::unlock_buffer();
 
 	// displays buffer   
 	window::d3d::device->Present(NULL, NULL, NULL, NULL);
-
+	
 	return true;
-
 }
 
 bool render() {

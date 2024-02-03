@@ -28,6 +28,7 @@
 #include "../types/types.hpp"
 #include "../math/math.hpp"
 #include "../exceptions/exceptions.hpp"
+#include "../render/render.hpp"
 
 #ifndef WINDOW_HPP
 

@@ -22,7 +22,7 @@ size_t width  = 800;
 size_t height = 600;
 size_t size   = window::width * window::height;
 
-DWORD style = (WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME);
+DWORD style = WS_OVERLAPPEDWINDOW ;
 MSG msg;
 
 int n_cmd_show = 0;
@@ -44,7 +44,7 @@ namespace d3d {
     D3DLOCKED_RECT lock_rect_rslt = { 0 };
     RECT rect = { 0 };
     D3DCOLOR clear_color = 0;
-
+    D3DDISPLAYMODE adapter_mode;
 }
 
 /*
@@ -78,7 +78,7 @@ namespace { // private functions
             NULL , // optional window styles.
             window::name,  // Window class
             window::title, // Window text
-            WS_OVERLAPPEDWINDOW, // Window style
+            window::style, // Window style
 
             // size and position
             window::x, window::y,
@@ -120,20 +120,35 @@ namespace { // private functions
 
         window::d3d::inter_face = Direct3DCreate9(D3D_SDK_VERSION);
 
+        // query display mode
+        hr = window::d3d::inter_face->GetAdapterDisplayMode(
+            D3DADAPTER_DEFAULT ,
+            &(window::d3d::adapter_mode)
+        );
+
+        if (hr != D3D_OK) {
+            exceptions::show_error("d3d get display mode error", exceptions::get_last_error_window());
+            return false;
+        }
+
         // setup d3d_device_info
 
         ZeroMemory(&window::d3d::device_info, sizeof(D3DPRESENT_PARAMETERS));
-
+  
         window::d3d::device_info.Windowed = TRUE;
         // swap buffers
-        window::d3d::device_info.SwapEffect = D3DSWAPEFFECT_FLIP;
+        window::d3d::device_info.SwapEffect = D3DSWAPEFFECT_DISCARD;
         window::d3d::device_info.BackBufferCount = 1;
         window::d3d::device_info.hDeviceWindow = window::handle;
-        // try to specifiy buffer format 
-        window::d3d::device_info.BackBufferFormat = D3DFMT_UNKNOWN;
+        window::d3d::device_info.BackBufferFormat = window::d3d::adapter_mode.Format;
+        
+        /*
+        window::d3d::device_info.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+        window::d3d::device_info.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
         // enable back-buffer access
         window::d3d::device_info.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+        */
 
         window::d3d::device_info.BackBufferWidth  = window::width;
         window::d3d::device_info.BackBufferHeight = window::height;
@@ -150,12 +165,24 @@ namespace { // private functions
 
         // TODO : error handling
         if ( FAILED(hr) ) { 
-
             std::string err = exceptions::get_last_error_window();
-
-            exceptions::show_error(
-                "d3d9 create device error", err
+            
+            if(hr == D3DERR_DEVICELOST ) exceptions::show_error(
+                "d3d9 create device error", "DEVICELOST"
             );
+
+            if (hr == D3DERR_INVALIDCALL) exceptions::show_error(
+                "d3d9 create device error", "INVALIDCALL"
+            );
+
+            if (hr == D3DERR_NOTAVAILABLE) exceptions::show_error(
+                "d3d9 create device error", "NOTAVAILABLE"
+            );
+
+            if (hr == D3DERR_OUTOFVIDEOMEMORY) exceptions::show_error(
+                "d3d9 create device error", "OUTOFVIDEOMEMORY"
+            );
+
             return false;
         }
 
@@ -173,7 +200,7 @@ namespace { // private functions
             std::string err = exceptions::get_last_error_window();
 
             exceptions::show_error(
-                "d3d9 get back buffer error", err
+                "d3d9 get back buffer error", err.c_str()
             );
             return false;
         }
@@ -205,10 +232,7 @@ void destroy() {
         DestroyWindow(window::handle);
     }
 
-    if (window::buffer != nullptr) {
-        delete[] window::buffer;
-        window::buffer = nullptr;
-    }
+    window::buffer = nullptr;
 
     // free Direct3D stuff
     
@@ -260,6 +284,7 @@ bool lock_buffer() {
         D3DLOCK_DONOTWAIT
     );
 
+    if (hr == D3DERR_WASSTILLDRAWING) return false;
     if (FAILED(hr)) return false;
     
     return true;
@@ -288,9 +313,10 @@ LRESULT CALLBACK proc(
         return 0;
     } 
 
-    case WM_ERASEBKGND: return 1;
+    // case WM_ERASEBKGND: return 1;
 
     case WM_PAINT: {
+        renderer::render();
         return 0;
     }
 
