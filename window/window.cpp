@@ -140,18 +140,18 @@ namespace { // private functions
         window::d3d::device_info.SwapEffect = D3DSWAPEFFECT_DISCARD;
         window::d3d::device_info.BackBufferCount = 1;
         window::d3d::device_info.hDeviceWindow = window::handle;
-        window::d3d::device_info.BackBufferFormat = window::d3d::adapter_mode.Format;
         
         /*
-        window::d3d::device_info.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
-        window::d3d::device_info.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
-
         // enable back-buffer access
         window::d3d::device_info.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
-        */
 
+        window::d3d::device_info.BackBufferFormat = window::d3d::adapter_mode.Format;
+        window::d3d::device_info.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+        window::d3d::device_info.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+        
         window::d3d::device_info.BackBufferWidth  = window::width;
         window::d3d::device_info.BackBufferHeight = window::height;
+        */
 
         // create a device using d3d_device_info and 
         hr = d3d::inter_face->CreateDevice(
@@ -316,7 +316,7 @@ LRESULT CALLBACK proc(
     // case WM_ERASEBKGND: return 1;
 
     case WM_PAINT: {
-        renderer::render();
+        // renderer::render();
         return 0;
     }
 
