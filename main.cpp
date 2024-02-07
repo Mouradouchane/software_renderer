@@ -17,8 +17,6 @@ int WINAPI WinMain(
         return GetLastError();
     }
 
-    window::buffer = new uint32_t[800 * 600];
-
     // main loop 
     while( global::running ){
 
@@ -28,10 +26,11 @@ int WINAPI WinMain(
         // render 
         renderer::render();
 
-        // todo : time-elapse fps control 
-        SendMessageA(window::handle, WM_PAINT, 0, 0);
-        Sleep(15);
+        InvalidateRect(window::handle, 0, 0);
+        UpdateWindow(window::handle);
 
+        // todo : sleep based on time-elapse
+        Sleep(15);
     }
 
     renderer::destroy();

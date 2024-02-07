@@ -1,12 +1,12 @@
 
 /*
-	all the includes for main.cpp
+	all the needed includes for main.cpp
 */
+
+#pragma once 
 
 #ifndef INCLUDES_HPP
 #define INCLUDES_HPP
-
-#pragma once 
 
 #ifndef UNICODE
 #define UNICODE
@@ -22,20 +22,14 @@
 	#include <time.h>
 #endif
 
-#ifndef CONFIGS_HPP
-	#include "configs/configs.hpp"
+#ifndef CHRONO_H
+#define CHRONO_H
+	#include <chrono>
 #endif
 
-#ifndef TYPES_HPP
-	#include "types/types.hpp"
+#include "configs/configs.hpp"
+#include "types/types.hpp"
+#include "window/window.hpp"
+#include "render/render.hpp"
+
 #endif
-
-#ifndef WINDOW_HPP 
-	#include "window/window.hpp"
-#endif
-
-#ifndef RENDER_HPP
-	#include "render/render.hpp"
-#endif 
-
-#endif 

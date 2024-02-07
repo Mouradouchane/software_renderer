@@ -179,6 +179,4 @@ triangle3d::triangle3d(
 
 }
 
-
-
 #endif

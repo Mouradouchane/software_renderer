@@ -8,7 +8,7 @@
 #pragma once 
 
 #ifndef UNICODE
-	#define UNICODE
+#define UNICODE
 #endif
 
 // winapi
@@ -17,14 +17,14 @@
 	#include <windows.h>
 #endif
 
-// directx 9
-#ifndef D3D_H
-#define D3D_H
+#ifndef GDI_H
+#define GDI_H
 	#include <wingdi.h>
-	#include <dxgi.h>
-	#include <d3d9.h> 
-	#include <ddraw.h>
-	#include <d3d9types.h>
+#endif
+
+#ifndef STRING_H
+#define STRING_H
+	#include <string>
 #endif
 
 #include "../configs/configs.hpp"
@@ -34,7 +34,6 @@
 #include "../render/render.hpp"
 
 #ifndef WINDOW_HPP
-
 #define WINDOW_HPP
 
 namespace window {
@@ -50,12 +49,10 @@ namespace window {
 	extern size_t width;
 	extern size_t height;
 
-	extern float dpi;
-
 	// style to create window with
 	extern DWORD style;
 
-	// a pointer to window pixels 
+	// main buffer for rendering
 	extern uint32_t* buffer;
 	extern size_t size;
 
@@ -71,20 +68,12 @@ namespace window {
 	extern HWND handle; // window handel
 	extern WNDCLASSW window_class; // window register class
 	
-	/*
-		=========== directx variables ===========
-	*/
-	namespace d3d {
+	extern BITMAP  bitmap;
+	extern HBITMAP hbitmap;
+	extern HDC     bitmap_hdc;
 
-		extern PDIRECT3D9 inter_face;
-		extern PDIRECT3DDEVICE9 device;
-		extern D3DPRESENT_PARAMETERS device_info; // device information
-		extern D3DCOLOR clear_color;
-		extern IDirect3DSurface9* surface; // d3d buck buffer
-		extern D3DLOCKED_RECT lock_rect_rslt; 
-		extern RECT rect;
-
-	}
+	extern HDC hdc;
+	extern PAINTSTRUCT paint_struct;
 
 	/*
 		========== window function's ========== 
@@ -98,9 +87,6 @@ namespace window {
 	LRESULT CALLBACK proc(
 		HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param
 	);
-
-	bool lock_buffer();
-	bool unlock_buffer();
 
 	/* 
 	// TODO : in futuer
