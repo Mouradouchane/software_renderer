@@ -14,19 +14,20 @@
 #ifndef RENDER_HPP
 #define RENDER_HPP
 
-namespace renderer{
+namespace graphics{
 
-// main frame buffer we draw/raster in
-extern buffer<rgba8>*frame_buffer;
+	// main frame buffer we draw/raster in
+	extern buffer<rgba8>* frame_buffer;
 
-bool init();
-void destroy();
+	bool init();
+	void destroy();
 
-// raster generate buffer to screen buffer
-bool raster();
+	// raster generate buffer to screen buffer
+	void draw();
 
-bool render();
+	bool render();
 
 }
+// end : graphics namespace
 
 #endif

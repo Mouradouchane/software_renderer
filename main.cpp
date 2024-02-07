@@ -10,7 +10,7 @@ int WINAPI WinMain(
         return GetLastError();
     }
 
-    if (!renderer::init()) {
+    if (!graphics::init()) {
         window::destroy();
 
         exceptions::show_error("init window error", "failed to init renderer !");
@@ -24,16 +24,16 @@ int WINAPI WinMain(
         window::handle_message();
 
         // render 
-        renderer::render();
+        graphics::render();
 
         InvalidateRect(window::handle, 0, 0);
         UpdateWindow(window::handle);
 
         // todo : sleep based on time-elapse
-        Sleep(15);
+        Sleep(25);
     }
 
-    renderer::destroy();
+    graphics::destroy();
     window::destroy();
 
 	return 0;

@@ -30,6 +30,13 @@ WNDCLASSW window_class = {};
 // window buffer
 uint32_t* buffer = nullptr;
 
+BITMAP  bitmap;
+HBITMAP hbitmap;
+HDC     bitmap_hdc;
+
+HDC hdc;
+PAINTSTRUCT paint_struct;
+
 /*
     ============= window function's =============
 */
@@ -90,8 +97,8 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
     window::buffer = new uint32_t[800 * 600];
 
     // setup bitmap
-    ZeroMemory(&(window::bitmap), sizeof(BITMAP));
-    window::bitmap.bmWidth = window::width;
+    ZeroMemory( &(window::bitmap) , sizeof(BITMAP) );
+    window::bitmap.bmWidth  = window::width;
     window::bitmap.bmHeight = window::height;
     window::bitmap.bmWidthBytes = 4;
     window::bitmap.bmBitsPixel = 32;
@@ -166,8 +173,6 @@ LRESULT CALLBACK proc(
 
             return 0;
         } 
-
-        // case WM_ERASEBKGND: return 1;
 
         case WM_PAINT: {
             // renderer::render();
