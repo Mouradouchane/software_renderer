@@ -5,6 +5,7 @@
 
 // we need directx9 for window buffer access + speed 
 #pragma comment(lib, "d3d9.lib")
+#pragma comment(lib, "dxgi.lib")
 
 #ifndef WINDOW_CPP
 #define WINDOW_CPP
@@ -152,6 +153,32 @@ namespace { // private functions
         window::d3d::device_info.BackBufferWidth  = window::width;
         window::d3d::device_info.BackBufferHeight = window::height;
         */
+
+        IDXGIFactory* pFactory = NULL;
+
+        hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&pFactory);
+
+        if (FAILED(hr)) {
+
+            if (hr == DXGI_ERROR_NOT_FOUND) exceptions::show_error(
+                "dxgi factory error", "DXGI_ERROR_NOT_FOUND"
+            );
+
+        }
+
+        IDXGIAdapter* pAdapter;
+        std::vector<IDXGIAdapter*> arrAdapter;
+
+        for (
+            UINT i = 0;
+            pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND;
+            ++i
+        ){
+            arrAdapter.push_back(pAdapter);
+        }
+
+        DXGI_ADAPTER_DESC adapterdesc;
+        hr = arrAdapter[0]->GetDesc(&adapterdesc);
 
         // create a device using d3d_device_info and 
         hr = d3d::inter_face->CreateDevice(

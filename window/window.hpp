@@ -20,7 +20,10 @@
 // directx 9
 #ifndef D3D_H
 #define D3D_H
+	#include <wingdi.h>
+	#include <dxgi.h>
 	#include <d3d9.h> 
+	#include <ddraw.h>
 	#include <d3d9types.h>
 #endif
 
