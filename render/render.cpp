@@ -7,11 +7,16 @@
 
 namespace graphics {
 
-buffer<rgba8>* frame_buffer = nullptr;
+buffer<scolor>* frame_buffer = nullptr;
+
+BITMAP  bitmap     = {0};
+HBITMAP hbitmap    = NULL;
+HDC     bitmap_hdc = NULL;
 
 bool init() {
 
-	graphics::frame_buffer = new buffer<rgba8>(
+	// allocate buffer
+	graphics::frame_buffer = new buffer<scolor>(
 		0, 0, window::width, window::height
 	);
 
@@ -21,6 +26,32 @@ bool init() {
 		);
 		return false;
 	}
+
+	// setup bitmap
+
+	ZeroMemory( &(graphics::bitmap) , sizeof(BITMAP) );
+
+	graphics::bitmap.bmWidth  = window::width;
+	graphics::bitmap.bmHeight = window::height;
+	graphics::bitmap.bmPlanes = 1;
+	graphics::bitmap.bmWidthBytes = sizeof(scolor);
+	graphics::bitmap.bmBitsPixel  = sizeof(scolor)*8;
+	graphics::bitmap.bmBits = frame_buffer->memory;
+	graphics::bitmap.bmType = 0;
+
+	// create a window compatible hdc for frame_buffer -> bitmap 
+	graphics::bitmap_hdc = CreateCompatibleDC(window::hdc);
+
+	// just a handle to the bitmap 
+	graphics::hbitmap = CreateBitmap(
+		frame_buffer->width,
+		frame_buffer->height,
+		bitmap.bmPlanes,
+		bitmap.bmBitsPixel,
+		frame_buffer->memory
+	);
+
+	SelectObject(graphics::bitmap_hdc, graphics::hbitmap);
 
 	return true;
 }
@@ -37,34 +68,40 @@ void destroy() {
 // todo : draw into frame_buffer
 void draw() {
 
-	uint16_t r = std::rand() * 255 * 3;
+	scolor color= {
+		0,0,math::random::uint8(),255 
+	};
 
 	// clear buffer
-	ZeroMemory(window::buffer, window::width * window::height);
+	ZeroMemory(
+		frame_buffer->memory , frame_buffer->size * sizeof(scolor)
+	);
 
 	// draw to buffer
-	for (size_t y = 0; y < window::height; y += 1) {
-		for (size_t x = 0; x < window::width; x += 1) {
-			window::buffer[y * window::width + x] = std::rand();
+	for (size_t y = 0 , Y = 0; y < frame_buffer->height; y += 1 ) {
+		Y = y * frame_buffer->width;
+
+		for (size_t x = 0; x < frame_buffer->width; x += 1 ) {
+			frame_buffer->memory[Y + x] = color;
 		}
 	}
 
 	// update bitmap buffer address
 	SetBitmapBits(
-		window::hbitmap, 
-		sizeof(size_t) * window::width * window::height,
-		window::buffer
+		hbitmap, 
+		frame_buffer->size * sizeof(scolor),
+		frame_buffer->memory
 	);
 
-	SelectObject(window::bitmap_hdc, window::hbitmap);
+	SelectObject(bitmap_hdc, hbitmap);
 
 	// blt buffer into screen
 	BitBlt(
 		window::hdc, 
 		0, 0, 
-		window::bitmap.bmWidth, 
-		window::bitmap.bmHeight, 
-		window::bitmap_hdc,
+		frame_buffer->width ,
+		frame_buffer->height,
+		bitmap_hdc,
 		0, 0,
 		SRCCOPY
 	);

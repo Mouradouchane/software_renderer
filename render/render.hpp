@@ -14,10 +14,18 @@
 #ifndef RENDER_HPP
 #define RENDER_HPP
 
+// our standard color system
+#define scolor rgba8
+
 namespace graphics{
 
 	// main frame buffer we draw/raster in
-	extern buffer<rgba8>* frame_buffer;
+	extern buffer<scolor>* frame_buffer;
+
+	// bitmap & hdc for gdi
+	extern BITMAP  bitmap;
+	extern HBITMAP hbitmap;
+	extern HDC     bitmap_hdc;
 
 	bool init();
 	void destroy();

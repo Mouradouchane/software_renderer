@@ -14,14 +14,14 @@ int WINAPI WinMain(
         window::destroy();
 
         exceptions::show_error("init window error", "failed to init renderer !");
-        return GetLastError();
+        return 0;
     }
 
     // main loop 
     while( global::running ){
 
         // window message + inputs
-        window::handle_message();
+        window::process_messages();
 
         // render 
         graphics::render();

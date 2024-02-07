@@ -302,43 +302,43 @@ sfloat triangle_area(
 */
 
 uint8_t math::random::uint8(uint8_t min, uint8_t max){
-    srand(time(0));
-    return (uint8_t)(rand() % (max - min + 1) + min);
+    //srand(time(0));
+    return (uint8_t)(std::rand() % (max - min + 1) + min);
 }
 
 int8_t math::random::int8(int8_t min, int8_t max) {
-    srand(time(0));
-    return (int8_t)(rand() % (max - min + 1) + min);
+    //srand(time(0));
+    return (int8_t)(std::rand() % (max - min + 1) + min);
 }
 
 uint16_t math::random::uint16(uint16_t min, uint16_t max) {
-    srand(time(0));
-    return (uint16_t)(rand() % (max - min + 1) + min);
+    //srand(time(0));
+    return (uint16_t)(std::rand() % (max - min + 1) + min);
 }
 
 int16_t math::random::int16(int16_t min, int16_t max) {
-    srand(time(0));
-    return (int16_t)(rand() % (max - min + 1) + min);
+    //srand(time(0));
+    return (int16_t)(std::rand() % (max - min + 1) + min);
 }
 
 uint32_t math::random::uint32(uint32_t min, uint32_t max) {
-    srand(time(0));
-    return (uint32_t)(rand() % (max - min + 1) + min);
+    //srand(time(0));
+    return (uint32_t)(std::rand() % (max - min + 1) + min);
 }
 
 int32_t math::random::int32(int32_t min, int32_t max) {
-    srand(time(0));
-    return (int32_t)(rand() % (max - min + 1) + min);
+    //srand(time(0));
+    return (int32_t)(std::rand() % (max - min + 1) + min);
 }
 
 uint64_t math::random::uint64(uint64_t min, uint64_t max) {
-    srand(time(0));
-    return (uint64_t)(rand() % (max - min + 1) + min);
+    //srand(time(0));
+    return (uint64_t)(std::rand() % (max - min + 1) + min);
 }
 
 int64_t math::random::int64(int64_t min, int64_t max) {
-    srand(time(0));
-    return (int64_t)(rand() % (max - min + 1) + min);
+    //srand(time(0));
+    return (int64_t)(std::rand() % (max - min + 1) + min);
 }
 
 } 

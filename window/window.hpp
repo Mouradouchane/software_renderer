@@ -52,10 +52,6 @@ namespace window {
 	// style to create window with
 	extern DWORD style;
 
-	// main buffer for rendering
-	extern uint32_t* buffer;
-	extern size_t size;
-
 	/*
 		============ winapi sutff ============ 
 	*/
@@ -65,12 +61,8 @@ namespace window {
 	extern int n_cmd_show;
 	extern HINSTANCE h_instance;
 
-	extern HWND handle; // window handel
-	extern WNDCLASSW window_class; // window register class
-	
-	extern BITMAP  bitmap;
-	extern HBITMAP hbitmap;
-	extern HDC     bitmap_hdc;
+	extern HWND handle; // window handle
+	extern WNDCLASSW cls; // window register class
 
 	extern HDC hdc;
 	extern PAINTSTRUCT paint_struct;
@@ -88,14 +80,14 @@ namespace window {
 		HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param
 	);
 
-	/* 
-	// TODO : in futuer
-		void on_resize();
-		void on_keypressed();
-		void on_mouseclick();
-	*/
+/* 
+//  TODO : in futuer
+	void on_resize();
+	void on_keypressed();
+	void on_mouseclick();
+*/
 
-	void handle_message();
+	void process_messages();
 	void show();
 	void hide();
 

@@ -58,32 +58,33 @@ typedef struct rgb32 {
 };
 
 typedef struct rgba8 {
-	uint8_t r = 0; // red
-	uint8_t g = 0; // green
 	uint8_t b = 0; // blue
-	float32 a = 1.0f; // alpha 
+	uint8_t g = 0; // green
+	uint8_t r = 0; // red
+	uint8_t a = UINT8_MAX; // alpha 
 };
 
 typedef struct rgba16 {
-	uint16_t r = 0; // red
-	uint16_t g = 0; // green
-	uint16_t b = 0; // blue
-	float32  a = 1.0f; // alpha 
+	uint16_t r = 0;    // red
+	uint16_t g = 0;    // green
+	uint16_t b = 0;    // blue
+	uint16_t a = UINT16_MAX;  // alpha 
 };
 
 typedef struct rgba32 {
 	uint32_t r = 0; // red
 	uint32_t g = 0; // green
 	uint32_t b = 0; // blue
-	float32  a = 1.0f; // alpha 
+	uint32_t a = UINT32_MAX; // alpha 
 };
 
 rgb8  create_rgb8 (uint8_t  red, uint8_t  green, uint8_t  blue);
 rgb16 create_rgb16(uint16_t red, uint16_t green, uint16_t blue);
 rgb32 create_rgb32(uint32_t red, uint32_t green, uint32_t blue);
 
-rgba8  create_rgba8 (uint8_t  red, uint8_t  green, uint8_t  blue, float32 alpha);
-rgba16 create_rgba16(uint16_t red, uint16_t green, uint16_t blue, float32 alpha);
+rgba8  create_rgba8 (uint8_t  red, uint8_t  green, uint8_t  blue, uint8_t  alpha = UINT8_MAX);
+rgba16 create_rgba16(uint16_t red, uint16_t green, uint16_t blue, uint16_t alpha = UINT16_MAX);
+rgba32 create_rgba32(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha = UINT32_MAX);
 
 
 /*

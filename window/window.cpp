@@ -25,14 +25,7 @@ int n_cmd_show = 0;
 HINSTANCE h_instance;
 
 HWND handle = NULL;
-WNDCLASSW window_class = {};
-
-// window buffer
-uint32_t* buffer = nullptr;
-
-BITMAP  bitmap;
-HBITMAP hbitmap;
-HDC     bitmap_hdc;
+WNDCLASSW cls = {};
 
 HDC hdc;
 PAINTSTRUCT paint_struct;
@@ -47,15 +40,15 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
     window::n_cmd_show = n_cmd_show;
 
     // setup window class 
-    window::window_class.lpszClassName = window::name;
-    window::window_class.hInstance = window::h_instance;
-    window::window_class.style = CS_HREDRAW | CS_VREDRAW;
-    window::window_class.lpfnWndProc = window::proc;
-    window::window_class.cbWndExtra = 0;
-    window::window_class.cbClsExtra = 0;
+    window::cls.lpszClassName = window::name;
+    window::cls.hInstance = window::h_instance;
+    window::cls.style = CS_HREDRAW | CS_VREDRAW;
+    window::cls.lpfnWndProc = window::proc;
+    window::cls.cbWndExtra = 0;
+    window::cls.cbClsExtra = 0;
 
     // resigster window using class
-    if (RegisterClassW(&(window::window_class)) == NULL) {
+    if (RegisterClassW(&(window::cls)) == NULL) {
         std::string err = exceptions::get_last_error_window();
         exceptions::show_error(
             "error", err
@@ -93,33 +86,8 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
 
     window::hdc = GetWindowDC(window::handle);
 
-    // allocate buffer
-    window::buffer = new uint32_t[800 * 600];
-
-    // setup bitmap
-    ZeroMemory( &(window::bitmap) , sizeof(BITMAP) );
-    window::bitmap.bmWidth  = window::width;
-    window::bitmap.bmHeight = window::height;
-    window::bitmap.bmWidthBytes = 4;
-    window::bitmap.bmBitsPixel = 32;
-    window::bitmap.bmPlanes = 1;
-    window::bitmap.bmBits = window::buffer;
-
-    // create hdc for bitmap 
-    window::bitmap_hdc = CreateCompatibleDC(window::hdc);
-
-    // just a handle to the bitmap
-    window::hbitmap = CreateBitmap(
-        window::width ,
-        window::height,
-        window::bitmap.bmPlanes,
-        window::bitmap.bmBitsPixel ,
-        window::buffer
-    );
-
-    SelectObject(window::bitmap_hdc , window::hbitmap);
-
     window::show();
+    
     return true;
 }
 
@@ -131,25 +99,17 @@ void destroy() {
         DestroyWindow(window::handle);
     }
 
-    // todo : implement free buffer
-    if (window::buffer != nullptr) {
-        delete[] window::buffer;
-        window::buffer = nullptr;
-    }
-
 }
 
-void handle_message() {
+// handle window messages 
+void process_messages() {
 
-    // handle window messages 
     if (GetMessage(&window::msg, NULL, 0, 0) != 0) {
-
         // note : this handel keys messages
         TranslateMessage(&window::msg);
 
         // note : this call 'window::proc'
         DispatchMessage(&window::msg);
-
     }
 
 }
@@ -175,14 +135,12 @@ LRESULT CALLBACK proc(
         } 
 
         case WM_PAINT: {
-            // renderer::render();
             return 0;
         }
 
     }
 
     return DefWindowProc(hwnd, u_msg, w_param, l_param);
-
 } 
 // end : proc function
 

@@ -27,7 +27,7 @@ vec4d create_vec4d(sfloat x, sfloat y, sfloat z , sfloat w) {
 	few functions for colors creation
 */
 
-rgb8 create_rgb8(uint8_t  red, uint8_t  green, uint8_t  blue) {
+rgb8 create_rgb8(uint8_t red, uint8_t green, uint8_t blue) {
 	return { red , green , blue };
 }
 
@@ -40,18 +40,18 @@ rgb32 create_rgb32(uint32_t red, uint32_t green, uint32_t blue) {
 }
 
 rgba8 create_rgba8(
-	uint8_t  red, uint8_t  green, uint8_t  blue, float32 alpha
+	uint8_t  red, uint8_t  green, uint8_t  blue, uint8_t alpha
 ) {
 	return { red , green , blue , alpha };
 }
 rgba16 create_rgba16(
-	uint16_t red, uint16_t green, uint16_t blue, float32 alpha
+	uint16_t red, uint16_t green, uint16_t blue, uint16_t alpha
 ){
 	return { red , green , blue , alpha };
 }
 
 rgba32 create_rgba32(
-	uint32_t red, uint32_t green, uint32_t blue, float32 alpha
+	uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha
 ){
 	return { red , green , blue , alpha };
 }
