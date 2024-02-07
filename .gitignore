@@ -20,6 +20,8 @@ build/
 *.obj
 obj/
 object/
+x64/
+x86/
 
 # Precompiled Headers
 *.gch
