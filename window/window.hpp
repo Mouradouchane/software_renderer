@@ -61,6 +61,8 @@ namespace window {
 	extern int n_cmd_show;
 	extern HINSTANCE h_instance;
 
+	extern RECT rect;
+
 	extern HWND handle; // window handle
 	extern WNDCLASSW cls; // window register class
 

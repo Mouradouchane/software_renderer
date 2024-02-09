@@ -27,6 +27,7 @@ HINSTANCE h_instance;
 HWND handle = NULL;
 WNDCLASSW cls = {};
 
+RECT rect;
 HDC hdc;
 PAINTSTRUCT paint_struct;
 

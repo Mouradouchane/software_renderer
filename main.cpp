@@ -23,10 +23,11 @@ int WINAPI WinMain(
         // window message + inputs
         window::process_messages();
 
+        InvalidateRect(window::handle, 0, 0);
+
         // render 
         graphics::render();
 
-        InvalidateRect(window::handle, 0, 0);
         UpdateWindow(window::handle);
 
         // todo : sleep based on time-elapse

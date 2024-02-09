@@ -15,7 +15,7 @@
 #define RENDER_HPP
 
 // our standard color system
-#define scolor rgba8
+#define scolor bgra8
 
 namespace graphics{
 
@@ -26,6 +26,7 @@ namespace graphics{
 	extern BITMAP  bitmap;
 	extern HBITMAP hbitmap;
 	extern HDC     bitmap_hdc;
+	extern BITMAPINFO bitmap_info;
 
 	bool init();
 	void destroy();
