@@ -11,14 +11,14 @@ namespace window{
 const wchar_t* name  = L"software_renderer";
 const wchar_t* title = L"software - renderer";
 
-int x = CW_USEDEFAULT;
-int y = CW_USEDEFAULT;
+int x = 0;
+int y = 0;
 
 size_t width  = 800;
 size_t height = 600;
 size_t size   = window::width * window::height;
 
-DWORD style = WS_OVERLAPPEDWINDOW ;
+DWORD style = NULL;// WS_OVERLAPPEDWINDOW & ~(WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
 MSG msg;
 
 int n_cmd_show = 0;
@@ -31,6 +31,10 @@ RECT rect;
 HDC hdc;
 PAINTSTRUCT paint_struct;
 
+// main screen stuff
+HMONITOR h_monitor;
+MONITORINFO monitor_info;
+
 /*
     ============= window function's =============
 */
@@ -39,6 +43,21 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
 
     window::h_instance = h_instance;
     window::n_cmd_show = n_cmd_show;
+
+    // get main monitor info
+    h_monitor = MonitorFromWindow(window::handle, MONITOR_DEFAULTTOPRIMARY);
+
+    ZeroMemory(&monitor_info, sizeof(MONITORINFO));
+    monitor_info.cbSize = sizeof(MONITORINFO);
+
+    if (!GetMonitorInfoA(h_monitor, &monitor_info)) {
+        exceptions::show_error("error", "failed to get monitor info");
+        return false;
+    }
+
+    // get monitor/screen resoultion for full-screen window
+    window::width  = GetSystemMetrics(SM_CXSCREEN);
+    window::height = GetSystemMetrics(SM_CYSCREEN);
 
     // setup window class 
     window::cls.lpszClassName = window::name;
@@ -82,6 +101,27 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
             "error", err
         );
 
+        return false;
+    }
+
+    // set window to fullscreen
+    SetWindowLong(window::handle, GWL_STYLE, window::style);
+
+    if (
+        FAILED(
+            SetWindowPos(
+                window::handle,
+                NULL,
+                0, 0,
+                window::width, 
+                window::height,
+                SWP_NOSIZE | SWP_NOMOVE |
+                SWP_NOZORDER | SWP_NOACTIVATE |
+                SWP_FRAMECHANGED
+            )
+        )
+    ) {
+        exceptions::show_error("error", "failed to set window to full-screen mode !");
         return false;
     }
 

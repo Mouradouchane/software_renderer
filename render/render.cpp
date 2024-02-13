@@ -16,34 +16,36 @@ HDC     bitmap_hdc = NULL;
 bool init() {
 
 	// allocate buffer
-	graphics::frame_buffer = new buffer<scolor>(
+	frame_buffer = new buffer<scolor>(
 		0, 0, window::width, window::height
 	);
 
-	if (graphics::frame_buffer == nullptr) {
+	if (frame_buffer == nullptr) {
 		exceptions::show_error(
-			"renderer error", "failed to allocate memory for 'frame buffer' !"
+			"error", "failed to allocate memory for 'frame buffer' !"
 		);
 		return false;
 	}
 
+	GetClientRect(window::handle, &window::rect);
+	AdjustWindowRectEx(&window::rect, window::style, 0, 0);
+
+	ZeroMemory( &(bitmap) , sizeof(BITMAP) );
+
 	// setup bitmap
-
-	ZeroMemory( &(graphics::bitmap) , sizeof(BITMAP) );
-
-	graphics::bitmap.bmWidth  = window::width;
-	graphics::bitmap.bmHeight = window::height;
-	graphics::bitmap.bmPlanes = 1;
-	graphics::bitmap.bmWidthBytes = sizeof(scolor);
-	graphics::bitmap.bmBitsPixel  = sizeof(scolor)*8;
-	graphics::bitmap.bmBits = frame_buffer->memory;
-	graphics::bitmap.bmType = 0;
+	bitmap.bmWidth  = window::width;
+	bitmap.bmHeight = window::height;
+	bitmap.bmPlanes = 1;
+	bitmap.bmWidthBytes = sizeof(scolor);
+	bitmap.bmBitsPixel  = sizeof(scolor)*8;
+	bitmap.bmBits = frame_buffer->memory;
+	bitmap.bmType = 0;
 
 	// create a window compatible hdc for frame_buffer -> bitmap 
-	graphics::bitmap_hdc = CreateCompatibleDC(window::hdc);
+	bitmap_hdc = CreateCompatibleDC(window::hdc);
 
 	// just a handle to the bitmap 
-	graphics::hbitmap = CreateBitmap(
+	hbitmap = CreateBitmap(
 		frame_buffer->width,
 		frame_buffer->height,
 		bitmap.bmPlanes,
@@ -71,25 +73,16 @@ void draw() {
 	scolor color = { 0 };
 	color.a = 255;
 	color.r = math::random::uint8();
+	color.g = math::random::uint8();
 
 	// clear buffer
 	ZeroMemory(
 		frame_buffer->memory, frame_buffer->size * sizeof(scolor)
 	);
-	/*
-	FillMemory(frame_buffer->memory, frame_buffer->size * sizeof(scolor), 0xfffff);
-	*/
-
-
-	GetClientRect(window::handle, &window::rect);
-	/*
-	ClientToScreen(window::handle, (LPPOINT)&window::rect.left);
-	ClientToScreen(window::handle, (LPPOINT)&window::rect.top);
-	*/
 
 	// draw to buffer
 	uint32_t Y = 0;
-	for (uint16_t y = 0; y < 2; y += 1) {
+	for (uint16_t y = 0; y < frame_buffer->height; y += 1) {
 		Y = y * frame_buffer->width;
 
 		for (uint16_t x = 0; x < frame_buffer->width; x += 1) {
@@ -109,9 +102,11 @@ void draw() {
 	// blt buffer into screen
 	BitBlt(
 		window::hdc,
-		window::rect.left, window::rect.top,
+		0,0,
+
 		frame_buffer->width,
 		frame_buffer->height,
+
 		bitmap_hdc,
 		0,0,
 		SRCCOPY

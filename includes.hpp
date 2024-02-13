@@ -17,16 +17,7 @@
 	#include <windows.h>
 #endif
 
-#ifndef TIME_H
-#define TIME_H
-	#include <time.h>
-#endif
-
-#ifndef CHRONO_H
-#define CHRONO_H
-	#include <chrono>
-#endif
-
+#include "timer/timer.hpp"
 #include "configs/configs.hpp"
 #include "types/types.hpp"
 #include "window/window.hpp"

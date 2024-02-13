@@ -10,16 +10,21 @@
 #ifndef CONFIGS_HPP
 #define CONFIGS_HPP
 
-// program global variables
+// namespace for all global variables
 namespace global {
 
 	extern bool running;
+	extern uint16_t fps;
+	extern uint16_t idle_time;
 
 }
+// end : namespace global
 
-// program configs
 namespace config{
 	
+	extern uint16_t max_fps;
+
+
 } 
 // end : namespace configs
 
