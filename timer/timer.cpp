@@ -20,9 +20,7 @@ uint32_t timer::stop() {
 uint32_t timer::time_here() {
 	if (this->working == false) return 0;
 
-	this->e = hr_clock::now();
-	this->last_duration_ms = std::chrono::duration_cast<ms>(e-s).count();
-	
+	this->e = hr_clock::now();   
 	return this->last_duration_ms;
 }
 

@@ -90,6 +90,8 @@ void draw() {
 		}
 	}
 
+	// draw fps info  
+
 	// update bitmap buffer address
 	SetBitmapBits(
 		hbitmap,
@@ -98,6 +100,14 @@ void draw() {
 	);
 
 	SelectObject(bitmap_hdc, hbitmap);
+
+	DrawTextA(
+		bitmap_hdc,
+		global::fps_msg.c_str(),
+		global::fps_msg.length(),
+		&(global::fps_msg_rect),
+		DT_LEFT
+	);
 
 	// blt buffer into screen
 	BitBlt(

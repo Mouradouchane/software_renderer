@@ -18,28 +18,37 @@ int WINAPI WinMain(
         return 0;
     }
 
+    std::thread fps_update_thread();
+
     // for preformance counting 
-    timer render_timer; 
+    timer timerr; 
+    uint32_t time_ellapse = 0;
 
     // main loop 
     while( global::running ){
 
+        timerr.start();
+
         // window message + inputs
         window::process_messages();
 
+        // rendering
         InvalidateRect(window::handle, 0, 0);
-
-        render_timer.start();
         graphics::render();
-        render_timer.stop();
-
         UpdateWindow(window::handle);
 
-        // todo : sleep based on time-elapse
-        Sleep(25);
+        global::frames += 1;
+        time_ellapse = timerr.stop();
 
+        // for stable frame's per sec
+        if (time_ellapse < global::frame_time) {
+            Sleep(global::frame_time - time_ellapse);
+        }
+    
     }
+    // end : main loop 
 
+    // free resources
     graphics::destroy();
     window::destroy();
 

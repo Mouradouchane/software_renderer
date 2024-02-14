@@ -12,6 +12,16 @@
 #define UNICODE
 #endif
 
+#ifndef ATMOIC_H
+#define ATMOIC_H
+	#include <atomic>
+#endif
+
+#ifndef THREAD_H
+#define THREAD_H
+	#include <thread>
+#endif
+
 #ifndef WINDOWS_H
 #define WINDOWS_H
 	#include <windows.h>

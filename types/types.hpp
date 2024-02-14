@@ -8,8 +8,23 @@
 #pragma once 
 
 #ifndef _stdint
-	#define _stdint	
+#define _stdint	
 	#include <stdint.h> // for int32 int64 ...
+#endif
+
+#ifndef STRING_H
+#define STRING_H
+	#include <string>
+#endif
+
+#ifndef ATMOIC_H
+#define ATMOIC_H
+	#include <atomic>
+#endif
+
+#ifndef THREAD_H
+#define THREAD_H
+	#include <thread>
 #endif
 
 #ifndef TYPES_HPP
