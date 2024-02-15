@@ -17,9 +17,9 @@
 	#include <string>
 #endif
 
-#ifndef ATMOIC_H
-#define ATMOIC_H
-	#include <atomic>
+#ifndef MUTEX_H
+#define MUTEX_H
+	#include <mutex>
 #endif
 
 #ifndef THREAD_H

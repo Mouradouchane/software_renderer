@@ -5,7 +5,6 @@ int WINAPI WinMain(
 	HINSTANCE h_instance, HINSTANCE h_prev_instance, LPSTR p_cmd_line, int n_cmd_show
 ){
 
-
     if ( !window::init(h_instance, n_cmd_show) ) {
         exceptions::show_error("init window error", exceptions::get_last_error_window());
         return GetLastError();
@@ -18,16 +17,18 @@ int WINAPI WinMain(
         return 0;
     }
 
-    std::thread fps_update_thread();
-
+    // start thread for "fps_update_routine" 
+    global::fps_update_thread = std::thread(
+        global::fps_update_worker
+    );
+    
     // for preformance counting 
-    timer timerr; 
-    uint32_t time_ellapse = 0;
+    timer gtimer; 
 
     // main loop 
     while( global::running ){
 
-        timerr.start();
+        gtimer.start();
 
         // window message + inputs
         window::process_messages();
@@ -38,15 +39,18 @@ int WINAPI WinMain(
         UpdateWindow(window::handle);
 
         global::frames += 1;
-        time_ellapse = timerr.stop();
+        global::taken_time = gtimer.stop();
 
         // for stable frame's per sec
-        if (time_ellapse < global::frame_time) {
-            Sleep(global::frame_time - time_ellapse);
+        if ((global::taken_time + global::time_bais) < global::frame_time) {
+            Sleep(global::frame_time - global::taken_time);
         }
     
     }
     // end : main loop 
+
+    // join thread's
+    global::fps_update_thread.join();
 
     // free resources
     graphics::destroy();
