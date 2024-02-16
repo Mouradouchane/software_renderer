@@ -27,9 +27,15 @@
 	#include <windows.h>
 #endif
 
+#ifndef STRING_H
+#define STRING_H
+	#include <string>
+#endif
+
+#include "types/types.hpp"
 #include "timer/timer.hpp"
 #include "configs/configs.hpp"
-#include "types/types.hpp"
+#include "preformance/preformance.hpp"
 #include "window/window.hpp"
 #include "render/render.hpp"
 

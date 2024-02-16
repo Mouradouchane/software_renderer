@@ -1,8 +1,10 @@
 
-#include "timer.hpp"
+#pragma once
 
 #ifndef TIMER_CPP
 #define TIMER_CPP
+
+#include "timer.hpp"
 
 void timer::start() {
 	this->working = true;

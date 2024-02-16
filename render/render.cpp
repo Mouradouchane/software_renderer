@@ -1,12 +1,14 @@
 
-#include "render.hpp"
 
 #ifndef RENDER_CPP
 #define RENDER_CPP
 
+#include "render.hpp"
+
 namespace graphics {
 
-buffer<scolor>* frame_buffer = nullptr;
+buffer<scolor>* front_buffer = nullptr;
+buffer<scolor>* back_buffer = nullptr;
 
 BITMAPINFO bitmap_info = { 0 };
 BITMAP  bitmap = { 0 };
@@ -15,14 +17,26 @@ HDC     bitmap_hdc = NULL;
 
 bool init() {
 
-	// allocate buffer
-	frame_buffer = new buffer<scolor>(
+	// allocate back-buffer
+	back_buffer = new buffer<scolor>(
 		0, 0, window::width, window::height
 	);
 
-	if (frame_buffer == nullptr) {
+	if (back_buffer == nullptr) {
 		exceptions::show_error(
-			"error", "failed to allocate memory for 'frame buffer' !"
+			global::error_title, "failed to allocate memory for 'back buffer' !"
+		);
+		return false;
+	}
+
+	// allocate front-buffer
+	front_buffer = new buffer<scolor>(
+		0, 0, window::width, window::height
+	);
+
+	if (front_buffer == nullptr) {
+		exceptions::show_error(
+			global::error_title, "failed to allocate memory for 'front buffer' !"
 		);
 		return false;
 	}
@@ -33,12 +47,12 @@ bool init() {
 	ZeroMemory(&(bitmap), sizeof(BITMAP));
 
 	// setup bitmap
-	bitmap.bmWidth = window::width;
+	bitmap.bmWidth  = window::width;
 	bitmap.bmHeight = window::height;
 	bitmap.bmPlanes = 1;
 	bitmap.bmWidthBytes = sizeof(scolor);
-	bitmap.bmBitsPixel = sizeof(scolor) * 8;
-	bitmap.bmBits = frame_buffer->memory;
+	bitmap.bmBitsPixel  = sizeof(scolor) * 8;
+	bitmap.bmBits = back_buffer->memory;
 	bitmap.bmType = 0;
 
 	// create a window compatible hdc for frame_buffer -> bitmap 
@@ -46,11 +60,11 @@ bool init() {
 
 	// just a handle to the bitmap 
 	hbitmap = CreateBitmap(
-		frame_buffer->width,
-		frame_buffer->height,
+		back_buffer->width,
+		back_buffer->height,
 		bitmap.bmPlanes,
 		bitmap.bmBitsPixel,
-		frame_buffer->memory
+		back_buffer->memory
 	);
 
 	SelectObject(graphics::bitmap_hdc, graphics::hbitmap);
@@ -60,18 +74,23 @@ bool init() {
 
 void destroy() {
 
-	if (graphics::frame_buffer != nullptr) {
-		graphics::frame_buffer->~buffer();
-		graphics::frame_buffer = nullptr;
+	if (graphics::front_buffer != nullptr) {
+		graphics::front_buffer->~buffer();
+		graphics::front_buffer = nullptr;
+	}
+
+	if (graphics::back_buffer != nullptr) {
+		graphics::back_buffer->~buffer();
+		graphics::back_buffer  = nullptr;
 	}
 
 }
 
 void draw_fps_info() {
 
-	if (global::fps_guard.try_lock()) {
-		global::fps_msg = "FPS : " + std::to_string(global::fps);
-		global::fps_guard.unlock();
+	if (preformance::total_fps_guard.try_lock()) {
+		global::fps_msg = "FPS : " + std::to_string(preformance::total_fps);
+		preformance::total_fps_guard.unlock();
 	}
 
 	DrawTextA(
@@ -82,7 +101,7 @@ void draw_fps_info() {
 		DT_LEFT
 	);
 
-	global::loop_msg = "LOOP TIME : " + std::to_string(global::taken_time);
+	global::loop_msg = "LOOP TIME : " + std::to_string(preformance::taken_time);
 
 	DrawTextA(
 		bitmap_hdc,
@@ -116,23 +135,23 @@ void draw() {
 
 	// clear buffer
 	ZeroMemory(
-		frame_buffer->memory, frame_buffer->size * sizeof(scolor)
+		back_buffer->memory, back_buffer->size * sizeof(scolor)
 	);
 
 	// draw to buffer
 	uint32_t Y = 0;
-	for (uint16_t y = 0; y < frame_buffer->height; y += 1) {
-		Y = y * frame_buffer->width;
-		for (uint16_t x = 0; x < frame_buffer->width; x += 1) {
-			frame_buffer->memory[Y+x] = color;
+	for (uint16_t y = 0; y < back_buffer->height; y += 1) {
+		Y = y * back_buffer->width;
+		for (uint16_t x = 0; x < back_buffer->width; x += 1) {
+			back_buffer->memory[Y+x] = color;
 		}
 	}
 
 	// update bitmap buffer address
 	SetBitmapBits(
 		hbitmap,
-		frame_buffer->size * sizeof(scolor),
-		frame_buffer->memory
+		back_buffer->size * sizeof(scolor),
+		back_buffer->memory
 	);
 
 	SelectObject(bitmap_hdc, hbitmap);
@@ -144,14 +163,16 @@ void draw() {
 		window::hdc,
 		0,0,
 
-		frame_buffer->width,
-		frame_buffer->height,
+		back_buffer->width,
+		back_buffer->height,
 
 		bitmap_hdc,
 		0,0,
 		SRCCOPY
 	);
 
+	// swap buffers
+	//std::swap(front_buffer, back_buffer);
 }
 
 bool render() {

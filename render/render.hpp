@@ -5,22 +5,21 @@
 	the rendering stage's .
 */
 
+#ifndef RENDER_HPP
+#define RENDER_HPP
+
 #include "../types/types.hpp"
 #include "../math/math.hpp"
+#include "../preformance/preformance.hpp"
 #include "../configs/configs.hpp"
 #include "../window/window.hpp"
 #include "../draw/draw.hpp"
 
-#ifndef RENDER_HPP
-#define RENDER_HPP
-
-// our standard color system
-#define scolor bgra8
-
 namespace graphics{
 
-	// main frame buffer we draw/raster in
-	extern buffer<scolor>* frame_buffer;
+	// main frame buffer's
+	extern buffer<scolor>* back_buffer;
+	extern buffer<scolor>* front_buffer;
 
 	// bitmap & hdc for gdi
 	extern BITMAP  bitmap;

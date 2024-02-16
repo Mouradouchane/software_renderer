@@ -32,7 +32,7 @@ HDC hdc;
 PAINTSTRUCT paint_struct;
 
 // main screen stuff
-HMONITOR h_monitor;
+HMONITOR    h_monitor;
 MONITORINFO monitor_info;
 
 /*

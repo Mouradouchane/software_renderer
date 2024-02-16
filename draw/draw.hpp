@@ -14,7 +14,7 @@
 namespace draw {
 
 	// buffer for draw/rasterization
-	extern buffer<rgb8> * frame_buffer;
+	extern buffer<rgb8> * back_buffer;
 
 	bool init(buffer<rgb8>* frame_buffer_);
 	bool destroy();

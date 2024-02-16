@@ -17,6 +17,11 @@
 	#include <string>
 #endif
 
+#ifndef CHRONO_H
+#define CHRONO_H
+	#include <chrono>
+#endif
+
 #ifndef MUTEX_H
 #define MUTEX_H
 	#include <mutex>
@@ -79,8 +84,6 @@ typedef struct rgba8 {
 	uint8_t a = UINT8_MAX; // alpha 
 };
 
-
-
 typedef struct rgba16 {
 	uint16_t r = 0;    // red
 	uint16_t g = 0;    // green
@@ -107,6 +110,9 @@ typedef struct bgra8 {
 	uint8_t r = 0; // red
 	uint8_t a = UINT8_MAX; // alpha 
 };
+
+// standard type color
+typedef bgra8 scolor;
 
 rgb8   create_rgb8  (uint8_t  red, uint8_t  green, uint8_t  blue);
 rgb16  create_rgb16 (uint16_t red, uint16_t green, uint16_t blue);
@@ -208,7 +214,6 @@ template<typename type> buffer<type>::~buffer() {
 
 }
 
-
 typedef struct pixle {
 	uint16_t x = 0;
 	uint16_t y = 0;
@@ -220,7 +225,6 @@ template<typename type> struct sample {
 	sfloat y = 0;
 	type value;
 };
-
 
 /*
 	=================================================
@@ -328,5 +332,21 @@ public:
 
 };
 // end : class triangle3d
+
+/*
+	=================================================
+	============= time/chrono types =================
+	=================================================
+*/
+
+typedef std::chrono::high_resolution_clock hr_clock;
+typedef std::chrono::system_clock sys_clock;
+typedef std::chrono::steady_clock steady_clock;
+
+typedef std::chrono::milliseconds ms;
+typedef std::chrono::seconds sec;
+
+typedef std::chrono::duration<sfloat> sfloat_duration;
+typedef std::chrono::duration<uint32_t> uint32_t_duration;
 
 #endif
