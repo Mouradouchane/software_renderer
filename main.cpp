@@ -21,9 +21,12 @@ int WINAPI WinMain(
         exceptions::show_warn(global::warn_title, "unexpected error while setuping some preformance threads !");
     }
   
+    hr_clock::time_point s = hr_clock::now();
+    hr_clock::time_point e = hr_clock::now() + ms(1000);
+
     // main loop 
     while( global::running ){
-
+        s = hr_clock::now();
         preformance::main_timer.start();
 
         // window message + inputs
@@ -35,7 +38,14 @@ int WINAPI WinMain(
         UpdateWindow(window::handle);
 
         preformance::frames_counter += 1;
+    
         preformance::taken_time = preformance::main_timer.stop();
+
+        if (s >= e) {
+            e = hr_clock::now() + ms(1000);
+            preformance::total_fps = preformance::frames_counter;
+            preformance::frames_counter = 0;
+        }
 
         // check if we have time for sleep
         if (preformance::taken_time < preformance::frame_time) {
@@ -43,13 +53,10 @@ int WINAPI WinMain(
         }
     
     }
-    // end : main loop 
+    // end : main loop
 
     // free resources
-  
-    // includes "thread's join"
     preformance::destroy();
-
     graphics::destroy();
     window::destroy();
 

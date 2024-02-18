@@ -19,25 +19,27 @@ namespace preformance {
 	std::mutex total_fps_guard;
 
 	uint16_t frames_counter = 0;
-	uint32_t frame_time = (uint32_t)(1000 / config::max_fps);
+	float32  frame_time = 1000 / ((config::max_fps != 0) ? config::max_fps : 1);
 	
 	std::thread total_fps_update_thread;
 
-// thread for updating "total_fps" each 1000ms
 void total_fps_updater() {
+	/*
+	static ms time_to_sleep(1000);
+	std::this_thread::sleep_for(time_to_sleep);
 
 	while (global::running && config::draw_fps_info) {
 
-		if (total_fps_guard.try_lock()) {
+		if ( total_fps_guard.try_lock() ) {
 			total_fps = frames_counter;
 			frames_counter = 0;
 
 			total_fps_guard.unlock();
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		std::this_thread::sleep_for(time_to_sleep);
 	}
-
+	*/
 }
 
 bool init() {

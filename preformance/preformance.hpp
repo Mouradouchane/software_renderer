@@ -28,7 +28,7 @@ namespace preformance {
 	extern std::mutex total_fps_guard; 
 
 	extern uint16_t frames_counter;
-	extern uint32_t frame_time;
+	extern float32  frame_time;
 
 	// thread for updating "total_fps" each 1000ms
 	extern std::thread total_fps_update_thread;

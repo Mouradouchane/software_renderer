@@ -13,7 +13,7 @@ void timer::start() {
 
 uint32_t timer::stop() {
 	this->e = hr_clock::now();
-	this->last_duration_ms = std::chrono::duration_cast<ms>(e-s).count();
+	this->last_duration_ms = (uint32_t)std::chrono::duration_cast<ms>(e-s).count();
 	this->working = false;
 
 	return this->last_duration_ms;

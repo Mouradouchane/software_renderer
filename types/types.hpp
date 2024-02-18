@@ -7,6 +7,9 @@
 
 #pragma once 
 
+#ifndef TYPES_HPP
+#define TYPES_HPP
+
 #ifndef _stdint
 #define _stdint	
 	#include <stdint.h> // for int32 int64 ...
@@ -31,9 +34,6 @@
 #define THREAD_H
 	#include <thread>
 #endif
-
-#ifndef TYPES_HPP
-#define TYPES_HPP
 
 /*
 	=================================================
