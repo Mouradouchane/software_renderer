@@ -88,10 +88,7 @@ void destroy() {
 
 void draw_fps_info() {
 
-	if (preformance::total_fps_guard.try_lock()) {
-		global::fps_msg = "FPS : " + std::to_string(preformance::total_fps);
-		preformance::total_fps_guard.unlock();
-	}
+	global::fps_msg = "FPS : " + std::to_string(preformance::fps);
 
 	DrawTextA(
 		bitmap_hdc,
@@ -101,7 +98,7 @@ void draw_fps_info() {
 		DT_LEFT
 	);
 
-	global::loop_msg = "LOOP TIME : " + std::to_string(preformance::taken_time);
+	global::loop_msg = "LOOP TIME : " + std::to_string(preformance::total_taken_time);
 
 	DrawTextA(
 		bitmap_hdc,

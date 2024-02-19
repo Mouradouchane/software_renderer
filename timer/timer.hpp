@@ -11,9 +11,11 @@ class timer {
 private :
 
 	bool working = false;
-	hr_clock::time_point s; // start time
-	hr_clock::time_point e; // end time
-	uint32_t last_duration_ms = 0; // ellapse time in ms
+
+	hr_time_point s; // start time
+	hr_time_point e; // end time
+
+	uint32_t taken_time; // taken time between s -> e
 
 public :
 
@@ -26,7 +28,7 @@ public :
 	// method's
 	void start();
 	uint32_t stop();
-	uint32_t time_here();
+	uint32_t taken_time_to_this_point();
 
 };
 // end : class timer 

@@ -122,6 +122,7 @@ rgba8  create_rgba8 (uint8_t  red, uint8_t  green, uint8_t  blue, uint8_t  alpha
 rgba16 create_rgba16(uint16_t red, uint16_t green, uint16_t blue, uint16_t alpha = UINT16_MAX);
 rgba32 create_rgba32(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha = UINT32_MAX);
 
+// TODO : support more BGRA stuff !!!
 bgr8   create_bgr8();
 bgra8  create_bgra8();
 
@@ -346,7 +347,11 @@ typedef std::chrono::steady_clock steady_clock;
 typedef std::chrono::milliseconds ms;
 typedef std::chrono::seconds sec;
 
-typedef std::chrono::duration<sfloat> sfloat_duration;
-typedef std::chrono::duration<uint32_t> uint32_t_duration;
+typedef hr_clock::time_point     hr_time_point;
+typedef sys_clock::time_point    sc_time_point;
+typedef steady_clock::time_point st_time_point;
+
+typedef std::chrono::duration<sfloat,ms>   sfloat_duration;
+typedef std::chrono::duration<uint32_t,ms> uint32_t_duration;
 
 #endif

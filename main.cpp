@@ -21,12 +21,13 @@ int WINAPI WinMain(
         exceptions::show_warn(global::warn_title, "unexpected error while setuping some preformance threads !");
     }
   
-    hr_clock::time_point s = hr_clock::now();
-    hr_clock::time_point e = hr_clock::now() + ms(1000);
+    hr_time_point start = hr_clock::now();
+    hr_time_point end   = hr_clock::now() + ms(1000);
 
     // main loop 
     while( global::running ){
-        s = hr_clock::now();
+
+        start = hr_clock::now();
         preformance::main_timer.start();
 
         // window message + inputs
@@ -37,19 +38,19 @@ int WINAPI WinMain(
         graphics::render();
         UpdateWindow(window::handle);
 
-        preformance::frames_counter += 1;
+        preformance::frames += 1;
     
-        preformance::taken_time = preformance::main_timer.stop();
-
-        if (s >= e) {
-            e = hr_clock::now() + ms(1000);
-            preformance::total_fps = preformance::frames_counter;
-            preformance::frames_counter = 0;
+        if (start >= end) {
+            end = hr_clock::now() + ms(1000);
+            preformance::fps = preformance::frames;
+            preformance::frames = 0;
         }
 
-        // check if we have time for sleep
-        if (preformance::taken_time < preformance::frame_time) {
-            Sleep(preformance::frame_time - preformance::taken_time);
+        preformance::total_taken_time = preformance::main_timer.stop();
+
+        // sleep between frames if needed for stable frame rate
+        if (preformance::total_taken_time < preformance::frame_time) {
+            Sleep(preformance::frame_time - preformance::total_taken_time);
         }
     
     }

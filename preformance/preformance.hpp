@@ -10,6 +10,7 @@
 #ifndef PREFORMANCE_HPP 
 #define PREFORMANCE_HPP 
 
+#include <Windows.h>
 #include "../types/types.hpp"
 #include "../configs/configs.hpp"
 #include "../timer/timer.hpp"
@@ -18,21 +19,15 @@ namespace preformance {
 
 	extern timer main_timer;
 
-	extern uint32_t taken_time; // total taken time by all
+	extern uint32_t total_taken_time; // total taken time by all
 	extern uint32_t render_time; // rendering time
 	extern uint32_t input_time; // os handling inputs time
 	extern uint32_t os_time;    // os proc time
 
-	// note ! "total_fps" is shared between threads
-	extern uint16_t   total_fps;
-	extern std::mutex total_fps_guard; 
-
-	extern uint16_t frames_counter;
-	extern float32  frame_time;
-
-	// thread for updating "total_fps" each 1000ms
-	extern std::thread total_fps_update_thread;
-	void total_fps_updater();
+	// note : fps is a counter & not => "max fps"
+	extern uint16_t fps;
+	extern uint16_t frames; // frame's counter
+	extern uint32_t frame_time; // needed time to compute 1 frame
 
 	// setup threads/values/...
 	bool init();
