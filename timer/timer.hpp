@@ -6,6 +6,7 @@
 
 #include "../types/types.hpp"
 
+// normal timer to calc taken time .
 class timer {
 
 private :
@@ -19,10 +20,7 @@ private :
 
 public :
 
-	// constructor
-	timer() = default;
-
-	// destructor
+	 timer() = default;
 	~timer() = default;
 
 	// method's
@@ -32,5 +30,29 @@ public :
 
 };
 // end : class timer 
+
+// spinner timer to do some work each time 
+class periodic_timer {
+
+private:
+	ms cycle_time_ms = ms(1000);
+
+	hr_time_point current_time = hr_clock::now();
+	hr_time_point work_time = hr_clock::now() + cycle_time_ms;
+
+public: 
+
+	// constructor's
+	periodic_timer() = default;
+	periodic_timer(uint32_t time_in_ms);
+	
+	// destructor
+	~periodic_timer() = default;
+
+	// method's
+	void update();
+	bool is_time_for_work();
+
+};
 
 #endif

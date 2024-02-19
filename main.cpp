@@ -21,13 +21,12 @@ int WINAPI WinMain(
         exceptions::show_warn(global::warn_title, "unexpected error while setuping some preformance threads !");
     }
   
-    hr_time_point start = hr_clock::now();
-    hr_time_point end   = hr_clock::now() + ms(1000);
+    periodic_timer fpspt;
 
     // main loop 
     while( global::running ){
 
-        start = hr_clock::now();
+        fpspt.update();
         preformance::main_timer.start();
 
         // window message + inputs
@@ -40,8 +39,7 @@ int WINAPI WinMain(
 
         preformance::frames += 1;
     
-        if (start >= end) {
-            end = hr_clock::now() + ms(1000);
+        if (fpspt.is_time_for_work()) {
             preformance::fps = preformance::frames;
             preformance::frames = 0;
         }

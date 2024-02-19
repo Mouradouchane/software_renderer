@@ -5,6 +5,8 @@
 #define PREFORMANCE_CPP 
 
 #include "preformance.hpp"
+
+// we need it for window time-api 
 #pragma comment(lib, "winmm.lib")
 
 namespace preformance {
@@ -16,8 +18,8 @@ namespace preformance {
 	uint32_t input_time  = 0;
 	uint32_t os_time     = 0;
 
-	hr_time_point fps_update_start_time = hr_clock::now();
-	hr_time_point fps_update_end_time   = hr_clock::now();
+	hr_time_point fps_update_time = hr_clock::now();
+	hr_time_point fps_next_update_time = hr_clock::now();
 
 	uint16_t fps = 0;
 	uint16_t frames = 0;
