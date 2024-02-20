@@ -98,7 +98,7 @@ void draw_fps_info() {
 		DT_LEFT
 	);
 
-	global::loop_msg = "LOOP TIME : " + std::to_string(preformance::total_taken_time);
+	global::loop_msg = "LOOP TIME : " + std::to_string(preformance::total_taken_time) + "ms";
 
 	DrawTextA(
 		bitmap_hdc,
@@ -110,24 +110,6 @@ void draw_fps_info() {
 
 }
 
-bool inc = true;
-scolor color = { 0,0,100,255 };
-
-std::thread rt(
-	[&]() {
-
-		while (global::running) {
-			if (color.r >= 254) inc = false;
-			if (color.r == 0) inc = true;
-			color.r += ((inc) ? 1 : -1);
-			color.b += ((inc) ? 1 : -1);
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
-		}
-		
-	}
-);
-
 void draw() {
 
 	// clear buffer
@@ -136,14 +118,8 @@ void draw() {
 	);
 
 	// draw to buffer
-	uint32_t Y = 0;
-	for (uint16_t y = 0; y < back_buffer->height; y += 1) {
-		Y = y * back_buffer->width;
-		for (uint16_t x = 0; x < back_buffer->width; x += 1) {
-			back_buffer->memory[Y+x] = color;
-		}
-	}
-
+	back_buffer->set( 1 , 1 , scolor{0, 255, 0, 255});
+	
 	// update bitmap buffer address
 	SetBitmapBits(
 		hbitmap,

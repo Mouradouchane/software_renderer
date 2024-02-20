@@ -182,6 +182,14 @@ public :
 	// destructor
 	~buffer();
 
+	void set(uint16_t X, uint16_t Y, type& new_value) {
+		this->memory[ width * Y + X ] = new_value;
+	}
+
+	type get(uint16_t X, uint16_t Y) {
+		return this->memory[ width * Y + X ];
+	}
+
 };
 
 
