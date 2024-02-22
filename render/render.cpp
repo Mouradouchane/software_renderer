@@ -4,18 +4,23 @@
 #define RENDER_CPP
 
 #include "render.hpp"
+// #include "draw.cpp"
 
 namespace graphics {
 
 buffer<scolor>* front_buffer = nullptr;
-buffer<scolor>* back_buffer = nullptr;
+buffer<scolor>* back_buffer  = nullptr;
 
 BITMAPINFO bitmap_info = { 0 };
-BITMAP  bitmap = { 0 };
-HBITMAP hbitmap = NULL;
-HDC     bitmap_hdc = NULL;
+BITMAP     bitmap = { 0 };
+HBITMAP    hbitmap = NULL;
+HDC        bitmap_hdc = NULL;
+
+scolor clear_color = { 0,0,0,0 };
 
 bool init() {
+
+	clear_color.a = 255;
 
 	// allocate back-buffer
 	back_buffer = new buffer<scolor>(
@@ -110,16 +115,47 @@ void draw_fps_info() {
 
 }
 
-void draw() {
+void rasterization() {
 
 	// clear buffer
-	ZeroMemory(
-		back_buffer->memory, back_buffer->size * sizeof(scolor)
-	);
+	back_buffer->fill(clear_color);
 
 	// draw to buffer
-	back_buffer->set( 1 , 1 , scolor{0, 255, 0, 255});
+	/*
+	draw::line(vec2d{ 10,10 }, vec2d{ 10,300 }, scolor{ 0,0,255,255 });
+	draw::line(vec2d{ 10,10 }, vec2d{ 25,300 }, scolor{0,120,255,255});
+	draw::line(vec2d{ 250,650 }, vec2d{ 1000,300 }, scolor{ 255,0,0,255 });
+	draw::line(vec2d{ 1100,320 }, vec2d{ 250,150 }, scolor{ 255,111,0,255 });
+	draw::line(vec2d{ 10,10 }, vec2d{ 300,10 }, scolor{ 0,255,0,255 });
+	draw::line(vec2d{ 10,10 }, vec2d{ 300,25 }, scolor{ 255,255,0,255 });
 	
+	draw::draw_triangle(
+		vec2d{ 100,100 }, vec2d{ 200,100 }, vec2d{ 200,200 },
+		scolor{ 0,255,0,255 }
+	);
+	*/
+
+	draw::fill_triangle(
+		vec2d{ 100,100 }, vec2d{ 200,100 }, vec2d{ 200,200 },
+		scolor{ 255,0,0,100 }
+	);
+	draw::fill_triangle(
+		vec2d{ 600,100 }, vec2d{ 200,100 }, vec2d{ 200,200 },
+		scolor{ 0,0,255,100 }
+	);
+	draw::fill_triangle(
+		vec2d{ 600,100 }, vec2d{ 200,200 }, vec2d{ 600,400 },
+		scolor{ 0,255,0,100 }
+	);
+	draw::fill_triangle(
+		vec2d{ 230,470 }, vec2d{ 200,200 }, vec2d{ 600,400 },
+		scolor{ 255,255,0,100 }
+	);
+	draw::fill_triangle(
+		vec2d{ 230,470 }, vec2d{ 200,200 }, vec2d{ 100,100},
+		scolor{ 120,80,200,100 }
+	);
+
 	// update bitmap buffer address
 	SetBitmapBits(
 		hbitmap,
@@ -145,13 +181,13 @@ void draw() {
 	);
 
 	// swap buffers
-	//std::swap(front_buffer, back_buffer);
+	std::swap(front_buffer, back_buffer);
 }
 
 bool render() {
 	
 	// draw objects
-	graphics::draw();
+	graphics::rasterization();
 
 	return true;
 }

@@ -56,99 +56,98 @@ uint16_t max_slope = 1024;
 
 namespace vector {
 
-sfloat cross_product(
-    vec2d const& target, vec2d const& p1, vec2d const& p2
-) {
+    sfloat cross_product(
+        vec2d const& target, vec2d const& p1, vec2d const& p2
+    ) {
 
-    // 1 - move to (0,0) using v0
-    vec2d a = { p2.x - p1.x , p2.y - p1.y };
-    vec2d b = { target.x - p1.x , target.y - p1.y };
+        // 1 - move to (0,0) using v0
+        vec2d a = { p2.x - p1.x , p2.y - p1.y };
+        vec2d b = { target.x - p1.x , target.y - p1.y };
 
-    // 2 - calc normal.z : a x b
-    return (a.x * b.y) - (a.y * b.x);
-}
+        // 2 - calc normal.z : a x b
+        return (a.x * b.y) - (a.y * b.x);
+    }
 
-void scale(vec2d& a, sfloat scalar) {
-    a.x *= scalar;
-    a.y *= scalar;
-}
-void scale(vec3d& a, sfloat scalar) {
-    a.x *= scalar;
-    a.y *= scalar;
-    a.z *= scalar;
-}
-void scale(vec4d& a, sfloat scalar) {
-    a.x *= scalar;
-    a.y *= scalar;
-    a.z *= scalar;
-    a.w *= scalar;
-}
+    void scale(vec2d& a, sfloat scalar) {
+        a.x *= scalar;
+        a.y *= scalar;
+    }
+    void scale(vec3d& a, sfloat scalar) {
+        a.x *= scalar;
+        a.y *= scalar;
+        a.z *= scalar;
+    }
+    void scale(vec4d& a, sfloat scalar) {
+        a.x *= scalar;
+        a.y *= scalar;
+        a.z *= scalar;
+        a.w *= scalar;
+    }
 
-sfloat length(vec2d const& a) {
-    return std::sqrtf(
-        (a.x * a.x) + (a.y * a.y)
-    );
-}
+    sfloat length(vec2d const& a) {
+        return std::sqrtf(
+            (a.x * a.x) + (a.y * a.y)
+        );
+    }
 
-vec2d unit(vec2d const& a) {
+    vec2d unit(vec2d const& a) {
 
-    sfloat length = math::vector::length(a);
+        sfloat length = math::vector::length(a);
 
-    if (length == 0) return {0,0};
+        if (length == 0) return {0,0};
 
-    return {
-        a.x / length ,
-        a.y / length
-    };
+        return {
+            a.x / length ,
+            a.y / length
+        };
 
-}
+    }
 
-vec2d left_normal(vec2d const& p1, vec2d const& p2) {
+    vec2d left_normal(vec2d const& p1, vec2d const& p2) {
 
-    return { -(p1.y - p2.y) ,  (p1.x - p2.x) };
-}
+        return { -(p1.y - p2.y) ,  (p1.x - p2.x) };
+    }
 
-vec2d right_normal(vec2d const& p1, vec2d const& p2) {
+    vec2d right_normal(vec2d const& p1, vec2d const& p2) {
  
-    return { (p1.y - p2.y) ,  -(p1.x - p2.x) };
-}
+        return { (p1.y - p2.y) ,  -(p1.x - p2.x) };
+    }
 
-// TODO : implements those functions 
+    // TODO : implements those functions 
 
-vec3d left_normal(vec3d const& p1, vec3d const& p2) {
-    std::runtime_error("not implemented yet :(");
-    return { 0,0,0 };
-}
+    vec3d left_normal(vec3d const& p1, vec3d const& p2) {
+        std::runtime_error("not implemented yet :(");
+        return { 0,0,0 };
+    }
 
-vec3d right_normal(vec3d const& p1, vec3d const& p2) {
-    std::runtime_error("not implemented yet :(");
-    return { 0,0,0 };
-}
+    vec3d right_normal(vec3d const& p1, vec3d const& p2) {
+        std::runtime_error("not implemented yet :(");
+        return { 0,0,0 };
+    }
 
-vec3d unit(vec3d const& a) {
-    std::runtime_error("not implemented yet :(");
-    return {0,0,0};
-}
+    vec3d unit(vec3d const& a) {
+        std::runtime_error("not implemented yet :(");
+        return {0,0,0};
+    }
 
-vec4d unit(vec4d const& a) {
-    std::runtime_error("not implemented yet :(");
-    return { 0,0,0,0 };
-}
+    vec4d unit(vec4d const& a) {
+        std::runtime_error("not implemented yet :(");
+        return { 0,0,0,0 };
+    }
 
-sfloat cross_product(
-    vec3d const& target, vec3d const& p1, vec3d const& p2
-) {
-    std::runtime_error("not implemented yet :(");
-    return NULL;
-}
+    sfloat cross_product(
+        vec3d const& target, vec3d const& p1, vec3d const& p2
+    ) {
+        std::runtime_error("not implemented yet :(");
+        return NULL;
+    }
 
-sfloat cross_product(
-    vec4d const& target, vec4d const& p1, vec4d const& p2
-) {
-    std::runtime_error("not implemented yet :(");
-    return NULL;
-}
-
+    sfloat cross_product(
+        vec4d const& target, vec4d const& p1, vec4d const& p2
+    ) {
+        std::runtime_error("not implemented yet :(");
+        return NULL;
+    }
 
 } 
 // end : namespace vector
@@ -166,7 +165,7 @@ sfloat deltha(sfloat v1, sfloat v2) {
 // slope = dy / dx 
 sfloat slope2d(vec2d const& a, vec2d const& b) {
     sfloat dx = (b.x - a.x);
-    return (b.y - a.y) / ((dx == 0) ? max_slope : dx);
+    return (dx == 0) ? max_slope : (b.y - a.y) / dx;
 }
 
 // distance = sqrt((b.x - a.x)² + (b.y - a.y)²)

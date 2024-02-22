@@ -190,6 +190,18 @@ public :
 		return this->memory[ width * Y + X ];
 	}
 
+	void fill(type& value) {
+
+		uint32_t Y = 0;
+		for (uint16_t y = 0; y < this->height; y += 1) {
+			Y = this->width * y;
+			for (uint16_t x = 0; x < this->width; x += 1) {
+				this->memory[Y + x] = value;
+			}
+		}
+
+	}
+
 };
 
 

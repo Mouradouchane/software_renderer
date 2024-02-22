@@ -85,7 +85,7 @@ namespace math {
 	sfloat deltha( sfloat v1 , sfloat v2 );
 
 	// slope of the line : b -> a
-	// s = dy / dx 
+	// s = dy / dx
 	sfloat slope2d(vec2d const& a, vec2d const& b);
 	sfloat slope3d(vec3d const& a, vec3d const& b);
 
