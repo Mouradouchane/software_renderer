@@ -4,6 +4,19 @@
 #ifndef TYPES_CPP
 #define TYPES_CPP
 
+ndc create_ndc(
+	int16_t near_ , int16_t far_,
+	int16_t left  , int16_t right,
+	int16_t top   , int16_t buttom 
+) {
+
+	return ndc{
+		near_, far_,
+		left, right,
+		top, buttom,
+	};
+}
+
 /*
 	few function for vector's creation
 */
@@ -15,11 +28,6 @@ vec2d create_vec2d(sfloat x, sfloat y){
 
 vec3d create_vec3d(sfloat x, sfloat y, sfloat z) {
 	vec3d  vector = { x = x , y = y , z = z };
-	return vector;
-}
-
-vec4d create_vec4d(sfloat x, sfloat y, sfloat z , sfloat w) {
-	vec4d  vector = { x = x , y = y , z = z , w = w};
 	return vector;
 }
 

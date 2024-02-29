@@ -141,18 +141,26 @@ typedef struct vec3d {
 	sfloat x = 0;
 	sfloat y = 0;
 	sfloat z = 1;
+	sfloat w = 1;
 }; 
 
-typedef struct vec4d {
-	sfloat x = 0;
-	sfloat y = 0;
-	sfloat z = 1;
-	sfloat w = 1;
+typedef struct ndc {
+	int16_t n =  1;
+	int16_t f = -1;
+	int16_t l = -1;
+	int16_t r =  1;
+	int16_t t = -1;
+	int16_t b =  1;
 };
 
 vec2d create_vec2d(sfloat x=0, sfloat y=0);
-vec3d create_vec3d(sfloat x=0, sfloat y=0, sfloat z=1);
-vec4d create_vec4d(sfloat x=0, sfloat y=0, sfloat z=1, sfloat w=1);
+vec3d create_vec3d(sfloat x= 0, sfloat y= 0, sfloat z= 1, sfloat w= 1);
+
+ndc create_ndc(
+	int16_t near =  1, int16_t far = -1,
+	int16_t left = -1, int16_t right = 1,
+	int16_t top  = -1, int16_t buttom = 1
+);
 
 /*
 	=================================================
@@ -174,13 +182,33 @@ public :
 	type *   memory = nullptr; // heap allocation !
 
 	// constructor's
+
 	buffer(
 		uint16_t x = 0, uint16_t y = 0,
 		uint16_t width = 1, uint16_t height = 1
-	);
-	
+	) {
+
+		this->x = x;
+		this->y = y;
+
+		this->height = height;
+		this->width = width;
+
+		this->size = width * height;
+
+		this->memory = new type[this->size];
+
+	}
+
 	// destructor
-	~buffer();
+	~buffer() {
+
+		if (this->memory != nullptr) {
+			delete[] this->memory;
+			this->memory = nullptr;
+		}
+
+	}
 
 	void set(uint16_t X, uint16_t Y, type& new_value) {
 		this->memory[ width * Y + X ] = new_value;
@@ -204,47 +232,10 @@ public :
 
 };
 
-
-/*
-	buffer template implementation
-*/
-
-template<typename type> buffer<type>::buffer(
-	uint16_t x, uint16_t y,
-	uint16_t width, uint16_t height
-) {
-
-	this->x = x;
-	this->y = y;
-
-	this->height = height;
-	this->width  = width;
-
-	this->size = width * height;
-
-	this->memory = new type[this->size];
-
-}
-
-template<typename type> buffer<type>::~buffer() {
-
-	if (this->memory != nullptr) {
-		delete[] this->memory;
-		this->memory = nullptr;
-	}
-
-}
-
-typedef struct pixle {
-	uint16_t x = 0;
-	uint16_t y = 0;
-	rgb8 color = { 0,0,0 };
-};
-
 template<typename type> struct sample {
 	sfloat x = 0;
 	sfloat y = 0;
-	type value;
+	type   value;
 };
 
 /*

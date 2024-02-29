@@ -53,6 +53,7 @@ sfloat operator * (vec3d const& a, vec3d const& b) {
 namespace math {
 
 uint16_t max_slope = 1024;
+const sfloat pi = 3.14159265359;
 
 namespace vector {
 
@@ -76,12 +77,6 @@ namespace vector {
         a.x *= scalar;
         a.y *= scalar;
         a.z *= scalar;
-    }
-    void scale(vec4d& a, sfloat scalar) {
-        a.x *= scalar;
-        a.y *= scalar;
-        a.z *= scalar;
-        a.w *= scalar;
     }
 
     sfloat length(vec2d const& a) {
@@ -130,20 +125,9 @@ namespace vector {
         return {0,0,0};
     }
 
-    vec4d unit(vec4d const& a) {
-        std::runtime_error("not implemented yet :(");
-        return { 0,0,0,0 };
-    }
 
     sfloat cross_product(
         vec3d const& target, vec3d const& p1, vec3d const& p2
-    ) {
-        std::runtime_error("not implemented yet :(");
-        return NULL;
-    }
-
-    sfloat cross_product(
-        vec4d const& target, vec4d const& p1, vec4d const& p2
     ) {
         std::runtime_error("not implemented yet :(");
         return NULL;
@@ -156,6 +140,14 @@ namespace vector {
 /*
     math function's    
 */
+
+sfloat to_radian(sfloat degree_value) {
+    return degree_value * math::pi / 180;
+}
+
+sfloat to_degree(sfloat radian_value) {
+    return radian_value * 180 / math::pi;
+}
 
 // deltha = v1 - v2
 sfloat deltha(sfloat v1, sfloat v2) {

@@ -39,24 +39,21 @@
 // r = a + b 
 vec2d operator + (vec2d const& a, vec2d const& b);
 vec3d operator + (vec3d const& a, vec3d const& b);
-vec4d operator + (vec4d const& a, vec4d const& b);
 
 // vector's subtraction 
 // r = a - b 
 vec2d operator - (vec2d const& a, vec2d const& b);
 vec3d operator - (vec3d const& a, vec3d const& b);
-vec4d operator - (vec4d const& a, vec4d const& b);
 
 // vector's dot product 
 // v = a . b 
 sfloat operator * (vec2d const& a, vec2d const& b);
 sfloat operator * (vec3d const& a, vec3d const& b);
-sfloat operator * (vec4d const& a, vec4d const& b);
-
 
 namespace math {
 
 	extern uint16_t max_slope;
+	extern const sfloat pi;
 
 	/* 
 		class for random generation based on time function
@@ -79,6 +76,10 @@ namespace math {
 
 	};
 	// end : class random
+
+	// to convert between rad & deg
+	sfloat to_radian(sfloat degree_value);
+	sfloat to_degree(sfloat radian_value);
 
 	// calc the change of deltha from v1 to v2 
 	// dt = v1 - v2
@@ -157,26 +158,22 @@ namespace math {
 		// a *= scalar;
 		void scale(vec2d& a, sfloat scalar);
 		void scale(vec3d& a, sfloat scalar);
-		void scale(vec4d& a, sfloat scalar);
 
 		// vector cross product between 3 points in space
 		// note : ordering is matter
 		// c = a * b
 		sfloat cross_product(vec2d const& target, vec2d const& p1, vec2d const& p2);
 		sfloat cross_product(vec3d const& target, vec3d const& p1, vec3d const& p2);
-		sfloat cross_product(vec4d const& target, vec4d const& p1, vec4d const& p2);
 
 		// note : length of the vector based on the origin(0,0)
 		// formula :: len = sqrt( x² + y² )
 		sfloat length(vec2d const& a);
 		sfloat length(vec3d const& a);
-		sfloat length(vec4d const& a);
 
 		// note : none zero vector length
 		// formula :: |a| =  a / ||a||
 		vec2d unit(vec2d const& a);
 		vec3d unit(vec3d const& a);
-		vec4d unit(vec4d const& a);
 		
 		// get normals between vectors in 2D or 3D
 		vec2d left_normal(vec2d const& p1, vec2d const& p2);

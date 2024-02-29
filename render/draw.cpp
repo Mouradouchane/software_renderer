@@ -183,9 +183,28 @@ void draw_triangle_2d(
 
 }
 
-void draw_triangle(
-	vec2d& p1, vec2d& p2, vec2d& p3,
+void draw_triangle_3d(
+	vec3d p1, vec3d p2, vec3d p3,
 	scolor& color
+) {
+
+	if (color.a == 0) return;
+
+	line(vec2d{ p1.x ,p1.y }, vec2d{ p2.x ,p2.y }, color);
+	line(vec2d{ p2.x ,p2.y }, vec2d{ p3.x ,p3.y }, color);
+	line(vec2d{ p1.x ,p1.y }, vec2d{ p3.x ,p3.y }, color);
+
+}
+
+void draw_triangle(
+	vec3d& p1, vec3d& p2, vec3d& p3, scolor& color
+) {
+
+	draw_triangle_3d(p1, p2, p3, color);
+}
+
+void draw_triangle(
+	vec2d& p1, vec2d& p2, vec2d& p3, scolor& color
 ) {
 
 	draw_triangle_2d(p1, p2, p3, color);
@@ -200,8 +219,7 @@ void sort_by_y(
 }
 
 void fill_triangle_2d(
-	vec2d p1, vec2d p2, vec2d p3,
-	scolor& color
+	vec2d p1, vec2d p2, vec2d p3, scolor& color
 ) {
 
 	// sort triangle point by y for fill in orderer

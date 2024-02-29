@@ -48,6 +48,10 @@ namespace draw {
 		vec2d& p1, vec2d& p2, vec2d& p3,
 		scolor& color
 	);
+	void draw_triangle(
+		vec3d& p1, vec3d& p2, vec3d& p3,
+		scolor& color
+	);
 
 	void fill_triangle_2d(
 		vec2d p1, vec2d p2, vec2d p3,

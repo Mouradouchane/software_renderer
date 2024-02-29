@@ -17,6 +17,16 @@
 
 namespace graphics {
 
+	extern sfloat fov; // filed of view "in rad"
+	extern sfloat hfov; // half fov
+
+	extern const sfloat max_fov; 
+	extern const sfloat min_fov;
+
+	extern sfloat aspect_ratio;
+
+	extern ndc ndc_space;
+
 	// main frame buffer's
 	extern buffer<scolor>* back_buffer;
 	extern buffer<scolor>* front_buffer;
@@ -30,6 +40,13 @@ namespace graphics {
 
 	bool init();
 	void destroy();
+
+	void  orthographic_projection();
+	vec3d perspective_projection( vec3d& point ); // + ortho
+	void  projection();
+
+	// convert point from ndc to screen space
+	void  to_screen_space(vec3d& point);
 
 	// draw primitives
 	void rasterization();
