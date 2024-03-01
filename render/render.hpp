@@ -41,6 +41,8 @@ namespace graphics {
 	bool init();
 	void destroy();
 
+	void transfrom_to_world_space();
+
 	void  orthographic_projection();
 	vec3d perspective_projection( vec3d& point ); // + ortho
 	void  projection();

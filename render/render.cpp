@@ -8,39 +8,42 @@
 
 namespace graphics {
 
-const sfloat min_fov = math::to_radian(20);
-const sfloat max_fov = math::to_radian(160);
+	const sfloat min_fov = math::to_radian(20);
+	const sfloat max_fov = math::to_radian(160);
 
-sfloat fov = math::to_radian(90);
-sfloat hfov = 1 / std::tanf(fov/2);
+	sfloat fov = math::to_radian(90);
+	sfloat hfov = 1 / std::tanf(fov / 2);
 
-sfloat aspect_ratio = NULL;
-sfloat z_normalaize_factor = NULL;
+	sfloat aspect_ratio = 1.0f;
+	sfloat z_normalaize_factor = NULL;
 
-ndc ndc_space;
+	ndc ndc_space;
 
-buffer<scolor>* front_buffer = nullptr;
-buffer<scolor>* back_buffer  = nullptr;
+	buffer<scolor>* front_buffer = nullptr;
+	buffer<scolor>* back_buffer = nullptr;
 
-BITMAPINFO bitmap_info = { 0 };
-BITMAP     bitmap = { 0 };
-HBITMAP    hbitmap = NULL;
-HDC        bitmap_hdc = NULL;
+	BITMAPINFO bitmap_info = { 0 };
+	BITMAP     bitmap = { 0 };
+	HBITMAP    hbitmap = NULL;
+	HDC        bitmap_hdc = NULL;
 
-scolor clear_color = { 0,0,0,0 };
+	scolor clear_color = { 0,0,0,0 };
 
 // few triangles for testing 
-triangle3d trig1(20, 40, -125, 69, 98, -125, 88, 32, -125);
-triangle3d ptrig1;
+triangle3d trigs[6] = {
+	triangle3d(0, 0, 0,		0, 1, 0,	1, 0, 0),
+	triangle3d(0, 1, 0,		1, 1, 0,	1, 0, 0),
+
+	triangle3d(0, 0, 1,		0, 1, 1,	1, 0, 1),
+	triangle3d(0, 1, 1,		1, 1, 1,	1, 0, 1),
+
+	triangle3d(1, 0, 0,		1, 1, 0,	1, 1, 1),
+	triangle3d(1, 0, 0,		1, 0, 1,	1, 1, 1),
+
+};
+triangle3d ptrigs[6] = {};
 
 bool init() {
-
-	clear_color.a = 255;
-
-	// setup rendering stuff
-	aspect_ratio = window::height / window::width;
-
-	ndc_space = ndc{ 1,-1, -1,1, -1,1 };
 
 	// allocate back-buffer
 	back_buffer = new buffer<scolor>(
@@ -66,12 +69,19 @@ bool init() {
 		return false;
 	}
 
+	transfrom_to_world_space();
+
+	// setup rendering stuff
+	clear_color.a = 255;
+	aspect_ratio = ((sfloat)back_buffer->height / (sfloat)back_buffer->width);
+	ndc_space = ndc{ 1,-1, -1,1, -1,1 };
+
+	// setup bitmap stuff
 	GetClientRect(window::handle, &window::rect);
 	AdjustWindowRectEx(&window::rect, window::style, 0, 0);
 
 	ZeroMemory(&(bitmap), sizeof(BITMAP));
 
-	// setup bitmap
 	bitmap.bmWidth  = window::width;
 	bitmap.bmHeight = window::height;
 	bitmap.bmPlanes = 1;
@@ -111,20 +121,32 @@ void destroy() {
 
 }
 
+void transfrom_to_world_space() {
+	
+	for (uint32_t t = 0; t < 6; t += 1) {
+		for (uint32_t p = 0; p < 3; p += 1) {
+			trigs[t].points[p].x = (trigs[t].points[p].x * 100) + 700;
+			trigs[t].points[p].y = (trigs[t].points[p].y * 100) + 700;
+			trigs[t].points[p].z = (trigs[t].points[p].z*5) - 100;
+		}
+	}
+	
+}
+
 vec3d perspective_projection(vec3d& point) {
 
 	// perspective transformation
 	vec3d new_point{
-		(point.x * hfov * aspect_ratio) ,
-		(point.y * hfov),
-		point.z * (ndc_space.f + ndc_space.n) + -(ndc_space.f * ndc_space.n),
+		(point.x / point.z) * ndc_space.n ,//* hfov * aspect_ratio,
+		(point.y / point.z) * ndc_space.n ,//* hfov,
+		point.z * (ndc_space.f + ndc_space.n) - (ndc_space.f * ndc_space.n),
 		point.z
 	};
 
 	// orthographic projection
-	new_point.x = new_point.x * (2 / (ndc_space.r - ndc_space.l)) + -((ndc_space.r + ndc_space.l) / (ndc_space.r - ndc_space.l));
-	new_point.y = new_point.y * (2 / (ndc_space.t - ndc_space.b)) + -((ndc_space.t + ndc_space.b) / (ndc_space.t - ndc_space.b));
-	new_point.z = new_point.z * (2 / (ndc_space.f - ndc_space.n)) + -((ndc_space.f + ndc_space.n) / (ndc_space.f - ndc_space.n));
+	new_point.x = new_point.x * (2 / (ndc_space.r - ndc_space.l)) - ((ndc_space.r + ndc_space.l) / (ndc_space.r - ndc_space.l));
+	new_point.y = new_point.y * (2 / (ndc_space.t - ndc_space.b)) - ((ndc_space.t + ndc_space.b) / (ndc_space.t - ndc_space.b));
+	new_point.z = new_point.z * (2 / (ndc_space.f - ndc_space.n)) - ((ndc_space.f + ndc_space.n) / (ndc_space.f - ndc_space.n));
 
 	// perspective divide
 	if (new_point.w != 0) {
@@ -137,12 +159,31 @@ vec3d perspective_projection(vec3d& point) {
 	return new_point;
 }
 
-void projection() {
+void transform_thread() {
 
-	for (uint32_t p = 0; p < 3; p += 1) {
-		ptrig1.points[p] = perspective_projection(trig1.points[p]);
+	while (global::running) {
+		
+		for (uint32_t t = 0; t < 6; t += 1) {
+			for (uint32_t p = 0; p < 3; p += 1) {
+				trigs[t].points[p].x -= 3;
+				trigs[t].points[p].y -= 2;
+				trigs[t].points[p].z += 0.2;
+			}
+		}
+	
+		Sleep(100);
 	}
 
+}
+std::thread trans_thread(transform_thread);
+
+void projection() {
+
+	for (uint32_t t = 0; t < 6; t += 1) {
+		for (uint32_t p = 0; p < 3; p += 1) {
+			ptrigs[t].points[p] = perspective_projection(trigs[t].points[p]);
+		}
+	}
 }
 
 void to_screen_space(vec3d& point) {
@@ -180,10 +221,13 @@ void rasterization() {
 	back_buffer->fill(clear_color);
 
 	// draw to buffer
-	draw::draw_triangle(
-		ptrig1.points[0], ptrig1.points[1], ptrig1.points[2],
-		scolor{255,255,255,255}
-	);
+	for (uint32_t t = 0; t < 6; t += 1) {
+		draw::draw_triangle(
+			ptrigs[t].points[0], ptrigs[t].points[1], ptrigs[t].points[2],
+			scolor{255,255,255,255}
+		);
+	}
+
 
 	// update bitmap buffer address
 	SetBitmapBits(
@@ -217,8 +261,10 @@ bool render() {
 	
 	projection();
 
-	for (uint32_t p = 0; p < 3; p += 1) {
-		to_screen_space(ptrig1.points[p]);
+	for (uint32_t t = 0; t < 6; t += 1) {
+		for (uint32_t p = 0; p < 3; p += 1) {
+			to_screen_space(ptrigs[t].points[p]);
+		}
 	}
 
 	// draw objects

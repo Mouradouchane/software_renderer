@@ -175,6 +175,10 @@ LRESULT CALLBACK proc(
             return 0;
         } 
 
+        case WM_KEYDOWN: {
+
+        }
+
         case WM_PAINT: {
             return 0;
         }
