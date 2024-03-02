@@ -55,6 +55,10 @@ namespace math {
 	extern uint16_t max_slope;
 	extern const sfloat pi;
 
+	void x_rotate(vec3d const& origin, vec3d& point, sfloat rad_angle = 0);
+	void y_rotate(vec3d const& origin, vec3d& point, sfloat rad_angle = 0);
+	void z_rotate(vec3d const& origin, vec3d& point, sfloat rad_angle = 0);
+
 	/* 
 		class for random generation based on time function
 	*/

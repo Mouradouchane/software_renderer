@@ -30,18 +30,25 @@ namespace graphics {
 	scolor clear_color = { 0,0,0,0 };
 
 // few triangles for testing 
-triangle3d trigs[6] = {
-	triangle3d(0, 0, 0,		0, 1, 0,	1, 0, 0),
-	triangle3d(0, 1, 0,		1, 1, 0,	1, 0, 0),
-
-	triangle3d(0, 0, 1,		0, 1, 1,	1, 0, 1),
-	triangle3d(0, 1, 1,		1, 1, 1,	1, 0, 1),
-
-	triangle3d(1, 0, 0,		1, 1, 0,	1, 1, 1),
-	triangle3d(1, 0, 0,		1, 0, 1,	1, 1, 1),
-
+vec3d p1 = { 0, 0, 0 }, p2 = { 0, 1, 0 }, p3 = { 1, 0, 0 }, p4 = { 1, 1, 0 };
+vec3d p5 = { 0, 0, 1 }, p6 = { 0, 1, 1 }, p7 = { 1, 0, 1 }, p8 = { 1, 1, 1 };
+vec3d pivot = { 0.5, 0.5, 0.5, 1 };
+size_t trig_size = 12;
+triangle3d trigs[12] = {
+	triangle3d(p1,p2,p3),
+	triangle3d(p2,p4,p3),
+	triangle3d(p5,p6,p7),
+	triangle3d(p6,p7,p8),
+	triangle3d(p3,p7,p8),
+	triangle3d(p3,p4,p8),
+	triangle3d(p1,p5,p6),
+	triangle3d(p1,p2,p6),
+	triangle3d(p2,p6,p8),
+	triangle3d(p2,p7,p8),
+	triangle3d(p1,p7,p5),
+	triangle3d(p1,p7,p3),
 };
-triangle3d ptrigs[6] = {};
+triangle3d ptrigs[12] = {};
 
 bool init() {
 
@@ -123,22 +130,27 @@ void destroy() {
 
 void transfrom_to_world_space() {
 	
-	for (uint32_t t = 0; t < 6; t += 1) {
+	size_t x = 2 , y = 2 , z = 11 , size = 4;
+
+	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
-			trigs[t].points[p].x = (trigs[t].points[p].x * 100) + 700;
-			trigs[t].points[p].y = (trigs[t].points[p].y * 100) + 700;
-			trigs[t].points[p].z = (trigs[t].points[p].z*5) - 100;
+			trigs[t].points[p].x = (trigs[t].points[p].x * size) - x;
+			trigs[t].points[p].y = (trigs[t].points[p].y * size) - y;
+			trigs[t].points[p].z = (trigs[t].points[p].z * size) - z;
 		}
 	}
-	
+
+	pivot.x = pivot.x * size - x;
+	pivot.y = pivot.y * size - y;
+	pivot.z = pivot.z * size - z;
 }
 
 vec3d perspective_projection(vec3d& point) {
 
 	// perspective transformation
 	vec3d new_point{
-		(point.x / point.z) * ndc_space.n ,//* hfov * aspect_ratio,
-		(point.y / point.z) * ndc_space.n ,//* hfov,
+		(point.x / (point.z != 0 ? point.z : 1)) * ndc_space.n ,
+		(point.y / (point.z != 0 ? point.z : 1)) * ndc_space.n ,
 		point.z * (ndc_space.f + ndc_space.n) - (ndc_space.f * ndc_space.n),
 		point.z
 	};
@@ -163,11 +175,15 @@ void transform_thread() {
 
 	while (global::running) {
 		
-		for (uint32_t t = 0; t < 6; t += 1) {
+		for (uint32_t t = 0; t < trig_size; t += 1) {
 			for (uint32_t p = 0; p < 3; p += 1) {
-				trigs[t].points[p].x -= 3;
-				trigs[t].points[p].y -= 2;
+				/*
+				trigs[t].points[p].y -= 0;
 				trigs[t].points[p].z += 0.2;
+				math::y_rotate(pivot, trigs[t].points[p], 0.1);
+				math::z_rotate(pivot, trigs[t].points[p], 0.02);
+				*/
+				math::y_rotate(pivot, trigs[t].points[p], 0.5);
 			}
 		}
 	
@@ -179,7 +195,7 @@ std::thread trans_thread(transform_thread);
 
 void projection() {
 
-	for (uint32_t t = 0; t < 6; t += 1) {
+	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
 			ptrigs[t].points[p] = perspective_projection(trigs[t].points[p]);
 		}
@@ -221,7 +237,7 @@ void rasterization() {
 	back_buffer->fill(clear_color);
 
 	// draw to buffer
-	for (uint32_t t = 0; t < 6; t += 1) {
+	for (uint32_t t = 0; t < trig_size; t += 1) {
 		draw::draw_triangle(
 			ptrigs[t].points[0], ptrigs[t].points[1], ptrigs[t].points[2],
 			scolor{255,255,255,255}
@@ -261,7 +277,7 @@ bool render() {
 	
 	projection();
 
-	for (uint32_t t = 0; t < 6; t += 1) {
+	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
 			to_screen_space(ptrigs[t].points[p]);
 		}
