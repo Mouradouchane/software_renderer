@@ -183,7 +183,7 @@ void transform_thread() {
 				math::y_rotate(pivot, trigs[t].points[p], 0.1);
 				math::z_rotate(pivot, trigs[t].points[p], 0.02);
 				*/
-				math::y_rotate(pivot, trigs[t].points[p], 0.5);
+				math::x_rotate(pivot, trigs[t].points[p], 0.5);
 			}
 		}
 	
