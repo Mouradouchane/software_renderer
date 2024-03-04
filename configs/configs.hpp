@@ -13,6 +13,7 @@
 	#include <Windows.h>
 #endif
 
+#include "../macros/macros.hpp"
 #include "../types/types.hpp"
 
 // namespace for all global variables
@@ -38,6 +39,7 @@ namespace config{
 	extern uint16_t max_fps; // max frames per sec
 	extern bool draw_fps_info;
 
+	extern uint8_t projection_type;
 } 
 // end : namespace configs
 

@@ -40,6 +40,7 @@ namespace config {
 	std::string max_fps_str = std::to_string(max_fps);
 	
 	bool draw_fps_info = true;
+	uint8_t projection_type = PERSPECTIVE_PROJECTION;
 
 }
 // end : namespace configs

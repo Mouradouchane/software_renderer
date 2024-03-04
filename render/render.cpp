@@ -11,13 +11,21 @@ namespace graphics {
 	const sfloat min_fov = math::to_radian(20);
 	const sfloat max_fov = math::to_radian(160);
 
-	sfloat fov = math::to_radian(90);
+	sfloat fov_deg = 90; // degree
+	sfloat fov  = math::to_radian(fov_deg);
 	sfloat hfov = 1 / std::tanf(fov / 2);
+
+	sfloat half_screen_width  = NULL;
+	sfloat half_screen_height = NULL;
 
 	sfloat aspect_ratio = 1.0f;
 	sfloat z_normalaize_factor = NULL;
 
-	ndc ndc_space;
+	cube ndc = { 
+		 1,-1, // near , far
+		-1, 1, // left , right
+		 1,-1  // top  , buttom
+	};
 
 	buffer<scolor>* front_buffer = nullptr;
 	buffer<scolor>* back_buffer = nullptr;
@@ -33,8 +41,11 @@ namespace graphics {
 vec3d p1 = { 0, 0, 0 }, p2 = { 0, 1, 0 }, p3 = { 1, 0, 0 }, p4 = { 1, 1, 0 };
 vec3d p5 = { 0, 0, 1 }, p6 = { 0, 1, 1 }, p7 = { 1, 0, 1 }, p8 = { 1, 1, 1 };
 vec3d pivot = { 0.5, 0.5, 0.5, 1 };
+
 size_t trig_size = 12;
 triangle3d trigs[12] = {
+	/*
+	*/
 	triangle3d(p1,p2,p3),
 	triangle3d(p2,p4,p3),
 	triangle3d(p5,p6,p7),
@@ -76,12 +87,16 @@ bool init() {
 		return false;
 	}
 
+	// setup rendering stuff
+	config::projection_type = PERSPECTIVE_PROJECTION;
 	transfrom_to_world_space();
 
-	// setup rendering stuff
 	clear_color.a = 255;
+
 	aspect_ratio = ((sfloat)back_buffer->height / (sfloat)back_buffer->width);
-	ndc_space = ndc{ 1,-1, -1,1, -1,1 };
+
+	half_screen_width  = (sfloat)back_buffer->width / 2;
+	half_screen_height = (sfloat)back_buffer->height / 2;
 
 	// setup bitmap stuff
 	GetClientRect(window::handle, &window::rect);
@@ -130,36 +145,91 @@ void destroy() {
 
 void transfrom_to_world_space() {
 	
-	size_t x = 2 , y = 2 , z = 11 , size = 4;
+	int32_t x = -2 , y = -2 , z = -10 , size = 4;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
-			trigs[t].points[p].x = (trigs[t].points[p].x * size) - x;
-			trigs[t].points[p].y = (trigs[t].points[p].y * size) - y;
-			trigs[t].points[p].z = (trigs[t].points[p].z * size) - z;
+			trigs[t].points[p].x = (trigs[t].points[p].x * size) + x;
+			trigs[t].points[p].y = (trigs[t].points[p].y * size) + y;
+			trigs[t].points[p].z = (trigs[t].points[p].z * size) + z;
 		}
 	}
 
-	pivot.x = pivot.x * size - x;
-	pivot.y = pivot.y * size - y;
-	pivot.z = pivot.z * size - z;
+	pivot.x = (pivot.x * size) + x;
+	pivot.y = (pivot.y * size) + y;
+	pivot.z = (pivot.z * size) + z;
 }
+
+void transform_thread() {
+
+	while (global::running) {
+
+		for (uint32_t t = 0; t < trig_size; t += 1) {
+			for (uint32_t p = 0; p < 3; p += 1) {
+		/*
+				math::y_rotate(pivot, trigs[t].points[p], 0.1);
+				math::x_rotate(pivot, trigs[t].points[p], 0.5);
+				trigs[t].points[p].z += 1;
+				trigs[t].points[p].y += 0.2;
+				math::y_rotate(pivot, trigs[t].points[p], 0.2);
+				trigs[t].points[p].y -= 0.2;
+		*/
+				trigs[t].points[p].z -= 0.5;
+			}
+		}
+
+		Sleep(500);
+	}
+
+}
+std::thread trans_thread(transform_thread);
 
 vec3d perspective_projection(vec3d& point) {
 
+	vec3d new_point = {};
+	
 	// perspective transformation
-	vec3d new_point{
-		(point.x / (point.z != 0 ? point.z : 1)) * ndc_space.n ,
-		(point.y / (point.z != 0 ? point.z : 1)) * ndc_space.n ,
-		point.z * (ndc_space.f + ndc_space.n) - (ndc_space.f * ndc_space.n),
-		point.z
+	if (point.z != 0) {
+		new_point.x = (point.x / -point.z) * ndc.n * aspect_ratio * hfov;
+		new_point.y = (point.y / -point.z) * ndc.n * hfov;
+	}
+	else {
+		new_point.x = -point.x * ndc.n * aspect_ratio * hfov;
+		new_point.y = -point.y * ndc.n * hfov;
+	}
+
+	new_point.w = point.z;
+	new_point.z = point.z * (ndc.f + ndc.n) - (ndc.f * ndc.n);
+	//new_point.z = point.z * (ndc.f / (ndc.f - ndc.n)) + -((ndc.f / (ndc.f - ndc.n)) * ndc.n);
+
+	// orthographic projection
+	new_point.x = new_point.x * (2 / (ndc.r - ndc.l)) - ((ndc.r + ndc.l) / (ndc.r - ndc.l));
+	new_point.y = new_point.y * (2 / (ndc.t - ndc.b)) - ((ndc.t + ndc.b) / (ndc.t - ndc.b));
+	new_point.z = new_point.z * (2 / (ndc.f - ndc.n)) - ((ndc.f + ndc.n) / (ndc.f - ndc.n));
+
+	// perspective divide
+	if (new_point.z != 0) {
+
+		new_point.x /= new_point.z;
+		new_point.y /= new_point.z;
+	}
+
+	return new_point;
+}
+
+vec3d orthographic_projection(vec3d& point){
+
+	vec3d new_point = { 
+		point.x * aspect_ratio * hfov , 
+		point.y * hfov , 
+		point.z , point.z
 	};
 
 	// orthographic projection
-	new_point.x = new_point.x * (2 / (ndc_space.r - ndc_space.l)) - ((ndc_space.r + ndc_space.l) / (ndc_space.r - ndc_space.l));
-	new_point.y = new_point.y * (2 / (ndc_space.t - ndc_space.b)) - ((ndc_space.t + ndc_space.b) / (ndc_space.t - ndc_space.b));
-	new_point.z = new_point.z * (2 / (ndc_space.f - ndc_space.n)) - ((ndc_space.f + ndc_space.n) / (ndc_space.f - ndc_space.n));
-
+	new_point.x = new_point.x * (2 / (ndc.r - ndc.l)) - ((ndc.r + ndc.l) / (ndc.r - ndc.l));
+	new_point.y = new_point.y * (2 / (ndc.t - ndc.b)) - ((ndc.t + ndc.b) / (ndc.t - ndc.b));
+	new_point.z = new_point.z * (2 / (ndc.f - ndc.n)) - ((ndc.f + ndc.n) / (ndc.f - ndc.n));
+	
 	// perspective divide
 	if (new_point.w != 0) {
 
@@ -171,40 +241,37 @@ vec3d perspective_projection(vec3d& point) {
 	return new_point;
 }
 
-void transform_thread() {
-
-	while (global::running) {
-		
-		for (uint32_t t = 0; t < trig_size; t += 1) {
-			for (uint32_t p = 0; p < 3; p += 1) {
-				/*
-				trigs[t].points[p].y -= 0;
-				trigs[t].points[p].z += 0.2;
-				math::y_rotate(pivot, trigs[t].points[p], 0.1);
-				math::z_rotate(pivot, trigs[t].points[p], 0.02);
-				*/
-				math::x_rotate(pivot, trigs[t].points[p], 0.5);
-			}
-		}
-	
-		Sleep(100);
-	}
-
-}
-std::thread trans_thread(transform_thread);
-
 void projection() {
 
-	for (uint32_t t = 0; t < trig_size; t += 1) {
-		for (uint32_t p = 0; p < 3; p += 1) {
-			ptrigs[t].points[p] = perspective_projection(trigs[t].points[p]);
+	if (config::projection_type == PERSPECTIVE_PROJECTION) {
+
+		for (uint32_t t = 0; t < trig_size; t += 1) {
+			for (uint32_t p = 0; p < 3; p += 1) {
+				ptrigs[t].points[p] = perspective_projection(trigs[t].points[p]);
+			}
 		}
+
 	}
+	else { // orthographic projection
+
+		for (uint32_t t = 0; t < trig_size; t += 1) {
+			for (uint32_t p = 0; p < 3; p += 1) {
+				ptrigs[t].points[p] = orthographic_projection(trigs[t].points[p]);
+			}
+		}
+
+	}
+
 }
 
 void to_screen_space(vec3d& point) {
-	point.x = point.x * back_buffer->width  + (back_buffer->width/2);
-	point.y = point.y * back_buffer->height + (back_buffer->height/2);
+	/*
+	point.x = point.x * back_buffer->width  + half_screen_width;
+	point.y = point.y * back_buffer->height + half_screen_height;
+	*/
+	
+	point.x = (point.x + 1) * half_screen_width;
+	point.y = (point.y + 1) * half_screen_height;
 }
 
 void draw_fps_info() {
@@ -244,7 +311,6 @@ void rasterization() {
 		);
 	}
 
-
 	// update bitmap buffer address
 	SetBitmapBits(
 		hbitmap,
@@ -275,6 +341,14 @@ void rasterization() {
 
 bool render() {
 	
+	/*
+	for (uint32_t t = 0; t < trig_size; t += 1) {
+		for (uint32_t p = 0; p < 3; p += 1) {
+			math::z_rotate(pivot, trigs[t].points[p], 0.1);
+		}
+	}
+	*/
+
 	projection();
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {

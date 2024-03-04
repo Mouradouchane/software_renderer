@@ -8,6 +8,7 @@
 #ifndef RENDER_HPP
 #define RENDER_HPP
 
+#include "../macros/macros.hpp"
 #include "../types/types.hpp"
 #include "../math/math.hpp"
 #include "../preformance/preformance.hpp"
@@ -17,6 +18,7 @@
 
 namespace graphics {
 
+	extern sfloat fov_deg; // filed of view "in deg" 
 	extern sfloat fov; // filed of view "in rad"
 	extern sfloat hfov; // half fov
 
@@ -25,7 +27,7 @@ namespace graphics {
 
 	extern sfloat aspect_ratio;
 
-	extern ndc ndc_space;
+	extern cube ndc;
 
 	// main frame buffer's
 	extern buffer<scolor>* back_buffer;
@@ -43,12 +45,12 @@ namespace graphics {
 
 	void transfrom_to_world_space();
 
-	void  orthographic_projection();
-	vec3d perspective_projection( vec3d& point ); // + ortho
+	vec3d orthographic_projection(vec3d& point);
+	vec3d perspective_projection( vec3d& point); // + ortho
 	void  projection();
 
 	// convert point from ndc to screen space
-	void  to_screen_space(vec3d& point);
+	void to_screen_space(vec3d& point);
 
 	// draw primitives
 	void rasterization();

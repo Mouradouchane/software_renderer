@@ -4,13 +4,13 @@
 #ifndef TYPES_CPP
 #define TYPES_CPP
 
-ndc create_ndc(
-	int16_t near_ , int16_t far_,
-	int16_t left  , int16_t right,
-	int16_t top   , int16_t buttom 
+cube create_ndc(
+	sfloat near_ , sfloat far_,
+	sfloat left  , sfloat right,
+	sfloat top   , sfloat buttom 
 ) {
 
-	return ndc{
+	return cube{
 		near_, far_,
 		left, right,
 		top, buttom,

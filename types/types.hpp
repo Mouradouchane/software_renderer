@@ -144,19 +144,19 @@ typedef struct vec3d {
 	sfloat w = 1;
 }; 
 
-typedef struct ndc {
-	int16_t n =  1;
-	int16_t f = -1;
-	int16_t l = -1;
-	int16_t r =  1;
-	int16_t t = -1;
-	int16_t b =  1;
+typedef struct cube {
+	sfloat n =  1;
+	sfloat f = -1;
+	sfloat l = -1;
+	sfloat r =  1;
+	sfloat t =  1;
+	sfloat b = -1;
 };
 
 vec2d create_vec2d(sfloat x=0, sfloat y=0);
 vec3d create_vec3d(sfloat x= 0, sfloat y= 0, sfloat z= 1, sfloat w= 1);
 
-ndc create_ndc(
+cube create_ndc(
 	int16_t near =  1, int16_t far = -1,
 	int16_t left = -1, int16_t right = 1,
 	int16_t top  = -1, int16_t buttom = 1

@@ -170,8 +170,8 @@ void y_rotate(vec3d const& origin, vec3d& point ,sfloat rad_angle) {
     sfloat cos = std::cosf(rad_angle);
     sfloat sin = std::sinf(rad_angle);
 
-    point.x = (point.x *  cos) + (point.z * sin);
-    point.z = -(point.x *  sin) + (point.z * cos);
+    point.x = (point.x *  cos) + -(point.z * sin);
+    point.z = (point.x *  sin) + (point.z * cos);
 
     // move back
     point.x += origin.x;
@@ -180,8 +180,8 @@ void y_rotate(vec3d const& origin, vec3d& point ,sfloat rad_angle) {
 
 }
 
-void z_rotate(vec3d const& origin, vec3d& point ,sfloat rad_angle) {
-    
+void z_rotate(vec3d const& origin, vec3d& point, sfloat rad_angle) {
+
     // move to origin
     point.x -= origin.x;
     point.y -= origin.y;
@@ -191,8 +191,8 @@ void z_rotate(vec3d const& origin, vec3d& point ,sfloat rad_angle) {
     sfloat cos = std::cosf(rad_angle);
     sfloat sin = std::sinf(rad_angle);
 
-    point.x = (point.x * cos) + (point.y * -sin);
-    point.y = (point.x * sin) + (point.y *  cos);
+    point.x = (point.x *  cos) + (point.y * -sin);
+    point.y = (point.x *  sin) + (point.y *  cos);
 
     // move back
     point.x += origin.x;
@@ -200,6 +200,7 @@ void z_rotate(vec3d const& origin, vec3d& point ,sfloat rad_angle) {
     point.z += origin.z;
 
 }
+
 /*
     math function's    
 */
