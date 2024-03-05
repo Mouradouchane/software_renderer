@@ -149,8 +149,11 @@ void x_rotate(vec3d const& origin, vec3d& point , sfloat rad_angle) {
     sfloat cos = std::cosf(rad_angle);
     sfloat sin = std::sinf(rad_angle);
 
-    point.y = (point.y * cos) + -(point.z *  sin);
-    point.z = (point.y * sin) +  (point.z *  cos);
+    // to avoid classic problem
+    sfloat py = point.y;
+
+    point.y = point.y * cos - point.z * sin;
+    point.z = py * sin + point.z * cos;
 
     // move back
     point.x += origin.x;
@@ -170,8 +173,11 @@ void y_rotate(vec3d const& origin, vec3d& point ,sfloat rad_angle) {
     sfloat cos = std::cosf(rad_angle);
     sfloat sin = std::sinf(rad_angle);
 
-    point.x = (point.x *  cos) + -(point.z * sin);
-    point.z = (point.x *  sin) + (point.z * cos);
+    // to avoid classic problem we have to use old x while calcute new y
+    sfloat px = point.x;
+
+    point.x = point.x * cos - point.z * sin;
+    point.z = px * sin + point.z * cos;
 
     // move back
     point.x += origin.x;
@@ -188,11 +194,14 @@ void z_rotate(vec3d const& origin, vec3d& point, sfloat rad_angle) {
     point.z -= origin.z;
 
     // rotate process
-    sfloat cos = std::cosf(rad_angle);
-    sfloat sin = std::sinf(rad_angle);
+    sfloat cos = cosf(rad_angle);
+    sfloat sin = sinf(rad_angle);
+    
+    // to avoid classic problem we have to use old x while calcute new y
+    sfloat px = point.x; 
 
-    point.x = (point.x *  cos) + (point.y * -sin);
-    point.y = (point.x *  sin) + (point.y *  cos);
+    point.x = point.x * cos - point.y * sin;
+    point.y = px * sin + point.y * cos;
 
     // move back
     point.x += origin.x;

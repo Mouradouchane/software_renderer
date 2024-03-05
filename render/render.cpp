@@ -40,7 +40,7 @@ namespace graphics {
 // few triangles for testing 
 vec3d p1 = { 0, 0, 0 }, p2 = { 0, 1, 0 }, p3 = { 1, 0, 0 }, p4 = { 1, 1, 0 };
 vec3d p5 = { 0, 0, 1 }, p6 = { 0, 1, 1 }, p7 = { 1, 0, 1 }, p8 = { 1, 1, 1 };
-vec3d pivot = { 0.5, 0.5, 0.5, 1 };
+vec3d pivot = { 0.5, 0.5, 0.5, 0 };
 
 size_t trig_size = 12;
 triangle3d trigs[12] = {
@@ -88,7 +88,7 @@ bool init() {
 	}
 
 	// setup rendering stuff
-	config::projection_type = PERSPECTIVE_PROJECTION;
+	// config::projection_type = PERSPECTIVE_PROJECTION;
 	transfrom_to_world_space();
 
 	clear_color.a = 255;
@@ -145,7 +145,7 @@ void destroy() {
 
 void transfrom_to_world_space() {
 	
-	int32_t x = -2 , y = -2 , z = -10 , size = 4;
+	int32_t x = -1 , y = -1 , z = -4 , size = 2;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -161,26 +161,20 @@ void transfrom_to_world_space() {
 }
 
 void transform_thread() {
+	/*
+	Sleep(500);
 
 	while (global::running) {
 
 		for (uint32_t t = 0; t < trig_size; t += 1) {
 			for (uint32_t p = 0; p < 3; p += 1) {
-		/*
-				math::y_rotate(pivot, trigs[t].points[p], 0.1);
-				math::x_rotate(pivot, trigs[t].points[p], 0.5);
-				trigs[t].points[p].z += 1;
-				trigs[t].points[p].y += 0.2;
-				math::y_rotate(pivot, trigs[t].points[p], 0.2);
-				trigs[t].points[p].y -= 0.2;
-		*/
-				trigs[t].points[p].z -= 0.5;
+				math::z_rotate(pivot, trigs[t].points[p], 0.1);
 			}
 		}
 
-		Sleep(500);
+		Sleep(100);
 	}
-
+	*/
 }
 std::thread trans_thread(transform_thread);
 
@@ -231,11 +225,10 @@ vec3d orthographic_projection(vec3d& point){
 	new_point.z = new_point.z * (2 / (ndc.f - ndc.n)) - ((ndc.f + ndc.n) / (ndc.f - ndc.n));
 	
 	// perspective divide
-	if (new_point.w != 0) {
+	if (new_point.z != 0) {
 
-		new_point.x /= new_point.w;
-		new_point.y /= new_point.w;
-		new_point.z /= new_point.w;
+		new_point.x /= new_point.z;
+		new_point.y /= new_point.z;
 	}
 
 	return new_point;
@@ -339,15 +332,18 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
+
 bool render() {
 	
-	/*
+	// transformation
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
-			math::z_rotate(pivot, trigs[t].points[p], 0.1);
+			math::x_rotate(pivot, trigs[t].points[p], 0.05);
+			math::z_rotate(pivot, trigs[t].points[p], 0.05);
+			math::y_rotate(pivot, trigs[t].points[p], 0.1);
 		}
 	}
-	*/
+	
 
 	projection();
 
