@@ -64,6 +64,28 @@ rgba32 create_rgba32(
 	return { red , green , blue , alpha };
 }
 
+bgr8 create_bgr8(
+	uint8_t  red, uint8_t green, uint8_t blue
+) {
+	return bgr8 {
+		blue,
+		green,
+		red,
+	};
+}
+
+bgra8 create_bgra8(
+	uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha
+) {
+	return bgra8 {
+		blue,
+		green,
+		red,
+		alpha
+	};
+}
+
+
 /*
 	=================================================
 	====================== lines ====================
@@ -186,5 +208,49 @@ triangle3d::triangle3d(
 	this->points[2] = point_3;
 
 }
+
+/*
+	================== matrix ================== 
+*/
+
+matrix::matrix(uint16_t rows_len, uint16_t columns_len)
+	: w{rows_len} , h{columns_len}
+{
+	this->size = rows_len * columns_len;
+	this->memory = new sfloat[this->size]; 
+
+	// fill matrix with zeros
+	memset(this->memory, 0, this->size * sizeof(sfloat));
+}
+
+matrix::~matrix() {
+	
+	if (this->memory != nullptr) {
+		delete[] this->memory;
+		this->memory = nullptr;
+	}
+
+}
+
+bool matrix::set(uint16_t row, uint16_t column, sfloat value) {
+
+	if (
+		this->memory == nullptr || row >= this->w || column >= this->h
+		) {
+		return false;
+	}
+
+	this->memory[this->w * column + row] = value;
+
+	return true;
+}
+
+sfloat matrix::get(uint16_t row, uint16_t column){
+
+	if (this->memory == nullptr) return NULL;
+
+	return this->memory[ this->w * column + row ];
+}
+
 
 #endif

@@ -11,8 +11,24 @@
 */
 namespace draw {
 
-	void line(vec2d& p1, vec2d& p2, scolor& color);
-	void line(vec3d& p1, vec3d& p2, scolor& color);
+	void sort_by_y(
+		vec2d& p1, vec2d& p2, vec2d& p3, 
+		bool bysmaller = true
+	);
+
+	scolor blend(
+		scolor& back_color, scolor& front_color
+	);
+
+	void set_pixel(
+		uint32_t x, uint32_t y, scolor& color
+	);
+
+	bool top_left_rule(vec2d& a, vec2d& b);
+	bool top_left_rule(vec3d& a, vec3d& b);
+
+	void line_2d(vec2d& p1, vec2d& p2, scolor& color);
+	void line_3d(vec3d& p1, vec3d& p2, scolor& color);
 
 	void draw_horizontal_line(
 		uint32_t x_start , uint32_t x_end ,
@@ -36,35 +52,27 @@ namespace draw {
 
 	void point(
 		uint32_t x, uint32_t y,
-		uint16_t size , scolor& color
+		uint16_t radius , scolor& color
 	);
 
-	void draw_triangle_2d(
-		vec2d p1, vec2d p2, vec2d p3,
-		scolor& color
-	);
-
-	void draw_triangle(
+	// draw triangle lines only
+	void draw_2d_triangle(
 		vec2d& p1, vec2d& p2, vec2d& p3,
 		scolor& color
 	);
-	void draw_triangle(
+
+	void fill_2d_triangle(
+		vec2d& p1, vec2d& p2, vec2d& p3,
+		scolor& color
+	);
+
+	void draw_3d_triangle(
 		vec3d& p1, vec3d& p2, vec3d& p3,
 		scolor& color
 	);
 
-	void fill_triangle_2d(
-		vec2d p1, vec2d p2, vec2d p3,
-		scolor& color
-	);
-
-	void fill_triangle_3d(
-		vec3d p1, vec3d p2, vec3d p3,
-		scolor& color
-	);
-
-	void fill_triangle(
-		vec2d& p1, vec2d& p2, vec2d& p3,
+	void fill_3d_triangle(
+		vec3d& p1, vec3d& p2, vec3d& p3,
 		scolor& color
 	);
 
@@ -73,28 +81,10 @@ namespace draw {
 		scolor& color
 	);
 
-	// blend tow colors 
-	scolor blend(
-		scolor& back_color,
-		scolor& front_color
-	);
-
-	// TODO : move this to it's right place
-	void sort_by_y(
-		vec2d& p1, vec2d& p2, vec2d& p3, 
-		bool bysmaller = true
-	);
-	void sort_by_y(
-		vec3d& p1, vec3d& p2, vec3d& p3, 
-		bool bysmaller = true
-	);
-
-	bool top_left_rule(vec2d& a , vec2d& b);
-
 	/*
 		TODO : implement curves
-		void curve(curve2d& curve);
-		void curve(curve3d& curve);
+		void draw_2d_curve(vec2d* vertices, scolor& color);
+		void draw_3d_curve(vec3d* vertices, scolor& color);
 	*/
 
 }

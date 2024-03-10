@@ -53,6 +53,26 @@ typedef long double  float96 , *ptr_float96;
 	#define sfloat float64
 #endif
 
+typedef class matrix {
+
+public:
+	sfloat* memory = nullptr; // matrix memory as 1d
+	uint16_t w = 0;
+	uint16_t h = 0;
+	uint32_t size = 0;
+
+	// constructor's
+	matrix(uint16_t rows_len = 1, uint16_t columns_len = 1);
+
+	// destructor
+	~matrix();
+
+	// methods & operators
+	bool set(uint16_t row, uint16_t column, sfloat value);
+	sfloat get(uint16_t row , uint16_t column);
+
+};
+
 /*
 	==========================================================
 	======================== colors ==========================
@@ -122,9 +142,8 @@ rgba8  create_rgba8 (uint8_t  red, uint8_t  green, uint8_t  blue, uint8_t  alpha
 rgba16 create_rgba16(uint16_t red, uint16_t green, uint16_t blue, uint16_t alpha = UINT16_MAX);
 rgba32 create_rgba32(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha = UINT32_MAX);
 
-// TODO : support more BGRA stuff !!!
-bgr8   create_bgr8();
-bgra8  create_bgra8();
+bgr8   create_bgr8(uint8_t  red, uint8_t green, uint8_t blue);
+bgra8  create_bgra8(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = UINT8_MAX);
 
 /*
 	===================================================
@@ -144,6 +163,7 @@ typedef struct vec3d {
 	sfloat w = 1;
 }; 
 
+// just for NDC 
 typedef struct cube {
 	sfloat n =  1;
 	sfloat f = -1;
@@ -154,12 +174,12 @@ typedef struct cube {
 };
 
 vec2d create_vec2d(sfloat x=0, sfloat y=0);
-vec3d create_vec3d(sfloat x= 0, sfloat y= 0, sfloat z= 1, sfloat w= 1);
+vec3d create_vec3d(sfloat x=0, sfloat y=0, sfloat z=1, sfloat w=1);
 
 cube create_ndc(
-	int16_t near =  1, int16_t far = -1,
-	int16_t left = -1, int16_t right = 1,
-	int16_t top  = -1, int16_t buttom = 1
+	sfloat near_, sfloat far_,
+	sfloat left, sfloat right,
+	sfloat top, sfloat buttom
 );
 
 /*
@@ -192,7 +212,7 @@ public :
 		this->y = y;
 
 		this->height = height;
-		this->width = width;
+		this->width  = width;
 
 		this->size = width * height;
 
@@ -219,7 +239,7 @@ public :
 	}
 
 	void fill(type& value) {
-
+		
 		uint32_t Y = 0;
 		for (uint16_t y = 0; y < this->height; y += 1) {
 			Y = this->width * y;
@@ -227,11 +247,12 @@ public :
 				this->memory[Y + x] = value;
 			}
 		}
-
+		// memset(this->memory, value, this->size * sizeof(type));
 	}
 
 };
 
+// 2d sample
 template<typename type> struct sample {
 	sfloat x = 0;
 	sfloat y = 0;
@@ -283,7 +304,6 @@ public:
 
 };
 // end : class line3d
-
 
 /*
 	===================================================

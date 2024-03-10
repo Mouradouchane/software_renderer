@@ -8,6 +8,24 @@
 
 namespace draw {
 
+void sort_by_y(
+	vec2d& p1, vec2d& p2, vec2d& p3, bool bysmaller
+) {
+
+	if (bysmaller) {
+		if (p1.y > p2.y || ((p1.y == p2.y) && p1.x > p2.x)) std::swap(p1, p2);
+		if (p1.y > p3.y || ((p1.y == p3.y) && p1.x > p3.x)) std::swap(p1, p3);
+		if (p2.y > p3.y || ((p2.y == p3.y) && p2.x > p3.x)) std::swap(p2, p3);
+	}
+	else {
+		if (p1.y < p2.y || ((p1.y == p2.y) && p1.x < p2.x)) std::swap(p1, p2);
+		if (p1.y < p3.y || ((p1.y == p3.y) && p1.x < p3.x)) std::swap(p1, p3);
+		if (p2.y < p3.y || ((p2.y == p3.y) && p2.x < p3.x)) std::swap(p2, p3);
+	}
+
+}
+
+
 scolor blend(
 	scolor& back_color,
 	scolor& front_color
@@ -135,10 +153,7 @@ void draw_vertical_line(
 
 }
 
-void line(
-	vec2d& p1, vec2d& p2,
-	scolor& color
-) {
+void line_2d( vec2d& p1, vec2d& p2, scolor& color ) {
 	// if invisible 
 	if (color.a == 0) return;
 
@@ -166,60 +181,33 @@ void line(
 
 }
 
+void line_3d(vec3d& p1, vec3d& p2, scolor& color) {
+	
+}
+
 bool top_left_rule(vec2d& a, vec2d& b) {
 	return ((a.x < b.x) && (a.y == b.y)) || (a.y > b.y);
 }
 
-void draw_triangle_2d(
+bool top_left_rule(vec3d& a, vec3d& b) {
+	return ((a.x < b.x) && (a.y == b.y)) || (a.y > b.y);
+}
+
+void draw_2d_triangle(
 	vec2d p1, vec2d p2, vec2d p3,
 	scolor& color
 ) {
 
 	if (color.a == 0) return;
 
-	line(p1, p2, color);
-	line(p2, p3, color);
-	line(p1, p3, color);
+	line_2d(p1, p2, color);
+	line_2d(p2, p3, color);
+	line_2d(p1, p3, color);
 
 }
 
-void draw_triangle_3d(
-	vec3d p1, vec3d p2, vec3d p3,
-	scolor& color
-) {
-
-	if (color.a == 0) return;
-
-	line(vec2d{ p1.x ,p1.y }, vec2d{ p2.x ,p2.y }, color);
-	line(vec2d{ p2.x ,p2.y }, vec2d{ p3.x ,p3.y }, color);
-	line(vec2d{ p1.x ,p1.y }, vec2d{ p3.x ,p3.y }, color);
-
-}
-
-void draw_triangle(
-	vec3d& p1, vec3d& p2, vec3d& p3, scolor& color
-) {
-
-	draw_triangle_3d(p1, p2, p3, color);
-}
-
-void draw_triangle(
+void fill_2d_triangle(
 	vec2d& p1, vec2d& p2, vec2d& p3, scolor& color
-) {
-
-	draw_triangle_2d(p1, p2, p3, color);
-}
-
-void sort_by_y(
-	vec2d& p1, vec2d& p2, vec2d& p3, bool bysmaller 
-) {
-	if (p1.y > p2.y || ((p1.y == p2.y) && p1.x > p2.x) ) std::swap(p1, p2);
-	if (p1.y > p3.y || ((p1.y == p3.y) && p1.x > p3.x) ) std::swap(p1, p3);
-	if (p2.y > p3.y || ((p2.y == p3.y) && p2.x > p3.x) ) std::swap(p2, p3);
-}
-
-void fill_triangle_2d(
-	vec2d p1, vec2d p2, vec2d p3, scolor& color
 ) {
 
 	// sort triangle point by y for fill in orderer
@@ -296,12 +284,24 @@ void fill_triangle_2d(
 	
 }
 
-void fill_triangle(
-	vec2d& p1, vec2d& p2, vec2d& p3,
+void draw_3d_triangle(
+	vec3d& p1, vec3d& p2, vec3d& p3,
 	scolor& color
 ) {
 
-	fill_triangle_2d(p1, p2, p3, color);
+	if (color.a == 0) return;
+
+	line_3d(p1, p2, color);
+	line_3d(p1, p3, color);
+	line_3d(p2, p3, color);
+
+}
+
+void fill_3d_triangle(
+	vec3d& p1, vec3d& p2, vec3d& p3,
+	scolor& color
+) {
+
 }
 
 }

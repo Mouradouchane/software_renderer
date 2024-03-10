@@ -32,6 +32,7 @@ namespace graphics {
 	// main frame buffer's
 	extern buffer<scolor>* back_buffer;
 	extern buffer<scolor>* front_buffer;
+	extern buffer<sfloat>* depth_buffer; // z-buffer
 	extern scolor clear_color;
 
 	// bitmap & hdc for gdi

@@ -19,7 +19,6 @@ namespace graphics {
 	sfloat half_screen_height = NULL;
 
 	sfloat aspect_ratio = 1.0f;
-	sfloat z_normalaize_factor = NULL;
 
 	cube ndc = { 
 		 1,-1, // near , far
@@ -27,8 +26,28 @@ namespace graphics {
 		 1,-1  // top  , buttom
 	};
 
+	// ===== precomputer values ============
+	sfloat ortho_dx = NULL;
+	sfloat ortho_dy = NULL;
+	sfloat ortho_dz = NULL;
+
+	sfloat ortho_dxw = NULL;
+	sfloat ortho_dyw = NULL;
+	sfloat ortho_dzw = NULL;
+
+	sfloat ndc_f_plus_n = NULL;
+	sfloat ndc_f_mul_n  = NULL;
+
+	sfloat perpsective_x_factor = NULL;
+	sfloat perspective_y_factor = NULL;
+	// =====================================
+
+	// buffer's
 	buffer<scolor>* front_buffer = nullptr;
-	buffer<scolor>* back_buffer = nullptr;
+	buffer<scolor>* back_buffer  = nullptr;
+
+	sfloat max_depth_value = -(std::numeric_limits<float>::infinity());
+	buffer<sfloat>* depth_buffer = nullptr; // z-buffer
 
 	BITMAPINFO bitmap_info = { 0 };
 	BITMAP     bitmap = { 0 };
@@ -87,14 +106,40 @@ bool init() {
 		return false;
 	}
 
-	// setup rendering stuff
-	// config::projection_type = PERSPECTIVE_PROJECTION;
-	transfrom_to_world_space();
+	// allocate depth-buffer
+	depth_buffer = new buffer<sfloat>(
+		0,0, window::width, window::height 
+	);
 
-	clear_color.a = 255;
+	if (depth_buffer == nullptr) {
+		exceptions::show_error(
+			global::error_title, "failed to allocate memory for 'depth buffer' !"
+		);
+		return false;
+	}
+
+	// setup rendering stuff
 
 	aspect_ratio = ((sfloat)back_buffer->height / (sfloat)back_buffer->width);
 
+	ortho_dx = (2 / (ndc.r - ndc.l));
+	ortho_dy = (2 / (ndc.t - ndc.b));
+	ortho_dz = (2 / (ndc.f - ndc.n));
+
+	ortho_dxw = -((ndc.r + ndc.l) / (ndc.r - ndc.l));
+	ortho_dyw = -((ndc.t + ndc.b) / (ndc.t - ndc.b));
+	ortho_dzw = -((ndc.f + ndc.n) / (ndc.f - ndc.n));
+
+	ndc_f_plus_n = (ndc.f + ndc.n);
+	ndc_f_mul_n = (ndc.f * ndc.n);
+	
+	perpsective_x_factor = ndc.n * aspect_ratio * hfov;
+	perspective_y_factor = ndc.n * hfov;
+
+	// config::projection_type = PERSPECTIVE_PROJECTION;
+	transfrom_to_world_space();
+	clear_color.a = 255;
+	
 	half_screen_width  = (sfloat)back_buffer->width / 2;
 	half_screen_height = (sfloat)back_buffer->height / 2;
 
@@ -181,25 +226,25 @@ std::thread trans_thread(transform_thread);
 vec3d perspective_projection(vec3d& point) {
 
 	vec3d new_point = {};
-	
+
 	// perspective transformation
 	if (point.z != 0) {
-		new_point.x = (point.x / -point.z) * ndc.n * aspect_ratio * hfov;
-		new_point.y = (point.y / -point.z) * ndc.n * hfov;
+		new_point.x = (point.x / -point.z) * perpsective_x_factor;
+		new_point.y = (point.y / -point.z) * perspective_y_factor;
 	}
 	else {
-		new_point.x = -point.x * ndc.n * aspect_ratio * hfov;
-		new_point.y = -point.y * ndc.n * hfov;
+		new_point.x = -point.x * perpsective_x_factor;
+		new_point.y = -point.y * perspective_y_factor;
 	}
 
 	new_point.w = point.z;
-	new_point.z = point.z * (ndc.f + ndc.n) - (ndc.f * ndc.n);
+	new_point.z = point.z * ndc_f_plus_n - ndc_f_mul_n;
 	//new_point.z = point.z * (ndc.f / (ndc.f - ndc.n)) + -((ndc.f / (ndc.f - ndc.n)) * ndc.n);
 
 	// orthographic projection
-	new_point.x = new_point.x * (2 / (ndc.r - ndc.l)) - ((ndc.r + ndc.l) / (ndc.r - ndc.l));
-	new_point.y = new_point.y * (2 / (ndc.t - ndc.b)) - ((ndc.t + ndc.b) / (ndc.t - ndc.b));
-	new_point.z = new_point.z * (2 / (ndc.f - ndc.n)) - ((ndc.f + ndc.n) / (ndc.f - ndc.n));
+	new_point.x = new_point.x * ortho_dx + ortho_dxw;
+	new_point.y = new_point.y * ortho_dy + ortho_dyw;
+	new_point.z = new_point.z * ortho_dz + ortho_dzw;
 
 	// perspective divide
 	if (new_point.z != 0) {
@@ -220,10 +265,10 @@ vec3d orthographic_projection(vec3d& point){
 	};
 
 	// orthographic projection
-	new_point.x = new_point.x * (2 / (ndc.r - ndc.l)) - ((ndc.r + ndc.l) / (ndc.r - ndc.l));
-	new_point.y = new_point.y * (2 / (ndc.t - ndc.b)) - ((ndc.t + ndc.b) / (ndc.t - ndc.b));
-	new_point.z = new_point.z * (2 / (ndc.f - ndc.n)) - ((ndc.f + ndc.n) / (ndc.f - ndc.n));
-	
+	new_point.x = new_point.x * ortho_dx + ortho_dxw;
+	new_point.y = new_point.y * ortho_dy + ortho_dyw;
+	new_point.z = new_point.z * ortho_dz + ortho_dzw;
+
 	// perspective divide
 	if (new_point.z != 0) {
 
@@ -293,15 +338,25 @@ void draw_fps_info() {
 
 void rasterization() {
 
-	// clear buffer
+	// clear buffers
 	back_buffer->fill(clear_color);
+	depth_buffer->fill(max_depth_value);
 
 	// draw to buffer
 	for (uint32_t t = 0; t < trig_size; t += 1) {
-		draw::draw_triangle(
+		
+		draw::fill_2d_triangle(
+			vec2d{ptrigs[t].points[0].x, ptrigs[t].points[0].y},
+			vec2d{ptrigs[t].points[1].x, ptrigs[t].points[1].y},
+			vec2d{ptrigs[t].points[2].x, ptrigs[t].points[2].y},
+			scolor{ 255,255,255,255 }
+		);
+		/*
+		draw::fill_3d_triangle(
 			ptrigs[t].points[0], ptrigs[t].points[1], ptrigs[t].points[2],
 			scolor{255,255,255,255}
 		);
+		*/
 	}
 
 	// update bitmap buffer address
@@ -344,7 +399,6 @@ bool render() {
 		}
 	}
 	
-
 	projection();
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
