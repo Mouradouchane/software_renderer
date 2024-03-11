@@ -80,6 +80,14 @@ triangle3d trigs[12] = {
 };
 triangle3d ptrigs[12] = {};
 
+scolor colors[9] = {
+	scolor{255,0,0,255},scolor{255,0,255,255},
+	scolor{255,0,255,255},scolor{0,0,255,255},
+	scolor{255,255,0,255},scolor{255,0,255,255},
+	scolor{0,0,255,255},scolor{0,255,255,255},
+	scolor{0,255,255,255}
+};
+
 bool init() {
 
 	// allocate back-buffer
@@ -190,7 +198,7 @@ void destroy() {
 
 void transfrom_to_world_space() {
 	
-	int32_t x = -1 , y = -1 , z = -4 , size = 2;
+	int32_t x = -0 , y = -0 , z = -10 , size = 2;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -336,6 +344,7 @@ void draw_fps_info() {
 
 }
 
+
 void rasterization() {
 
 	// clear buffers
@@ -346,17 +355,12 @@ void rasterization() {
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		
 		draw::fill_2d_triangle(
-			vec2d{ptrigs[t].points[0].x, ptrigs[t].points[0].y},
-			vec2d{ptrigs[t].points[1].x, ptrigs[t].points[1].y},
-			vec2d{ptrigs[t].points[2].x, ptrigs[t].points[2].y},
-			scolor{ 255,255,255,255 }
+			vec2d{ ptrigs[t].points[0].x, ptrigs[t].points[0].y },
+			vec2d{ ptrigs[t].points[1].x, ptrigs[t].points[1].y },
+			vec2d{ ptrigs[t].points[2].x, ptrigs[t].points[2].y },
+			colors[t]
 		);
-		/*
-		draw::fill_3d_triangle(
-			ptrigs[t].points[0], ptrigs[t].points[1], ptrigs[t].points[2],
-			scolor{255,255,255,255}
-		);
-		*/
+
 	}
 
 	// update bitmap buffer address
@@ -391,13 +395,15 @@ void rasterization() {
 bool render() {
 	
 	// transformation
+	/*
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
-			math::x_rotate(pivot, trigs[t].points[p], 0.05);
-			math::z_rotate(pivot, trigs[t].points[p], 0.05);
-			math::y_rotate(pivot, trigs[t].points[p], 0.1);
+			//math::x_rotate(pivot, trigs[t].points[p], 0.05);
+			//math::z_rotate(pivot, trigs[t].points[p], -0.05);
+			math::y_rotate(pivot, trigs[t].points[p], 0.02);
 		}
 	}
+	*/
 	
 	projection();
 

@@ -69,6 +69,13 @@ namespace vector {
         return (a.x * b.y) - (a.y * b.x);
     }
 
+    sfloat cross_product(
+        vec3d const& target, vec3d const& p1, vec3d const& p2
+    ) {
+
+        return NULL;
+    }
+
     void scale(vec2d& a, sfloat scalar) {
         a.x *= scalar;
         a.y *= scalar;
@@ -126,18 +133,13 @@ namespace vector {
     }
 
 
-    sfloat cross_product(
-        vec3d const& target, vec3d const& p1, vec3d const& p2
-    ) {
-        std::runtime_error("not implemented yet :(");
-        return NULL;
-    }
-
 } 
 // end : namespace vector
 
 
-/* 3d rotate functions */
+/* 
+    3d rotate function's 
+*/
 void x_rotate(vec3d const& origin, vec3d& point , sfloat rad_angle) {
     
     // move to origin
@@ -213,7 +215,6 @@ void z_rotate(vec3d const& origin, vec3d& point, sfloat rad_angle) {
 /*
     math function's    
 */
-
 sfloat to_radian(sfloat degree_value) {
     return degree_value * math::pi / 180;
 }

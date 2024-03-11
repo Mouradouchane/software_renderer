@@ -12,8 +12,7 @@
 namespace draw {
 
 	void sort_by_y(
-		vec2d& p1, vec2d& p2, vec2d& p3, 
-		bool bysmaller = true
+		vec3d& p1, vec3d& p2, vec3d& p3, bool bysmaller = true
 	);
 
 	scolor blend(
@@ -21,70 +20,40 @@ namespace draw {
 	);
 
 	void set_pixel(
-		uint32_t x, uint32_t y, scolor& color
+		uint16_t x, uint16_t y, scolor& color
 	);
 
-	bool top_left_rule(vec2d& a, vec2d& b);
 	bool top_left_rule(vec3d& a, vec3d& b);
 
-	void line_2d(vec2d& p1, vec2d& p2, scolor& color);
-	void line_3d(vec3d& p1, vec3d& p2, scolor& color);
+	/*
+		draw line functions
+	*/
+	void draw_line(vec3d& p1, vec3d& p2, scolor color);
+	
+	void draw_horizontal_line(vec3d& p1, vec3d& p2, scolor& color);
+	void draw_vertical_line(vec3d& p1, vec3d& p2, scolor& color);
+	
+	void draw_line_over_x(vec3d& p1, vec3d& p2, sfloat slope, scolor& color);
+	void draw_line_over_y(vec3d& p1, vec3d& p2, sfloat slope, scolor& color);
 
-	void draw_horizontal_line(
-		uint32_t x_start , uint32_t x_end ,
-		uint32_t Y , scolor color
-	);
+	/*
+		draw circle functions
+	*/
+	void draw_point(vec3d& point, uint16_t radius, scolor& color);
 
-	void draw_vertical_line(
-		uint32_t y_start , uint32_t y_end,
-		uint32_t X , scolor color
-	);
+	/*
+		draw triangle functions
+	*/
+	void draw_triangle(vec3d& p1, vec3d& p2, vec3d& p3, scolor& color);
+	void fill_triangle(vec3d& p1, vec3d& p2, vec3d& p3, scolor& color);
 
-	void draw_line_over_x(
-		vec2d p1, vec2d p2,
-		sfloat slope, scolor& color
-	);
-
-	void draw_line_over_y(
-		vec2d p1, vec2d p2,
-		sfloat slope, scolor& color
-	);
-
-	void point(
-		uint32_t x, uint32_t y,
-		uint16_t radius , scolor& color
-	);
-
-	// draw triangle lines only
-	void draw_2d_triangle(
-		vec2d& p1, vec2d& p2, vec2d& p3,
-		scolor& color
-	);
-
-	void fill_2d_triangle(
-		vec2d& p1, vec2d& p2, vec2d& p3,
-		scolor& color
-	);
-
-	void draw_3d_triangle(
-		vec3d& p1, vec3d& p2, vec3d& p3,
-		scolor& color
-	);
-
-	void fill_3d_triangle(
-		vec3d& p1, vec3d& p2, vec3d& p3,
-		scolor& color
-	);
-
-	void set_pixel(
-		uint32_t x, uint32_t y, 
-		scolor& color
-	);
+	scolor random_scolor(bool random_alpha = true);
+	bgra8  random_bgra8 (bool random_alpha = true);
 
 	/*
 		TODO : implement curves
-		void draw_2d_curve(vec2d* vertices, scolor& color);
-		void draw_3d_curve(vec3d* vertices, scolor& color);
+		void draw_curve(vec2d* vertices, scolor& color);
+		void draw_curve(vec3d* vertices, scolor& color);
 	*/
 
 }

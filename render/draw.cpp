@@ -8,9 +8,10 @@
 
 namespace draw {
 
-void sort_by_y(
-	vec2d& p1, vec2d& p2, vec2d& p3, bool bysmaller
-) {
+/*
+	general purpose functions
+*/
+void sort_by_y(vec3d& p1, vec3d& p2, vec3d& p3, bool bysmaller) {
 
 	if (bysmaller) {
 		if (p1.y > p2.y || ((p1.y == p2.y) && p1.x > p2.x)) std::swap(p1, p2);
@@ -25,11 +26,7 @@ void sort_by_y(
 
 }
 
-
-scolor blend(
-	scolor& back_color,
-	scolor& front_color
-) {
+scolor blend(scolor& back_color, scolor& front_color) {
 	/*
 	if (front_color.a == 0) return back_color;
 	if (back_color.a == 0)  return front_color;
@@ -55,68 +52,81 @@ scolor blend(
 	return new_color;
 }
 
-void set_pixel(
-	uint32_t x, uint32_t y , scolor& color
-) {
+void set_pixel(uint16_t x, uint16_t y , scolor& color) {
 	graphics::back_buffer->set(x, y, color);
 }
 
-void draw_line_over_x(
-	vec2d p1, vec2d p2,
-	sfloat slope, scolor& color
-) {
+scolor random_scolor(bool random_alpha) {
+	
+	scolor color;
+	
+	color.r = math::random::uint8();
+	color.g = math::random::uint8();
+	color.b = math::random::uint8();
+	color.a = (random_alpha) ? math::random::uint8() : UINT8_MAX;
+
+	return color;
+}
+
+bgra8 random_bgra8(bool random_alpha) {
+	return bgra8{
+		math::random::uint8(),
+		math::random::uint8(),
+		math::random::uint8(),
+		(random_alpha) ? math::random::uint8() : UINT8_MAX
+	};
+}
+
+/*
+	 draw lines functions
+*/
+void draw_line_over_x(vec3d& p1, vec3d& p2, sfloat slope, scolor& color){
 	
 	if (p1.x > p2.x) std::swap(p1, p2);
 
 	sfloat Y_intercept = math::y_intercept_at_x0_2d(p1 , slope);
-	uint32_t x = p1.x;
-	uint32_t y = p1.y;
+	int16_t x = p1.x;
+	int16_t y = p1.y;
 	
 	if (color.a < 255) {
 		for (   ; x <= p2.x; x += 1) {
-			y = (uint32_t)math::y_intercept_2d(x, slope, Y_intercept);
-			set_pixel(x, y, blend(graphics::back_buffer->get(x, y), color));
+			y = (int16_t)math::y_intercept_2d(x, slope, Y_intercept);
+			set_pixel( x, y, blend(graphics::back_buffer->get(x, y),color) );
 		}
 	}
 	else {
 		for (   ; x <= p2.x ; x += 1 ) {
-			y = (uint32_t)math::y_intercept_2d(x, slope, Y_intercept);
+			y = (int32_t)math::y_intercept_2d(x, slope, Y_intercept);
 			set_pixel(x, y, color);
 		}
 	}
 
 }
 
-void draw_line_over_y(
-	vec2d p1, vec2d p2,
-	sfloat slope, scolor& color
-) {
+void draw_line_over_y(vec3d& p1, vec3d& p2, sfloat slope, scolor& color){
 
 	if (p1.y > p2.y) std::swap(p1, p2);
 
 	sfloat Y_intercept = math::y_intercept_at_x0_2d(p1,slope);
-	uint32_t x = p1.x;
-	uint32_t y = p1.y;
+	int16_t x = p1.x;
+	int16_t y = p1.y;
 
 	if (color.a < 255) {
 		for (   ; y <= p2.y; y += 1) {
-			x = math::x_intercept_2d(y, slope, Y_intercept);
+			x = (int16_t)math::x_intercept_2d(y, slope, Y_intercept);
 			set_pixel(x,y, blend(graphics::back_buffer->get(x,y), color));
 		}
 	}
 	else {
 		for (   ; y <= p2.y ; y += 1 ) {
-			x = math::x_intercept_2d(y, slope, Y_intercept);
+			x = (int16_t)math::x_intercept_2d(y, slope, Y_intercept);
 			set_pixel(x, y, color);
 		}
 	}
 
 }
 
-void draw_horizontal_line(
-	uint32_t x_start, uint32_t x_end,
-	uint32_t Y, scolor color
-) {
+void draw_horizontal_line(vec3d& p1, vec3d& p2, scolor& color) {
 
 	if (x_start > x_end) std::swap(x_start, x_end);
 
@@ -133,10 +143,7 @@ void draw_horizontal_line(
 
 }
 
-void draw_vertical_line(
-	uint32_t y_start, uint32_t y_end,
-	uint32_t X, scolor color
-) {
+void draw_vertical_line(vec3d& p1, vec3d& p2, scolor& color){
 
 	if (y_start > y_end) std::swap(y_start, y_end);
 	
@@ -153,7 +160,7 @@ void draw_vertical_line(
 
 }
 
-void line_2d( vec2d& p1, vec2d& p2, scolor& color ) {
+void line_3d(vec3d& p1, vec3d& p2, scolor& color{
 	// if invisible 
 	if (color.a == 0) return;
 
@@ -181,40 +188,22 @@ void line_2d( vec2d& p1, vec2d& p2, scolor& color ) {
 
 }
 
-void line_3d(vec3d& p1, vec3d& p2, scolor& color) {
-	
-}
-
-bool top_left_rule(vec2d& a, vec2d& b) {
-	return ((a.x < b.x) && (a.y == b.y)) || (a.y > b.y);
-}
-
 bool top_left_rule(vec3d& a, vec3d& b) {
 	return ((a.x < b.x) && (a.y == b.y)) || (a.y > b.y);
 }
 
-void draw_2d_triangle(
-	vec2d p1, vec2d p2, vec2d p3,
+void fill_3d_triangle(
+	vec3d& p1, vec3d& p2, vec3d& p3,
 	scolor& color
-) {
-
-	if (color.a == 0) return;
-
-	line_2d(p1, p2, color);
-	line_2d(p2, p3, color);
-	line_2d(p1, p3, color);
-
-}
-
-void fill_2d_triangle(
-	vec2d& p1, vec2d& p2, vec2d& p3, scolor& color
 ) {
 
 	// sort triangle point by y for fill in orderer
 	sort_by_y(p1, p2, p3);
 
 	// centroid to help us getting "clock-wise" orientation
-	vec2d centroid = math::centroid(p1, p2, p3);
+	vec2d centroid = math::centroid(
+		vec2d{ p1.x,p1.y }, vec2d{ p2.x,p2.y }, vec2d{ p3.x , p3.y }
+	);
 
 	int8_t ab_bais = 0, bc_bais = 0, ac_bais = 0;
 
@@ -244,17 +233,17 @@ void fill_2d_triangle(
 	sfloat slope_3 = math::slope2d(p1, p3);
 	sfloat intercept_3 = math::y_intercept_at_x0_2d(p1, slope_3);
 	
-	uint32_t x_start = p1.x;
-	uint32_t x_end = p2.x;
-	uint32_t y = p1.y;
+	int32_t x_start = p1.x;
+	int32_t x_end = p2.x;
+	int32_t y = p1.y;
 
 	// fill from p1 to p2
 	if (slope_1 != 0) {
 
 		for (   ; y <= p2.y ; y += 1) {
 			
-			x_start = math::x_intercept_2d(y, slope_1, intercept_1) + ab_bais;
-			x_end   = math::x_intercept_2d(y, slope_3, intercept_3) + ac_bais;
+			x_start = (int32_t)math::x_intercept_2d(y, slope_1, intercept_1) + ab_bais;
+			x_end   = (int32_t)math::x_intercept_2d(y, slope_3, intercept_3) + ac_bais;
 			
 			// fill range
 			draw_horizontal_line(x_start, x_end, y, color);
@@ -276,8 +265,8 @@ void fill_2d_triangle(
 	// fill from p2 to p3
 	for (   ; y <= p3.y; y += 1) {
 		
-		x_start = math::x_intercept_2d(y, slope_3, intercept_3) + ac_bais;
-		x_end   = math::x_intercept_2d(y, slope_2, intercept_2) + bc_bais;
+		x_start = (int32_t)math::x_intercept_2d(y, slope_3, intercept_3) + ac_bais;
+		x_end   = (int32_t)math::x_intercept_2d(y, slope_2, intercept_2) + bc_bais;
 		draw_horizontal_line(x_start, x_end, y, color);
 
 	}
@@ -297,12 +286,7 @@ void draw_3d_triangle(
 
 }
 
-void fill_3d_triangle(
-	vec3d& p1, vec3d& p2, vec3d& p3,
-	scolor& color
-) {
 
-}
 
 }
 // end : namespace draw
