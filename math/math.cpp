@@ -1,12 +1,9 @@
 
 
-#ifndef MATH_HPP
-	#include "math.hpp"
-#endif
-
-#ifndef MATH_CPP
-    
+#ifndef MATH_CPP  
 #define MATH_CPP
+
+#include "math.hpp"
 
 /*
     global vector operators
@@ -58,22 +55,34 @@ const sfloat pi = 3.14159265359;
 namespace vector {
 
     sfloat cross_product(
-        vec2d const& target, vec2d const& p1, vec2d const& p2
+        vec2d const& origin, vec2d const& p1, vec2d const& p2
     ) {
 
-        // 1 - move to (0,0) using v0
+        // 1 - move to (0,0) using origin
+        vec2d a = { p1.x - origin.x , p1.y - origin.y };
+        vec2d b = { p2.x - origin.x , p2.y - origin.y };
+        /* possible bug
         vec2d a = { p2.x - p1.x , p2.y - p1.y };
-        vec2d b = { target.x - p1.x , target.y - p1.y };
+        vec2d b = { origin.x - p1.x , origin.y - p1.y };
+        */
 
         // 2 - calc normal.z : a x b
         return (a.x * b.y) - (a.y * b.x);
     }
 
-    sfloat cross_product(
-        vec3d const& target, vec3d const& p1, vec3d const& p2
+    vec3d cross_product(
+        vec3d const& origin, vec3d const& p1, vec3d const& p2
     ) {
 
-        return NULL;
+        vec3d pp1 = { p1.x - origin.x , p1.y - origin.y , p1.z - origin.z };
+        vec3d pp2 = { p1.x - origin.x , p1.y - origin.y , p1.z - origin.z };
+
+        return vec3d{ 
+            (pp1.z * pp2.y) - (pp2.z * pp1.y),
+            (pp1.x * pp2.z) - (pp2.x * pp1.z),
+            (pp1.y * pp2.x) - (pp2.y * pp1.x)
+        };
+
     }
 
     void scale(vec2d& a, sfloat scalar) {
@@ -233,6 +242,10 @@ sfloat slope2d(vec2d const& a, vec2d const& b) {
     sfloat dx = (b.x - a.x);
     return (dx == 0) ? max_slope : (b.y - a.y) / dx;
 }
+sfloat slope2d(vec3d const& a, vec3d const& b) {
+    sfloat dx = (b.x - a.x);
+    return (dx == 0) ? max_slope : (b.y - a.y) / dx;
+}
 
 // distance = sqrt((b.x - a.x)² + (b.y - a.y)²)
 sfloat distance2d(vec2d const& a, vec2d const& b) {
@@ -253,12 +266,12 @@ sfloat x_intercept_2d(sfloat y, sfloat slope, sfloat y_at_x0) {
     return (y - y_at_x0) / (slope != 0 ? slope : math::max_slope);
 }
 
-// Y = p.y - (slope * p.x)
+// Y_intercept = p.y - (slope * p.x)
 sfloat y_intercept_at_x0_2d(vec2d const& point, sfloat slope) {
     return point.y - (slope * point.x);
 }
 
-// X = (y - y_at_x0) / slope
+// X_intercept = (y - y_at_x0) / slope
 sfloat x_intercept_at_y0_2d(sfloat y_at_x0, sfloat slope) {
     return math::x_intercept_2d(0, slope, y_at_x0);
 }
@@ -310,6 +323,26 @@ vec2d centroid(
     };
 }
 
+vec2d centroid(
+    sfloat x1, sfloat y1,
+    sfloat x2, sfloat y2,
+    sfloat x3, sfloat y3 
+) {
+    return vec2d{
+        (x1 + x2 + x3) / 3,
+        (y1 + y2 + y3) / 3
+    };
+}
+vec3d centroid(
+    vec3d const& p1, vec3d const& p2, vec3d const& p3
+) {
+    return vec3d{
+       (p1.x + p2.x + p3.x) / 3,
+       (p1.y + p2.y + p3.y) / 3,
+       (p1.z + p2.z + p3.z) / 3,
+    };
+}
+
 // formula1 : p = (a+b+c) / 3
 // formula2 : area = sqrt( p * (p - A) * (p - B) * (p - C) )
 sfloat triangle_area(
@@ -346,13 +379,6 @@ bool is_point_inside_triangle(
 ) {
     throw std::runtime_error("not implemented yet :(");
     return false;
-}
-
-vec3d centroid(
-    vec3d const& p1, vec3d const& p2, vec3d const& p3
-) {
-    throw std::runtime_error("not implemented yet :(");
-    return vec3d{};
 }
 
 sfloat triangle_area(

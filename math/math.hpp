@@ -92,6 +92,8 @@ namespace math {
 	// slope of the line : b -> a
 	// s = dy / dx
 	sfloat slope2d(vec2d const& a, vec2d const& b);
+	sfloat slope2d(vec3d const& a, vec3d const& b);
+	// todo !!!
 	sfloat slope3d(vec3d const& a, vec3d const& b);
 
 	// distance between a and b
@@ -135,12 +137,15 @@ namespace math {
 		bool ignore_point_on_the_line = false
 	);
 
-	// triangle center of size
-	// X = (p1.x + p2.x + p3.x) / 3 
-	// Y = (p1.y + p2.y + p3.y) / 3
-	vec2d centroid( 
+	// centroid of 2D triangle
+	// ap = (a1 + p2 + a3) / 3 
+	vec2d centroid(
 		vec2d const& p1 , vec2d const& p2 , vec2d const& p3
 	);
+	vec2d centroid(
+		sfloat x1, sfloat y1, sfloat x2, sfloat y2, sfloat x3, sfloat y3
+	);
+	// centroid of 3D triangle
 	vec3d centroid( 
 		vec3d const& p1 , vec3d const& p2 , vec3d const& p3
 	);
@@ -165,12 +170,12 @@ namespace math {
 
 		// vector cross product between 3 points in space
 		// note : ordering is matter
-		// c = a * b
-		sfloat cross_product(vec2d const& target, vec2d const& p1, vec2d const& p2);
-		sfloat cross_product(vec3d const& target, vec3d const& p1, vec3d const& p2);
+		// c = a * b or ||a||*||b|| sin(angle)  
+		sfloat cross_product(vec2d const& origin, vec2d const& p1, vec2d const& p2);
+		vec3d  cross_product(vec3d const& origin, vec3d const& p1, vec3d const& p2);
 
-		// note : length of the vector based on the origin(0,0)
-		// formula :: len = sqrt( x² + y² )
+		// note : length of the vector based on the origin(0,0,0)
+		// formula :: len = sqrt(x² + y²)
 		sfloat length(vec2d const& a);
 		sfloat length(vec3d const& a);
 

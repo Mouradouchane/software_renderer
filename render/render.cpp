@@ -61,15 +61,17 @@ vec3d p1 = { 0, 0, 0 }, p2 = { 0, 1, 0 }, p3 = { 1, 0, 0 }, p4 = { 1, 1, 0 };
 vec3d p5 = { 0, 0, 1 }, p6 = { 0, 1, 1 }, p7 = { 1, 0, 1 }, p8 = { 1, 1, 1 };
 vec3d pivot = { 0.5, 0.5, 0.5, 0 };
 
-size_t trig_size = 12;
+triangle3d ttrg(vec3d{ 631,335 }, vec3d{ 727,337 }, vec3d{ 728,432 });
+size_t trig_size = 1;
 triangle3d trigs[12] = {
-	/*
-	*/
-	triangle3d(p1,p2,p3),
 	triangle3d(p2,p4,p3),
+	/*
+	triangle3d(p1,p2,p3),
 	triangle3d(p5,p6,p7),
 	triangle3d(p6,p7,p8),
 	triangle3d(p3,p7,p8),
+	*/
+	/*
 	triangle3d(p3,p4,p8),
 	triangle3d(p1,p5,p6),
 	triangle3d(p1,p2,p6),
@@ -77,6 +79,7 @@ triangle3d trigs[12] = {
 	triangle3d(p2,p7,p8),
 	triangle3d(p1,p7,p5),
 	triangle3d(p1,p7,p3),
+	*/
 };
 triangle3d ptrigs[12] = {};
 
@@ -198,7 +201,7 @@ void destroy() {
 
 void transfrom_to_world_space() {
 	
-	int32_t x = -0 , y = -0 , z = -10 , size = 2;
+	int32_t x = -1 , y = -1 , z = -10 , size = 2;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -214,20 +217,20 @@ void transfrom_to_world_space() {
 }
 
 void transform_thread() {
-	/*
 	Sleep(500);
 
+	/*
+	*/
 	while (global::running) {
 
 		for (uint32_t t = 0; t < trig_size; t += 1) {
 			for (uint32_t p = 0; p < 3; p += 1) {
-				math::z_rotate(pivot, trigs[t].points[p], 0.1);
+				math::y_rotate(pivot, trigs[t].points[p], -0.1);
 			}
 		}
 
 		Sleep(100);
 	}
-	*/
 }
 std::thread trans_thread(transform_thread);
 
@@ -353,14 +356,18 @@ void rasterization() {
 
 	// draw to buffer
 	for (uint32_t t = 0; t < trig_size; t += 1) {
-		
-		draw::fill_2d_triangle(
-			vec2d{ ptrigs[t].points[0].x, ptrigs[t].points[0].y },
-			vec2d{ ptrigs[t].points[1].x, ptrigs[t].points[1].y },
-			vec2d{ ptrigs[t].points[2].x, ptrigs[t].points[2].y },
+		/*
+		draw::fill_3d_triangle(
+			ttrg.points[0], ttrg.points[1], ttrg.points[2],
 			colors[t]
 		);
+		*/
 
+		draw::fill_3d_triangle(
+			ptrigs[t].points[0], ptrigs[t].points[1], ptrigs[t].points[2],
+			colors[t]
+		);
+		
 	}
 
 	// update bitmap buffer address

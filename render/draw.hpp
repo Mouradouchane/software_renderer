@@ -6,6 +6,9 @@
 #ifndef DRAW_HPP
 #define DRAW_HPP
 
+#include "../types/types.hpp"
+#include "../math/math.hpp"
+
 /*
 	here all the function for drawing 2d ,3d
 */
@@ -19,7 +22,7 @@ namespace draw {
 		scolor& back_color, scolor& front_color
 	);
 
-	void set_pixel(
+	void set_pixel( 
 		uint16_t x, uint16_t y, scolor& color
 	);
 
@@ -27,7 +30,6 @@ namespace draw {
 
 	/*
 		draw line functions
-	*/
 	void draw_line(vec3d& p1, vec3d& p2, scolor color);
 	
 	void draw_horizontal_line(vec3d& p1, vec3d& p2, scolor& color);
@@ -35,6 +37,7 @@ namespace draw {
 	
 	void draw_line_over_x(vec3d& p1, vec3d& p2, sfloat slope, scolor& color);
 	void draw_line_over_y(vec3d& p1, vec3d& p2, sfloat slope, scolor& color);
+	*/
 
 	/*
 		draw circle functions
@@ -43,9 +46,12 @@ namespace draw {
 
 	/*
 		draw triangle functions
-	*/
 	void draw_triangle(vec3d& p1, vec3d& p2, vec3d& p3, scolor& color);
-	void fill_triangle(vec3d& p1, vec3d& p2, vec3d& p3, scolor& color);
+	*/
+	void fill_3d_triangle(vec3d& p1, vec3d& p2, vec3d& p3, scolor& color);
+	
+	// fill row of a 3d shape with taken in count z values
+	void fill_row(int32_t x_start, int32_t x_end, int32_t Y, int32_t z_start, int32_t z_end, scolor& color);
 
 	scolor random_scolor(bool random_alpha = true);
 	bgra8  random_bgra8 (bool random_alpha = true);

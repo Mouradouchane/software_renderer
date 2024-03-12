@@ -79,7 +79,7 @@ bgra8 random_bgra8(bool random_alpha) {
 
 /*
 	 draw lines functions
-*/
+
 void draw_line_over_x(vec3d& p1, vec3d& p2, sfloat slope, scolor& color){
 	
 	if (p1.x > p2.x) std::swap(p1, p2);
@@ -187,103 +187,122 @@ void line_3d(vec3d& p1, vec3d& p2, scolor& color{
 	}
 
 }
+*/
 
 bool top_left_rule(vec3d& a, vec3d& b) {
 	return ((a.x < b.x) && (a.y == b.y)) || (a.y > b.y);
 }
 
+void fill_row(int32_t x_start, int32_t x_end, int32_t Y, int32_t z_start, int32_t z_end, scolor& color) {
+
+	if (x_start >= x_end) std::swap(x_start, x_end);
+
+	for (int32_t X = x_start; X <= x_end; X++ ) {
+		set_pixel(X, Y, color);
+	}
+
+}
+
 void fill_3d_triangle(
-	vec3d& p1, vec3d& p2, vec3d& p3,
-	scolor& color
+	vec3d& p1, vec3d& p2, vec3d& p3, scolor& color
 ) {
 
 	// sort triangle point by y for fill in orderer
 	sort_by_y(p1, p2, p3);
 
 	// centroid to help us getting "clock-wise" orientation
-	vec2d centroid = math::centroid(
-		vec2d{ p1.x,p1.y }, vec2d{ p2.x,p2.y }, vec2d{ p3.x , p3.y }
-	);
+	vec3d centroid = math::centroid(p1, p2, p3);
 
-	int8_t ab_bais = 0, bc_bais = 0, ac_bais = 0;
+	int8_t bais_1 = 0, bais_2 = 0, bais_3 = 0;
 
-	/*
-		check if centroid is on the right side of "p1 , p2"
-		if so then the direction is gonna be "p1 , p2 , p3"
-		otherwise  the direction is gonna be "p1 , p3 , p2"
-	*/
-	if (math::vector::cross_product(centroid, p1, p2) >= 0) {
-
-		ab_bais = (top_left_rule(p1, p2)) ? 0 : -1;
-		bc_bais = (top_left_rule(p2, p3)) ? 0 : -1;
-		ac_bais = (top_left_rule(p3, p1)) ? 0 :  1;
-
+	// using centroid and 2d cross_product to sort point in "clock-wise"
+	if (math::vector::cross_product(centroid, p1,p2).z >= 0) {
+		bais_1 = (top_left_rule(p1, p2)) ? 0 : -1;
+		bais_2 = (top_left_rule(p2, p3)) ? 0 : -1;
+		bais_3 = (top_left_rule(p3, p1)) ? 0 :  1;
 	}
 	else {
-		ab_bais = (top_left_rule(p2, p1)) ? 0 :  1;
-		bc_bais = (top_left_rule(p3, p2)) ? 0 :  1;
-		ac_bais = (top_left_rule(p1, p3)) ? 0 : -1;
+		bais_1 = (top_left_rule(p2, p1)) ? 0 :  1;
+		bais_2 = (top_left_rule(p3, p2)) ? 0 :  1;
+		bais_3 = (top_left_rule(p1, p3)) ? 0 : -1;
 	}
 
-	// p1 -> p2
-	sfloat slope_1 = math::slope2d(p1, p2);
-	sfloat intercept_1 = math::y_intercept_at_x0_2d(p1, slope_1);
-	
-	// p1 -> p3
-	sfloat slope_3 = math::slope2d(p1, p3);
-	sfloat intercept_3 = math::y_intercept_at_x0_2d(p1, slope_3);
-	
-	int32_t x_start = p1.x;
-	int32_t x_end = p2.x;
-	int32_t y = p1.y;
+	// calc slopes of triangle
+	sfloat m1 = math::slope2d(p2,p1);
+	sfloat m2 = math::slope2d(p3,p2);
+	sfloat m3 = math::slope2d(p3,p1);
 
-	// fill from p1 to p2
-	if (slope_1 != 0) {
+	// calc Y intercepts of triangle 
+	// p.y - (slope * p.x)
+	sfloat i1 = p1.y - (m1 * p1.x);
+	sfloat i2 = p2.y - (m2 * p2.x);
+	sfloat i3 = p3.y - (m3 * p3.x);
+
+	int32_t x_start = int32_t(p1.x);
+	int32_t x_end = int32_t(p2.x);
+	int32_t y = int32_t(p1.y);
+
+	sfloat z_start = 0;
+	sfloat z_end = 0;
+
+	// take the inverse of z's for "depth calculation"
+	sfloat p1_z = 1 / p1.z;
+	sfloat p2_z = 1 / p2.z;
+	sfloat p3_z = 1 / p3.z;
+
+	// fill the first half of the triangle from p1 to p2
+	if (m1 != 0 && m3 != 0) {
 
 		for (   ; y <= p2.y ; y += 1) {
-			
-			x_start = (int32_t)math::x_intercept_2d(y, slope_1, intercept_1) + ab_bais;
-			x_end   = (int32_t)math::x_intercept_2d(y, slope_3, intercept_3) + ac_bais;
+
+			// x = (y - b) / m
+			x_start = ((y - i1) / m1) + bais_1;
+			x_end   = ((y - i3) / m3) + bais_3;
 			
 			// fill range
-			draw_horizontal_line(x_start, x_end, y, color);
+			fill_row(x_start, x_end, y , z_start , z_end , color);
 		}
 
 	}
 	else {
-		x_start += ab_bais;
-		x_end   += ac_bais;
+		x_start += bais_1;
+		x_end   += bais_3;
 		
-		draw_horizontal_line(x_start, x_end, y, color);
+		fill_row(x_start, x_end, y, z_start, z_end, color);
 		y += 1;
 	}
 
-	// p2 -> p3
-	sfloat slope_2 = math::slope2d(p2, p3);
-	sfloat intercept_2 = math::y_intercept_at_x0_2d(p2, slope_2);
-	
-	// fill from p2 to p3
-	for (   ; y <= p3.y; y += 1) {
-		
-		x_start = (int32_t)math::x_intercept_2d(y, slope_3, intercept_3) + ac_bais;
-		x_end   = (int32_t)math::x_intercept_2d(y, slope_2, intercept_2) + bc_bais;
-		draw_horizontal_line(x_start, x_end, y, color);
+	if (m2 != 0 && m3 != 0) {
+		// fill the other half of the triangle from p2 to p3
+		for (	; y <= p3.y; y += 1) {
+			
+			// x = (y - b) / m
+			x_start = ((y - i3) / m3) + bais_3;
+			x_end = ((y - i2) / m2) + bais_2;
 
+			fill_row(x_start, x_end, y, z_start, z_end, color);
+		}
 	}
-	
+	else {
+		x_start += bais_1;
+		x_end += bais_2;
+
+		fill_row(x_start, x_end, y, z_start, z_end, color);
+	}
+
 }
 
 void draw_3d_triangle(
 	vec3d& p1, vec3d& p2, vec3d& p3,
 	scolor& color
 ) {
-
+	/*
 	if (color.a == 0) return;
 
 	line_3d(p1, p2, color);
 	line_3d(p1, p3, color);
 	line_3d(p2, p3, color);
-
+	*/
 }
 
 
