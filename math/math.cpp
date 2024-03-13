@@ -49,34 +49,46 @@ sfloat operator * (vec3d const& a, vec3d const& b) {
 
 namespace math {
 
-uint16_t max_slope = 1024;
+int16_t max_slope = 1024;
 const sfloat pi = 3.14159265359;
 
 namespace vector {
 
-    sfloat cross_product(
+    // note : ordering is matter ==> p1*p2 != p1*p2
+    sfloat cross_2d(
         vec2d const& origin, vec2d const& p1, vec2d const& p2
     ) {
 
-        // 1 - move to (0,0) using origin
+        // 1 - move to (0,0)
         vec2d a = { p1.x - origin.x , p1.y - origin.y };
         vec2d b = { p2.x - origin.x , p2.y - origin.y };
-        /* possible bug
-        vec2d a = { p2.x - p1.x , p2.y - p1.y };
-        vec2d b = { origin.x - p1.x , origin.y - p1.y };
-        */
 
         // 2 - calc normal.z : a x b
         return (a.x * b.y) - (a.y * b.x);
     }
 
-    vec3d cross_product(
+    sfloat cross_2d(
         vec3d const& origin, vec3d const& p1, vec3d const& p2
     ) {
 
+        // 1 - move to (0,0)
+        vec2d a = { p1.x - origin.x , p1.y - origin.y };
+        vec2d b = { p2.x - origin.x , p2.y - origin.y };
+
+        // 2 - calc normal.z : a x b
+        return (a.x * b.y) - (a.y * b.x);
+    }
+
+    // note : ordering is matter ==> p1*p2 != p1*p2
+    vec3d cross_3d(
+        vec3d const& origin, vec3d const& p1, vec3d const& p2
+    ) {
+
+        // 1 - move to (0,0,0)
         vec3d pp1 = { p1.x - origin.x , p1.y - origin.y , p1.z - origin.z };
         vec3d pp2 = { p1.x - origin.x , p1.y - origin.y , p1.z - origin.z };
 
+        // calc : a * b
         return vec3d{ 
             (pp1.z * pp2.y) - (pp2.z * pp1.y),
             (pp1.x * pp2.z) - (pp2.x * pp1.z),
@@ -239,19 +251,19 @@ sfloat deltha(sfloat v1, sfloat v2) {
 
 // slope = dy / dx 
 sfloat slope2d(vec2d const& a, vec2d const& b) {
-    sfloat dx = (b.x - a.x);
-    return (dx == 0) ? max_slope : (b.y - a.y) / dx;
+    sfloat  dx = (a.x - b.x);
+    return (dx == 0) ? max_slope : (a.y - b.y) / dx;
 }
 sfloat slope2d(vec3d const& a, vec3d const& b) {
-    sfloat dx = (b.x - a.x);
-    return (dx == 0) ? max_slope : (b.y - a.y) / dx;
+    sfloat  dx = (a.x - b.x);
+    return (dx == 0) ? math::max_slope : (a.y - b.y) / dx;
 }
 
 // distance = sqrt((b.x - a.x)² + (b.y - a.y)²)
 sfloat distance2d(vec2d const& a, vec2d const& b) {
     return std::sqrtf( 
         (sfloat)std::pow(b.x - a.x , 2) 
-                    + 
+                    +
         (sfloat)std::pow(b.y - a.y , 2)
     );
 }
@@ -293,22 +305,14 @@ bool is_point_inside_triangle(
 ) {
 
     if(ignore_point_on_the_line){
-
-        if(math::vector::cross_product(target_point, p1, p2 ) <= 0) return false;
-
-        if(math::vector::cross_product(target_point, p2, p3 ) <= 0) return false;
-
-        if(math::vector::cross_product(target_point, p3, p1 ) <= 0) return false;
-
+        if(math::vector::cross_2d(target_point, p1, p2 ) <= 0) return false;
+        if(math::vector::cross_2d(target_point, p2, p3 ) <= 0) return false;
+        if(math::vector::cross_2d(target_point, p3, p1 ) <= 0) return false;
     }
     else{
-
-        if (math::vector::cross_product(target_point, p1, p2) < 0) return false;
-
-        if (math::vector::cross_product(target_point, p2, p3) < 0) return false;
-
-        if (math::vector::cross_product(target_point, p3, p1) < 0) return false;
-
+        if (math::vector::cross_2d(target_point, p1, p2) < 0) return false;
+        if (math::vector::cross_2d(target_point, p2, p3) < 0) return false;
+        if (math::vector::cross_2d(target_point, p3, p1) < 0) return false;
     }
 
     return true;

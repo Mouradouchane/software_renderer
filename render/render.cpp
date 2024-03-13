@@ -61,34 +61,33 @@ vec3d p1 = { 0, 0, 0 }, p2 = { 0, 1, 0 }, p3 = { 1, 0, 0 }, p4 = { 1, 1, 0 };
 vec3d p5 = { 0, 0, 1 }, p6 = { 0, 1, 1 }, p7 = { 1, 0, 1 }, p8 = { 1, 1, 1 };
 vec3d pivot = { 0.5, 0.5, 0.5, 0 };
 
-triangle3d ttrg(vec3d{ 631,335 }, vec3d{ 727,337 }, vec3d{ 728,432 });
-size_t trig_size = 1;
+size_t trig_size = 12;
 triangle3d trigs[12] = {
-	triangle3d(p2,p4,p3),
-	/*
 	triangle3d(p1,p2,p3),
+	triangle3d(p2,p3,p4),
+	triangle3d(p1,p7,p3),
 	triangle3d(p5,p6,p7),
-	triangle3d(p6,p7,p8),
+	triangle3d(p2,p4,p3),
 	triangle3d(p3,p7,p8),
-	*/
-	/*
+	
 	triangle3d(p3,p4,p8),
 	triangle3d(p1,p5,p6),
 	triangle3d(p1,p2,p6),
 	triangle3d(p2,p6,p8),
 	triangle3d(p2,p7,p8),
 	triangle3d(p1,p7,p5),
-	triangle3d(p1,p7,p3),
+	/*
 	*/
 };
 triangle3d ptrigs[12] = {};
 
-scolor colors[9] = {
-	scolor{255,0,0,255},scolor{255,0,255,255},
-	scolor{255,0,255,255},scolor{0,0,255,255},
-	scolor{255,255,0,255},scolor{255,0,255,255},
-	scolor{0,0,255,255},scolor{0,255,255,255},
-	scolor{0,255,255,255}
+scolor colors[12] = {
+	scolor{155,255,155,255},scolor{255,50,0,255},
+	scolor{155,255,155,255},scolor{255,50,0,255},
+	scolor{155,255,155,255},scolor{255,50,0,255},
+	scolor{155,255,155,255},scolor{255,50,0,255},
+	scolor{155,255,155,255},scolor{255,50,0,255},
+	scolor{155,255,155,255},scolor{255,50,0,255}
 };
 
 bool init() {
@@ -148,7 +147,7 @@ bool init() {
 	perspective_y_factor = ndc.n * hfov;
 
 	// config::projection_type = PERSPECTIVE_PROJECTION;
-	transfrom_to_world_space();
+	to_world_space();
 	clear_color.a = 255;
 	
 	half_screen_width  = (sfloat)back_buffer->width / 2;
@@ -199,9 +198,9 @@ void destroy() {
 
 }
 
-void transfrom_to_world_space() {
+void to_world_space() {
 	
-	int32_t x = -1 , y = -1 , z = -10 , size = 2;
+	int32_t x = -1 , y = -1 , z = -6 , size = 2;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -214,13 +213,13 @@ void transfrom_to_world_space() {
 	pivot.x = (pivot.x * size) + x;
 	pivot.y = (pivot.y * size) + y;
 	pivot.z = (pivot.z * size) + z;
+
 }
 
 void transform_thread() {
 	Sleep(500);
 
 	/*
-	*/
 	while (global::running) {
 
 		for (uint32_t t = 0; t < trig_size; t += 1) {
@@ -231,6 +230,7 @@ void transform_thread() {
 
 		Sleep(100);
 	}
+	*/
 }
 std::thread trans_thread(transform_thread);
 
@@ -347,7 +347,6 @@ void draw_fps_info() {
 
 }
 
-
 void rasterization() {
 
 	// clear buffers
@@ -356,18 +355,12 @@ void rasterization() {
 
 	// draw to buffer
 	for (uint32_t t = 0; t < trig_size; t += 1) {
-		/*
-		draw::fill_3d_triangle(
-			ttrg.points[0], ttrg.points[1], ttrg.points[2],
-			colors[t]
-		);
-		*/
 
 		draw::fill_3d_triangle(
 			ptrigs[t].points[0], ptrigs[t].points[1], ptrigs[t].points[2],
 			colors[t]
 		);
-		
+
 	}
 
 	// update bitmap buffer address
@@ -398,11 +391,9 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
-
-bool render() {
+void render() {
 	
 	// transformation
-	/*
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
 			//math::x_rotate(pivot, trigs[t].points[p], 0.05);
@@ -410,7 +401,7 @@ bool render() {
 			math::y_rotate(pivot, trigs[t].points[p], 0.02);
 		}
 	}
-	*/
+
 	
 	projection();
 
@@ -423,7 +414,6 @@ bool render() {
 	// draw objects
 	rasterization();
 
-	return true;
 }
 
 }

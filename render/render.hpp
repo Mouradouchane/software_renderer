@@ -44,7 +44,7 @@ namespace graphics {
 	bool init();
 	void destroy();
 
-	void transfrom_to_world_space();
+	void to_world_space();
 
 	vec3d orthographic_projection(vec3d& point);
 	vec3d perspective_projection( vec3d& point); // + ortho
@@ -57,7 +57,7 @@ namespace graphics {
 	void rasterization();
 
 	// all the rendering stages called here
-	bool render();
+	void render();
 
 }
 // end : graphics namespace

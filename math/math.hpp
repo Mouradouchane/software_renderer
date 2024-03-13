@@ -52,7 +52,7 @@ sfloat operator * (vec3d const& a, vec3d const& b);
 
 namespace math {
 
-	extern uint16_t max_slope;
+	extern int16_t max_slope;
 	extern const sfloat pi;
 
 	void x_rotate(vec3d const& origin, vec3d& point, sfloat rad_angle = 0);
@@ -171,8 +171,9 @@ namespace math {
 		// vector cross product between 3 points in space
 		// note : ordering is matter
 		// c = a * b or ||a||*||b|| sin(angle)  
-		sfloat cross_product(vec2d const& origin, vec2d const& p1, vec2d const& p2);
-		vec3d  cross_product(vec3d const& origin, vec3d const& p1, vec3d const& p2);
+		sfloat cross_2d(vec2d const& origin, vec2d const& p1, vec2d const& p2);
+		sfloat cross_2d(vec3d const& origin, vec3d const& p1, vec3d const& p2);
+		vec3d  cross_3d(vec3d const& origin, vec3d const& p1, vec3d const& p2);
 
 		// note : length of the vector based on the origin(0,0,0)
 		// formula :: len = sqrt(x² + y²)

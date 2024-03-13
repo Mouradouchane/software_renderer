@@ -26,6 +26,21 @@ void sort_by_y(vec3d& p1, vec3d& p2, vec3d& p3, bool bysmaller) {
 
 }
 
+void sort_by_x(vec3d& p1, vec3d& p2, vec3d& p3, bool bysmaller) {
+
+	if (bysmaller) {
+		if (p1.x > p2.x || ((p1.x == p2.x) && p1.y > p2.y)) std::swap(p1, p2);
+		if (p1.x > p3.x || ((p1.x == p3.x) && p1.y > p3.y)) std::swap(p1, p3);
+		if (p2.x > p3.x || ((p2.x == p3.x) && p2.y > p3.y)) std::swap(p2, p3);
+	}
+	else {
+		if (p1.x < p2.x || ((p1.x == p2.x) && p1.y < p2.y)) std::swap(p1, p2);
+		if (p1.x < p3.x || ((p1.x == p3.x) && p1.y < p3.y)) std::swap(p1, p3);
+		if (p2.x < p3.x || ((p2.x == p3.x) && p2.y < p3.y)) std::swap(p2, p3);
+	}
+
+}
+
 scolor blend(scolor& back_color, scolor& front_color) {
 	/*
 	if (front_color.a == 0) return back_color;
@@ -193,101 +208,118 @@ bool top_left_rule(vec3d& a, vec3d& b) {
 	return ((a.x < b.x) && (a.y == b.y)) || (a.y > b.y);
 }
 
-void fill_row(int32_t x_start, int32_t x_end, int32_t Y, int32_t z_start, int32_t z_end, scolor& color) {
+// check if from p1 to p2 is "clock-wise" using 3rd point
+bool is_clock_wise(vec3d& test_point, vec3d& p1, vec3d& p2) {
+
+	vec2d a{ p2.x - p1.x, p2.y - p1.y};
+	vec2d b{ test_point.x  - p1.x, test_point.y  - p1.y};
+
+	return (a.x * b.y) - (a.y * b.x) >= 0;
+}
+
+void fill_row(int32_t x_start, int32_t x_end, int32_t Y, int32_t z_start, int32_t z_end, scolor& color, bool blendcolor) {
 
 	if (x_start >= x_end) std::swap(x_start, x_end);
 
-	for (int32_t X = x_start; X <= x_end; X++ ) {
-		set_pixel(X, Y, color);
+	if (blendcolor) {
+		for (int32_t X = x_start; X <= x_end; X++) {
+			set_pixel(
+				X, Y, blend(graphics::back_buffer->get(X,Y) , color)
+			);
+		}
+	}
+	else {
+		for (int32_t X = x_start; X <= x_end; X++ ) {
+			set_pixel(X, Y, color);
+		}
 	}
 
 }
 
 void fill_3d_triangle(
-	vec3d& p1, vec3d& p2, vec3d& p3, scolor& color
+	vec3d a, vec3d b, vec3d c, scolor& color
 ) {
 
+	bool do_alpha_blending = color.a < UINT8_MAX;
+
+	a.x = std::floor(a.x); a.y = std::floor(a.y) , a.z = 1 / a.z;
+	b.x = std::floor(b.x); b.y = std::floor(b.y) , b.z = 1 / b.z;
+	c.x = std::floor(c.x); c.y = std::floor(c.y) , c.z = 1 / c.z;
+
 	// sort triangle point by y for fill in orderer
-	sort_by_y(p1, p2, p3);
+	sort_by_y(a, b, c);
 
 	// centroid to help us getting "clock-wise" orientation
-	vec3d centroid = math::centroid(p1, p2, p3);
+	vec3d centroid = math::centroid(a, b, c);
 
-	int8_t bais_1 = 0, bais_2 = 0, bais_3 = 0;
+	int8_t bais_ab = 0, bais_bc = 0, bais_ac = 0;
 
-	// using centroid and 2d cross_product to sort point in "clock-wise"
-	if (math::vector::cross_product(centroid, p1,p2).z >= 0) {
-		bais_1 = (top_left_rule(p1, p2)) ? 0 : -1;
-		bais_2 = (top_left_rule(p2, p3)) ? 0 : -1;
-		bais_3 = (top_left_rule(p3, p1)) ? 0 :  1;
+	// "clock-wise" check for proper rasterzation
+	if (is_clock_wise(centroid, a, b)) {
+		bais_ab = (top_left_rule(a, b)) ? 0 : -1;
+		bais_bc = (top_left_rule(b, c)) ? 0 : -1;
+		bais_ac = (top_left_rule(c, a)) ? 0 :  1;
 	}
 	else {
-		bais_1 = (top_left_rule(p2, p1)) ? 0 :  1;
-		bais_2 = (top_left_rule(p3, p2)) ? 0 :  1;
-		bais_3 = (top_left_rule(p1, p3)) ? 0 : -1;
+		bais_ab = (top_left_rule(b, a)) ? 0 :  1;
+		bais_bc = (top_left_rule(c, b)) ? 0 :  1;
+		bais_ac = (top_left_rule(a, c)) ? 0 : -1;
 	}
 
+	int32_t x_start = a.x, x_end = b.x, y = a.y;
+
 	// calc slopes of triangle
-	sfloat m1 = math::slope2d(p2,p1);
-	sfloat m2 = math::slope2d(p3,p2);
-	sfloat m3 = math::slope2d(p3,p1);
+	sfloat slope_ab = math::slope2d(a,b);
+	sfloat slope_ac = math::slope2d(a,c);
+	sfloat slope_bc = math::slope2d(b,c);
 
 	// calc Y intercepts of triangle 
 	// p.y - (slope * p.x)
-	sfloat i1 = p1.y - (m1 * p1.x);
-	sfloat i2 = p2.y - (m2 * p2.x);
-	sfloat i3 = p3.y - (m3 * p3.x);
-
-	int32_t x_start = int32_t(p1.x);
-	int32_t x_end = int32_t(p2.x);
-	int32_t y = int32_t(p1.y);
+	sfloat i_ab = a.y - (slope_ab * a.x);
+	sfloat i_ac = a.y - (slope_ac * a.x);
+	sfloat i_bc = b.y - (slope_bc * b.x);
 
 	sfloat z_start = 0;
 	sfloat z_end = 0;
 
 	// take the inverse of z's for "depth calculation"
-	sfloat p1_z = 1 / p1.z;
-	sfloat p2_z = 1 / p2.z;
-	sfloat p3_z = 1 / p3.z;
+	sfloat p1_z = 1 / a.z;
+	sfloat p2_z = 1 / b.z;
+	sfloat p3_z = 1 / c.z;
 
-	// fill the first half of the triangle from p1 to p2
-	if (m1 != 0 && m3 != 0) {
+	// fill the first half of the triangle from a to b
+	if (slope_ab != 0 && slope_ac != 0) {
 
-		for (   ; y <= p2.y ; y += 1) {
+		for (   ; y <= b.y ; y++ ) {
 
 			// x = (y - b) / m
-			x_start = ((y - i1) / m1) + bais_1;
-			x_end   = ((y - i3) / m3) + bais_3;
-			
+			x_start = (y - i_ab) / slope_ab + bais_ab;
+			x_end   = (y - i_ac) / slope_ac + bais_ac;
+
 			// fill range
-			fill_row(x_start, x_end, y , z_start , z_end , color);
+			fill_row(x_start, x_end, y , z_start , z_end , color , do_alpha_blending);
 		}
 
 	}
 	else {
-		x_start += bais_1;
-		x_end   += bais_3;
+		x_start += bais_ab;
+		x_end   += bais_ac;
 		
-		fill_row(x_start, x_end, y, z_start, z_end, color);
+		fill_row(x_start, x_end, y, z_start, z_end, color , do_alpha_blending);
 		y += 1;
 	}
 
-	if (m2 != 0 && m3 != 0) {
+	if (slope_bc != 0 && slope_ac != 0) {
+
 		// fill the other half of the triangle from p2 to p3
-		for (	; y <= p3.y; y += 1) {
+		for (	; y <= c.y; y++ ) {
 			
 			// x = (y - b) / m
-			x_start = ((y - i3) / m3) + bais_3;
-			x_end = ((y - i2) / m2) + bais_2;
+			x_start = (y - i_ac) / slope_ac + bais_ac;
+			x_end   = (y - i_bc) / slope_bc + bais_bc;
 
-			fill_row(x_start, x_end, y, z_start, z_end, color);
+			fill_row(x_start, x_end, y, z_start, z_end, color , do_alpha_blending);
 		}
-	}
-	else {
-		x_start += bais_1;
-		x_end += bais_2;
-
-		fill_row(x_start, x_end, y, z_start, z_end, color);
 	}
 
 }
