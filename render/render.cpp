@@ -11,47 +11,47 @@ namespace graphics {
 	const sfloat min_fov = math::to_radian(20);
 	const sfloat max_fov = math::to_radian(160);
 
-	sfloat fov_deg = 90; // degree
+	sfloat fov_deg = 100; // degree
 	sfloat fov  = math::to_radian(fov_deg);
 	sfloat hfov = 1 / std::tanf(fov / 2);
 
-	sfloat half_screen_width  = NULL;
-	sfloat half_screen_height = NULL;
+	sfloat aspect_ratio = ((sfloat)window::height / (sfloat)window::width);
 
-	sfloat aspect_ratio = 1.0f;
+	sfloat half_screen_width  = (sfloat)window::width / 2;
+	sfloat half_screen_height = (sfloat)window::height / 2;
 
+	// ===== projection configs =====
 	cube ndc = { 
 		 1,-1, // near , far
 		-1, 1, // left , right
 		 1,-1  // top  , buttom
 	};
 
-	// ===== precomputer values ============
-	sfloat ortho_dx = NULL;
-	sfloat ortho_dy = NULL;
-	sfloat ortho_dz = NULL;
+	sfloat ortho_dx = (2 / (ndc.r - ndc.l));
+	sfloat ortho_dy = (2 / (ndc.t - ndc.b));
+	sfloat ortho_dz = (2 / (ndc.f - ndc.n));
 
-	sfloat ortho_dxw = NULL;
-	sfloat ortho_dyw = NULL;
-	sfloat ortho_dzw = NULL;
-
-	sfloat ndc_f_plus_n = NULL;
-	sfloat ndc_f_mul_n  = NULL;
+	sfloat ortho_dxw = -((ndc.r + ndc.l) / (ndc.r - ndc.l));
+	sfloat ortho_dyw = -((ndc.t + ndc.b) / (ndc.t - ndc.b));
+	sfloat ortho_dzw = -((ndc.f + ndc.n) / (ndc.f - ndc.n));
 
 	sfloat near_distance = 1;
 	sfloat far_distance  = 10;
+	sfloat z_factor = (far_distance / (far_distance - near_distance));
+
+	sfloat far_plus_near = far_distance + near_distance; //(ndc.f + ndc.n);
+	sfloat far_mult_near = far_distance * near_distance; //(ndc.f * ndc.n);
 
 	sfloat perpsective_x_factor = NULL;
 	sfloat perspective_y_factor = NULL;
 	// =====================================
 
-	// buffer's
-	buffer<scolor>* front_buffer = nullptr;
-	buffer<scolor>* back_buffer  = nullptr;
-
+	// buffers
 	sfloat max_depth_value = -(std::numeric_limits<float>::infinity());
 	buffer<sfloat>* depth_buffer = nullptr; // z-buffer
 
+	buffer<scolor>* front_buffer = nullptr;
+	buffer<scolor>* back_buffer  = nullptr;
 
 	BITMAPINFO bitmap_info = { 0 };
 	BITMAP     bitmap = { 0 };
@@ -65,8 +65,11 @@ vec3d p1 = { 0, 0, 0 }, p2 = { 0, 1, 0 }, p3 = { 1, 0, 0 }, p4 = { 1, 1, 0 };
 vec3d p5 = { 0, 0, 1 }, p6 = { 0, 1, 1 }, p7 = { 1, 0, 1 }, p8 = { 1, 1, 1 };
 vec3d pivot = { 0.5, 0.5, 0.5, 0 };
 
-size_t trig_size = 12;
+size_t trig_size = 2;
 triangle3d trigs[12] = {
+	triangle3d(vec3d{0,0,0},vec3d{0.5,1,0.5},vec3d{1,0,1}),
+	triangle3d(vec3d{0,0,1},vec3d{0.5,1,0.5},vec3d{1,0,0}),
+	/*
 	triangle3d(p1,p2,p3),
 	triangle3d(p2,p3,p4),
 	triangle3d(p1,p7,p3),
@@ -80,13 +83,13 @@ triangle3d trigs[12] = {
 	triangle3d(p2,p6,p8),
 	triangle3d(p2,p7,p8),
 	triangle3d(p1,p7,p5),
-	/*
 	*/
 };
 triangle3d ptrigs[12] = {};
 
 scolor colors[12] = {
-	draw::random_scolor(false),draw::random_scolor(false),
+	scolor{0,255,0,255},scolor{0,0,255,255},
+	//draw::random_scolor(false),draw::random_scolor(false),
 	draw::random_scolor(false),draw::random_scolor(false),
 	draw::random_scolor(false),draw::random_scolor(false),
 	draw::random_scolor(false),draw::random_scolor(false),
@@ -132,31 +135,16 @@ bool init() {
 		return false;
 	}
 
-	// setup rendering stuff
-
-	aspect_ratio = ((sfloat)back_buffer->height / (sfloat)back_buffer->width);
-
-	ortho_dx = (2 / (ndc.r - ndc.l));
-	ortho_dy = (2 / (ndc.t - ndc.b));
-	ortho_dz = (2 / (ndc.f - ndc.n));
-
-	ortho_dxw = -((ndc.r + ndc.l) / (ndc.r - ndc.l));
-	ortho_dyw = -((ndc.t + ndc.b) / (ndc.t - ndc.b));
-	ortho_dzw = -((ndc.f + ndc.n) / (ndc.f - ndc.n));
-
-	ndc_f_plus_n = (ndc.f + ndc.n);
-	ndc_f_mul_n  = (ndc.f * ndc.n);
-	
-	perpsective_x_factor = near_distance * aspect_ratio * hfov;// ndc.n* aspect_ratio* hfov;
-	perspective_y_factor = near_distance * hfov; // ndc.n* hfov;
-
-	// config::projection_type = PERSPECTIVE_PROJECTION;
-	to_world_space();
-	clear_color.a = 255;
-	
 	half_screen_width  = (sfloat)back_buffer->width / 2;
 	half_screen_height = (sfloat)back_buffer->height / 2;
 
+	aspect_ratio = ((sfloat)window::height / (sfloat)window::width);
+	perpsective_x_factor = near_distance * aspect_ratio * hfov;// ndc.n* aspect_ratio* hfov;
+	perspective_y_factor = near_distance * hfov; // ndc.n* hfov;
+	
+	to_world_space();
+	clear_color.a = 255;
+	
 	// setup bitmap stuff
 	GetClientRect(window::handle, &window::rect);
 	AdjustWindowRectEx(&window::rect, window::style, 0, 0);
@@ -204,7 +192,7 @@ void destroy() {
 
 void to_world_space() {
 	
-	int32_t x = -1 , y = -1 , z = -5 , size = 2;
+	int32_t x = -1 , y = -1 , z = -3, size = 2;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -253,8 +241,11 @@ vec3d perspective_projection(vec3d& point) {
 	}
 
 	new_point.w = point.z;
-	new_point.z = point.z * ndc_f_plus_n - ndc_f_mul_n;
-	//new_point.z = point.z * (ndc.f / (ndc.f - ndc.n)) + -((ndc.f / (ndc.f - ndc.n)) * ndc.n);
+	new_point.z = point.z * z_factor + -(z_factor * near_distance);//(ndc.f / (ndc.f - ndc.n)) + -((ndc.f / (ndc.f - ndc.n)) * ndc.n);
+	/*
+	new_point.z = point.z * far_plus_near - far_mult_near;
+	new_point.z = point.z * (far_distance + near_distance)-(far_distance*near_distance);
+	*/
 
 	// orthographic projection
 	new_point.x = new_point.x * ortho_dx + ortho_dxw;
@@ -402,11 +393,13 @@ void render() {
 	*/
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
+			//trigs[t].points[p].z -= 0.01;
 			//math::x_rotate(pivot, trigs[t].points[p], 0.05);
 			//math::z_rotate(pivot, trigs[t].points[p], -0.05);
 			math::y_rotate(pivot, trigs[t].points[p], 0.02);
 		}
 	}
+	//pivot.z -= 0.01;
 
 	projection();
 
