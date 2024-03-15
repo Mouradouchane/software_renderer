@@ -38,6 +38,9 @@ namespace graphics {
 	sfloat ndc_f_plus_n = NULL;
 	sfloat ndc_f_mul_n  = NULL;
 
+	sfloat near_distance = 1;
+	sfloat far_distance  = 10;
+
 	sfloat perpsective_x_factor = NULL;
 	sfloat perspective_y_factor = NULL;
 	// =====================================
@@ -48,6 +51,7 @@ namespace graphics {
 
 	sfloat max_depth_value = -(std::numeric_limits<float>::infinity());
 	buffer<sfloat>* depth_buffer = nullptr; // z-buffer
+
 
 	BITMAPINFO bitmap_info = { 0 };
 	BITMAP     bitmap = { 0 };
@@ -82,12 +86,12 @@ triangle3d trigs[12] = {
 triangle3d ptrigs[12] = {};
 
 scolor colors[12] = {
-	scolor{155,255,155,255},scolor{255,50,0,255},
-	scolor{155,255,155,255},scolor{255,50,0,255},
-	scolor{155,255,155,255},scolor{255,50,0,255},
-	scolor{155,255,155,255},scolor{255,50,0,255},
-	scolor{155,255,155,255},scolor{255,50,0,255},
-	scolor{155,255,155,255},scolor{255,50,0,255}
+	draw::random_scolor(false),draw::random_scolor(false),
+	draw::random_scolor(false),draw::random_scolor(false),
+	draw::random_scolor(false),draw::random_scolor(false),
+	draw::random_scolor(false),draw::random_scolor(false),
+	draw::random_scolor(false),draw::random_scolor(false),
+	draw::random_scolor(false),draw::random_scolor(false)
 };
 
 bool init() {
@@ -141,10 +145,10 @@ bool init() {
 	ortho_dzw = -((ndc.f + ndc.n) / (ndc.f - ndc.n));
 
 	ndc_f_plus_n = (ndc.f + ndc.n);
-	ndc_f_mul_n = (ndc.f * ndc.n);
+	ndc_f_mul_n  = (ndc.f * ndc.n);
 	
-	perpsective_x_factor = ndc.n * aspect_ratio * hfov;
-	perspective_y_factor = ndc.n * hfov;
+	perpsective_x_factor = near_distance * aspect_ratio * hfov;// ndc.n* aspect_ratio* hfov;
+	perspective_y_factor = near_distance * hfov; // ndc.n* hfov;
 
 	// config::projection_type = PERSPECTIVE_PROJECTION;
 	to_world_space();
@@ -200,7 +204,7 @@ void destroy() {
 
 void to_world_space() {
 	
-	int32_t x = -1 , y = -1 , z = -6 , size = 2;
+	int32_t x = -1 , y = -1 , z = -5 , size = 2;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -394,6 +398,8 @@ void rasterization() {
 void render() {
 	
 	// transformation
+	/*
+	*/
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
 			//math::x_rotate(pivot, trigs[t].points[p], 0.05);
@@ -402,7 +408,6 @@ void render() {
 		}
 	}
 
-	
 	projection();
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {

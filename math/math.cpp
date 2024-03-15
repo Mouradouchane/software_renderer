@@ -268,6 +268,14 @@ sfloat distance2d(vec2d const& a, vec2d const& b) {
     );
 }
 
+sfloat distance2d(vec3d const& a, vec3d const& b) {
+    return std::sqrtf(
+        (sfloat)std::pow(b.x - a.x, 2)
+        +
+        (sfloat)std::pow(b.y - a.y, 2)
+    );
+}
+
 // y = slope * x + y_at_x0
 sfloat y_intercept_2d(sfloat x, sfloat slope, sfloat y_at_x0) {
     return (slope * x) + y_at_x0;
@@ -347,9 +355,14 @@ vec3d centroid(
     };
 }
 
-// formula1 : p = (a+b+c) / 3
-// formula2 : area = sqrt( p * (p - A) * (p - B) * (p - C) )
-sfloat triangle_area(
+// 1D interpolation from t=0 to t=1
+// (1 - t) * v0 + t * v1
+sfloat lerp(sfloat s, sfloat e, sfloat t) {
+    return (1 - t) * s + t * e;
+}
+
+// TODO : find a better solution
+sfloat area_of_2d_triangle(
     vec2d const& p1, vec2d const& p2, vec2d const& p3
 ) {
 
@@ -357,10 +370,28 @@ sfloat triangle_area(
     sfloat B = math::distance2d(p3, p2);
     sfloat C = math::distance2d(p3, p1);
 
+    // formula1 : p = (a+b+c) / 3
     sfloat p = (A + B + C) / 2;
 
+    // formula2 : area = sqrt( p * (p - A) * (p - B) * (p - C) )
     return std::sqrtf(p * (p - A) * (p - B) * (p - C));
 }
+
+sfloat area_of_2d_triangle(
+    vec3d const& p1, vec3d const& p2, vec3d const& p3
+) {
+
+    sfloat A = math::distance2d(p2, p1);
+    sfloat B = math::distance2d(p3, p2);
+    sfloat C = math::distance2d(p3, p1);
+
+    // formula1 : p = (a+b+c) / 3
+    sfloat p = (A + B + C) / 2;
+
+    // formula2 : area = sqrt( p * (p - A) * (p - B) * (p - C) )
+    return std::sqrtf(p * (p - A) * (p - B) * (p - C));
+}
+
 
 /*
         TODO : 3D MATH !!!!!
@@ -385,7 +416,7 @@ bool is_point_inside_triangle(
     return false;
 }
 
-sfloat triangle_area(
+sfloat area_of_3d_triangle(
     vec3d const& p1, vec3d const& p2, vec3d const& p3
 ) {
     throw std::runtime_error("not implemented yet :(");

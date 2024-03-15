@@ -99,6 +99,7 @@ namespace math {
 	// distance between a and b
 	// distance = sqrt( (b.x - a.x)² + (b.y - a.y)² )
 	sfloat distance2d(vec2d const& a , vec2d const& b);
+	sfloat distance2d(vec3d const& a , vec3d const& b);
 	sfloat distance3d(vec3d const& a , vec3d const& b);
 
 	// find y in x poisiton on hte line
@@ -150,14 +151,17 @@ namespace math {
 		vec3d const& p1 , vec3d const& p2 , vec3d const& p3
 	);
 
-	// calculate the area of 2D triangle using "Heron's Formula"
+	sfloat lerp(sfloat s, sfloat e, sfloat t);
+	
+	// TOOD: find better solution than "Heron's Formula" 
     // note : no negative area
-	// formula1 : p = (a+b+c) / 3
-	// formula2 : area = sqrt( p * (p - A) * (p - B) * (p - C) )
-	sfloat triangle_area(
+	sfloat area_of_2d_triangle(
 		vec2d const& p1 , vec2d const& p2 , vec2d const& p3
 	);
-	sfloat triangle_area(
+	sfloat area_of_2d_triangle(
+		vec3d const& p1, vec3d const& p2, vec3d const& p3
+	);
+	sfloat area_of_3d_triangle(
 		vec3d const& p1 , vec3d const& p2 , vec3d const& p3
 	);
 

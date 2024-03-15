@@ -217,20 +217,41 @@ bool is_clock_wise(vec3d& test_point, vec3d& p1, vec3d& p2) {
 	return (a.x * b.y) - (a.y * b.x) >= 0;
 }
 
-void fill_row(int32_t x_start, int32_t x_end, int32_t Y, int32_t z_start, int32_t z_end, scolor& color, bool blendcolor) {
+void fill_row(int32_t x_start, int32_t x_end, int32_t Y, sfloat z_start, sfloat z_end, scolor& color, bool blendcolor) {
 
-	if (x_start >= x_end) std::swap(x_start, x_end);
+	if (x_start >= x_end) {
+		std::swap(x_start, x_end);
+		std::swap(z_start, z_end);
+	}
+
+	sfloat zfactor = (x_end - x_start) != 0 ? sfloat( 1 / (x_end - x_start) ) : 1;
+	sfloat z = 0 , t = 0;
 
 	if (blendcolor) {
 		for (int32_t X = x_start; X <= x_end; X++) {
-			set_pixel(
-				X, Y, blend(graphics::back_buffer->get(X,Y) , color)
-			);
+
+			z = math::lerp(z_start, z_end, t);
+
+			// depth test
+			if (z > graphics::depth_buffer->get(X, Y)) {
+				set_pixel(
+					X, Y, blend(graphics::back_buffer->get(X,Y) , color)
+				);
+			}
+
+			t += zfactor;
 		}
 	}
 	else {
 		for (int32_t X = x_start; X <= x_end; X++ ) {
-			set_pixel(X, Y, color);
+			
+			z = math::lerp(z_start, z_end, t);
+			
+			if (z > graphics::depth_buffer->get(X, Y)) {
+				set_pixel(X, Y, color);
+			}
+
+			t += zfactor;
 		}
 	}
 
@@ -240,14 +261,17 @@ void fill_3d_triangle(
 	vec3d a, vec3d b, vec3d c, scolor& color
 ) {
 
-	bool do_alpha_blending = color.a < UINT8_MAX;
+	bool do_alpha_blending = false; // color.a < UINT8_MAX;
 
-	a.x = std::floor(a.x); a.y = std::floor(a.y) , a.z = 1 / a.z;
+	a.x = std::floor(a.x); a.y = std::floor(a.y) , a.z = 1 / a.z; // 1/z for depth test
 	b.x = std::floor(b.x); b.y = std::floor(b.y) , b.z = 1 / b.z;
 	c.x = std::floor(c.x); c.y = std::floor(c.y) , c.z = 1 / c.z;
 
 	// sort triangle point by y for fill in orderer
 	sort_by_y(a, b, c);
+
+	sfloat area = math::area_of_2d_triangle(a,b,c); // area of project triangle
+	sfloat alpha = 0, beta = 0, gamma = 0; // area of sub triangles
 
 	// centroid to help us getting "clock-wise" orientation
 	vec3d centroid = math::centroid(a, b, c);
@@ -267,6 +291,8 @@ void fill_3d_triangle(
 	}
 
 	int32_t x_start = a.x, x_end = b.x, y = a.y;
+	vec3d p{ a.x , a.y , 0, 0};
+	sfloat z_start = 0, z_end = 0;
 
 	// calc slopes of triangle
 	sfloat slope_ab = math::slope2d(a,b);
@@ -279,14 +305,6 @@ void fill_3d_triangle(
 	sfloat i_ac = a.y - (slope_ac * a.x);
 	sfloat i_bc = b.y - (slope_bc * b.x);
 
-	sfloat z_start = 0;
-	sfloat z_end = 0;
-
-	// take the inverse of z's for "depth calculation"
-	sfloat p1_z = 1 / a.z;
-	sfloat p2_z = 1 / b.z;
-	sfloat p3_z = 1 / c.z;
-
 	// fill the first half of the triangle from a to b
 	if (slope_ab != 0 && slope_ac != 0) {
 
@@ -295,6 +313,26 @@ void fill_3d_triangle(
 			// x = (y - b) / m
 			x_start = (y - i_ab) / slope_ab + bais_ab;
 			x_end   = (y - i_ac) / slope_ac + bais_ac;
+			
+			// calc z value for z_start
+			p.x = sfloat(x_start);
+			p.y = sfloat(y);
+			
+			alpha = math::area_of_2d_triangle(p, c, b) / area;
+			beta  = math::area_of_2d_triangle(a, p, c) / area;
+			gamma = math::area_of_2d_triangle(a, p, b) / area;
+			// find z_start value by interpolate z values of "a,b,c" 
+			z_start = 1 / (alpha * a.z + beta * b.z + gamma * c.z);
+
+			// calc z value for x_end
+			p.x = sfloat(x_end);
+
+			alpha = math::area_of_2d_triangle(p, b, c) / area;
+			beta  = math::area_of_2d_triangle(a, p, c) / area;
+			gamma = math::area_of_2d_triangle(a, p, b) / area;
+
+			// find z_start value by interpolate z values of "a,b,c" 
+			z_end = 1 / (alpha * a.z + beta * b.z + gamma * c.z);
 
 			// fill range
 			fill_row(x_start, x_end, y , z_start , z_end , color , do_alpha_blending);
@@ -304,7 +342,10 @@ void fill_3d_triangle(
 	else {
 		x_start += bais_ab;
 		x_end   += bais_ac;
-		
+
+		z_start = a.z;
+		z_end = b.z;
+
 		fill_row(x_start, x_end, y, z_start, z_end, color , do_alpha_blending);
 		y += 1;
 	}
@@ -317,6 +358,26 @@ void fill_3d_triangle(
 			// x = (y - b) / m
 			x_start = (y - i_ac) / slope_ac + bais_ac;
 			x_end   = (y - i_bc) / slope_bc + bais_bc;
+
+			// calc z value for z_start
+			p.x = sfloat(x_start);
+			p.y = sfloat(y);
+
+			alpha = math::area_of_2d_triangle(p, b, c) / area;
+			beta  = math::area_of_2d_triangle(a, p, c) / area;
+			gamma = math::area_of_2d_triangle(a, p, b) / area;
+			// find z_start value by interpolate z values of "a,b,c" 
+			z_start = 1 / (alpha * a.z + beta * b.z + gamma * c.z);
+
+			// calc z value for x_end
+			p.x = sfloat(x_end);
+
+			alpha = math::area_of_2d_triangle(p, b, c) / area;
+			beta  = math::area_of_2d_triangle(a, p, c) / area;
+			gamma = math::area_of_2d_triangle(a, p, b) / area;
+
+			// find z_start value by interpolate z values of "a,b,c" 
+			z_end = 1 / (alpha * a.z + beta * b.z + gamma * c.z);
 
 			fill_row(x_start, x_end, y, z_start, z_end, color , do_alpha_blending);
 		}
