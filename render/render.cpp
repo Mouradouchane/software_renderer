@@ -35,8 +35,8 @@ namespace graphics {
 	sfloat ortho_dyw = -((ndc.t + ndc.b) / (ndc.t - ndc.b));
 	sfloat ortho_dzw = -((ndc.f + ndc.n) / (ndc.f - ndc.n));
 
-	sfloat near_distance = 1;
-	sfloat far_distance  = 10;
+	sfloat near_distance =  1;
+	sfloat far_distance  = -1;
 	sfloat z_factor = (far_distance / (far_distance - near_distance));
 
 	sfloat far_plus_near = far_distance + near_distance; //(ndc.f + ndc.n);
@@ -47,11 +47,11 @@ namespace graphics {
 	// =====================================
 
 	// buffers
-	sfloat max_depth_value = -(std::numeric_limits<float>::infinity());
 	buffer<sfloat>* depth_buffer = nullptr; // z-buffer
-
 	buffer<scolor>* front_buffer = nullptr;
 	buffer<scolor>* back_buffer  = nullptr;
+
+	sfloat max_depth_value = -(std::numeric_limits<float>::infinity());
 
 	BITMAPINFO bitmap_info = { 0 };
 	BITMAP     bitmap = { 0 };
@@ -61,36 +61,41 @@ namespace graphics {
 	scolor clear_color = { 0,0,0,0 };
 
 // few triangles for testing 
-vec3d p1 = { 0, 0, 0 }, p2 = { 0, 1, 0 }, p3 = { 1, 0, 0 }, p4 = { 1, 1, 0 };
-vec3d p5 = { 0, 0, 1 }, p6 = { 0, 1, 1 }, p7 = { 1, 0, 1 }, p8 = { 1, 1, 1 };
-vec3d pivot = { 0.5, 0.5, 0.5, 0 };
+vec3d p1 = { 0, 0, 0 }, p2 = { 1, 0, 0 }, p3 = { 0, 1, 0 }, p4 = { 1, 1, 0 };
+vec3d p5 = { 0, 0, -1 }, p6 = { 1, 0, -1 }, p7 = { 0, 1, -1 }, p8 = { 1, 1, -1 };
+vec3d pivot = { 0, 0, -1.1, 1 };
 
-size_t trig_size = 2;
+size_t trig_size = 12;
 triangle3d trigs[12] = {
-	triangle3d(vec3d{0,0,0},vec3d{0.5,1,0.5},vec3d{1,0,1}),
-	triangle3d(vec3d{0,0,1},vec3d{0.5,1,0.5},vec3d{1,0,0}),
+
 	/*
+	triangle3d(vec3d{0,0,-1.5},vec3d{0.5,1,-1.5},vec3d{1,0,-1.5}),
+	triangle3d(vec3d{0,0,-1},vec3d{0.5,1,-1},vec3d{1,0,-1}),
+	*/
 	triangle3d(p1,p2,p3),
-	triangle3d(p2,p3,p4),
+	triangle3d(p5,p6,p7),
+	triangle3d(p5,p6,p7),
+
+	triangle3d(p6,p7,p8),
 	triangle3d(p1,p7,p3),
 	triangle3d(p5,p6,p7),
+
 	triangle3d(p2,p4,p3),
 	triangle3d(p3,p7,p8),
-	
 	triangle3d(p3,p4,p8),
+	
 	triangle3d(p1,p5,p6),
-	triangle3d(p1,p2,p6),
-	triangle3d(p2,p6,p8),
 	triangle3d(p2,p7,p8),
 	triangle3d(p1,p7,p5),
+	/*
 	*/
 };
 triangle3d ptrigs[12] = {};
 
 scolor colors[12] = {
-	scolor{0,255,0,255},scolor{0,0,255,255},
-	//draw::random_scolor(false),draw::random_scolor(false),
-	draw::random_scolor(false),draw::random_scolor(false),
+	scolor{0,0,255,255},
+	scolor{0,255,0,255},
+	scolor{255,0,0,255},scolor{255,0,255,255},
 	draw::random_scolor(false),draw::random_scolor(false),
 	draw::random_scolor(false),draw::random_scolor(false),
 	draw::random_scolor(false),draw::random_scolor(false),
@@ -192,7 +197,7 @@ void destroy() {
 
 void to_world_space() {
 	
-	int32_t x = -1 , y = -1 , z = -3, size = 2;
+	int32_t x = -1 , y = -1 , z = -4, size = 2;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -208,10 +213,10 @@ void to_world_space() {
 
 }
 
+/*
 void transform_thread() {
 	Sleep(500);
 
-	/*
 	while (global::running) {
 
 		for (uint32_t t = 0; t < trig_size; t += 1) {
@@ -222,9 +227,10 @@ void transform_thread() {
 
 		Sleep(100);
 	}
-	*/
+
 }
 std::thread trans_thread(transform_thread);
+*/
 
 vec3d perspective_projection(vec3d& point) {
 
@@ -241,10 +247,10 @@ vec3d perspective_projection(vec3d& point) {
 	}
 
 	new_point.w = point.z;
-	new_point.z = point.z * z_factor + -(z_factor * near_distance);//(ndc.f / (ndc.f - ndc.n)) + -((ndc.f / (ndc.f - ndc.n)) * ndc.n);
-	/*
-	new_point.z = point.z * far_plus_near - far_mult_near;
 	new_point.z = point.z * (far_distance + near_distance)-(far_distance*near_distance);
+	/*
+	new_point.z = point.z * z_factor + -(z_factor * near_distance); //(ndc.f / (ndc.f - ndc.n)) + -((ndc.f / (ndc.f - ndc.n)) * ndc.n);
+	new_point.z = point.z * far_plus_near - far_mult_near;
 	*/
 
 	// orthographic projection
@@ -390,16 +396,15 @@ void render() {
 	
 	// transformation
 	/*
-	*/
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
-			//trigs[t].points[p].z -= 0.01;
-			//math::x_rotate(pivot, trigs[t].points[p], 0.05);
+			//trigs[0].points[p].z -= 0.01;
 			//math::z_rotate(pivot, trigs[t].points[p], -0.05);
-			math::y_rotate(pivot, trigs[t].points[p], 0.02);
+			//math::y_rotate(pivot, trigs[t].points[p], 0.02);
+			//math::x_rotate(pivot, trigs[t].points[p], 0.02);
 		}
 	}
-	//pivot.z -= 0.01;
+	*/
 
 	projection();
 
