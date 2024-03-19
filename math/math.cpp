@@ -380,16 +380,16 @@ sfloat area_of_2d_triangle(
 sfloat area_of_2d_triangle(
     vec3d const& p1, vec3d const& p2, vec3d const& p3
 ) {
-
-    sfloat A = math::distance2d(p2, p1);
-    sfloat B = math::distance2d(p3, p2);
-    sfloat C = math::distance2d(p3, p1);
+   
+    sfloat A = math::distance2d(p1, p2);
+    sfloat B = math::distance2d(p1, p3);
+    sfloat C = math::distance2d(p2, p3);
 
     // formula1 : p = (a+b+c) / 3
     sfloat p = (A + B + C) / 2;
 
     // formula2 : area = sqrt( p * (p - A) * (p - B) * (p - C) )
-    return std::sqrtf(p * (p - A) * (p - B) * (p - C));
+    return std::sqrtf( std::abs(p * (p - A) * (p - B) * (p - C)) );
 }
 
 

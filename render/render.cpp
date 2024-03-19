@@ -35,7 +35,7 @@ namespace graphics {
 	sfloat ortho_dyw = -((ndc.t + ndc.b) / (ndc.t - ndc.b));
 	sfloat ortho_dzw = -((ndc.f + ndc.n) / (ndc.f - ndc.n));
 
-	sfloat near_distance =  1;
+	sfloat near_distance = 1;
 	sfloat far_distance  = -1;
 	sfloat z_factor = (far_distance / (far_distance - near_distance));
 
@@ -65,41 +65,51 @@ vec3d p1 = { 0, 0, 0 }, p2 = { 1, 0, 0 }, p3 = { 0, 1, 0 }, p4 = { 1, 1, 0 };
 vec3d p5 = { 0, 0, -1 }, p6 = { 1, 0, -1 }, p7 = { 0, 1, -1 }, p8 = { 1, 1, -1 };
 vec3d pivot = { 0, 0, -1.1, 1 };
 
-size_t trig_size = 12;
+size_t trig_size = 2;
 triangle3d trigs[12] = {
 
+	triangle3d({ 0, 0, 0 },{ 1, 0, 0 },{ 0, 1, 0 }),
+	triangle3d({ 0, 0, -0.1 },{ 1, 0, -0.1 },{ 0, 1, -0.1 }),
 	/*
-	triangle3d(vec3d{0,0,-1.5},vec3d{0.5,1,-1.5},vec3d{1,0,-1.5}),
-	triangle3d(vec3d{0,0,-1},vec3d{0.5,1,-1},vec3d{1,0,-1}),
-	*/
+	triangle3d(p1,p6,p8),
+	triangle3d(p2,p5,p7),
+
 	triangle3d(p1,p2,p3),
-	triangle3d(p5,p6,p7),
-	triangle3d(p5,p6,p7),
+	triangle3d(p2,p3,p4),
+	*/
 
+	triangle3d(p5,p6,p7),
 	triangle3d(p6,p7,p8),
-	triangle3d(p1,p7,p3),
-	triangle3d(p5,p6,p7),
 
-	triangle3d(p2,p4,p3),
+	triangle3d(p2,p5,p6),
+	triangle3d(p2,p5,p1),
+
 	triangle3d(p3,p7,p8),
+	triangle3d(p3,p4,p8),
+
 	triangle3d(p3,p4,p8),
 	
 	triangle3d(p1,p5,p6),
 	triangle3d(p2,p7,p8),
 	triangle3d(p1,p7,p5),
-	/*
-	*/
 };
 triangle3d ptrigs[12] = {};
 
 scolor colors[12] = {
+	scolor{255,0,0,255},
 	scolor{0,0,255,255},
-	scolor{0,255,0,255},
-	scolor{255,0,0,255},scolor{255,0,255,255},
-	draw::random_scolor(false),draw::random_scolor(false),
-	draw::random_scolor(false),draw::random_scolor(false),
-	draw::random_scolor(false),draw::random_scolor(false),
-	draw::random_scolor(false),draw::random_scolor(false)
+	scolor{255,0,0,255},
+	scolor{255,255,0,255},
+
+	scolor{255,0,0,255},
+	scolor{255,255,0,255},
+	scolor{255,0,0,255},
+	scolor{255,255,0,255},
+
+	scolor{255,0,0,255},
+	scolor{255,255,0,255},
+	scolor{255,0,0,255},
+	scolor{255,255,0,255}
 };
 
 bool init() {
@@ -392,19 +402,22 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
+
 void render() {
 	
 	// transformation
 	/*
+	*/
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
-			//trigs[0].points[p].z -= 0.01;
+			trigs[t].points[p].z -= 0.01;
 			//math::z_rotate(pivot, trigs[t].points[p], -0.05);
-			//math::y_rotate(pivot, trigs[t].points[p], 0.02);
-			//math::x_rotate(pivot, trigs[t].points[p], 0.02);
+			//math::x_rotate(pivot, trigs[t].points[p], 0.005);
+			math::y_rotate(pivot, trigs[t].points[p], 0.02);
 		}
 	}
-	*/
+	pivot.z -= 0.01;
+
 
 	projection();
 

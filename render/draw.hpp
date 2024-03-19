@@ -56,7 +56,8 @@ namespace draw {
 	void fill_3d_triangle(vec3d p1, vec3d p2, vec3d p3, scolor& color);
 	
 	// fill row of a 3d shape with taken in count z values
-	void fill_row(int32_t x_start, int32_t x_end, int32_t Y, sfloat z_start, sfloat z_end, scolor& color , bool blendcolor = false);
+	void fill_row(int32_t x_start, int32_t x_end, int32_t Y, sfloat z_start, sfloat z_end, scolor& color);
+	void fill_transparent_row(int32_t x_start, int32_t x_end, int32_t Y, sfloat z_start, sfloat z_end, scolor& color);
 
 	scolor random_scolor(bool random_alpha = true);
 	bgra8  random_bgra8 (bool random_alpha = true);
