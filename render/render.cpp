@@ -8,71 +8,69 @@
 
 namespace graphics {
 
-	const sfloat min_fov = math::to_radian(20);
-	const sfloat max_fov = math::to_radian(160);
+// ===== rendering configs =====
+const sfloat min_fov = math::to_radian(20);
+const sfloat max_fov = math::to_radian(160);
 
-	sfloat fov_deg = 100; // degree
-	sfloat fov  = math::to_radian(fov_deg);
-	sfloat hfov = 1 / std::tanf(fov / 2);
+sfloat fov_deg = 100; // degree
+sfloat fov  = math::to_radian(fov_deg);
+sfloat hfov = 1 / std::tanf(fov / 2);
 
-	sfloat aspect_ratio = ((sfloat)window::height / (sfloat)window::width);
+sfloat aspect_ratio = NULL;
 
-	sfloat half_screen_width  = (sfloat)window::width / 2;
-	sfloat half_screen_height = (sfloat)window::height / 2;
+sfloat half_screen_width  = NULL;
+sfloat half_screen_height = NULL;
 
-	// ===== projection configs =====
-	cube ndc = { 
-		 1,-1, // near , far
-		-1, 1, // left , right
-		 1,-1  // top  , buttom
-	};
+cube frustum = { 0 }; // view frustum variables
 
-	sfloat ortho_dx = (2 / (ndc.r - ndc.l));
-	sfloat ortho_dy = (2 / (ndc.t - ndc.b));
-	sfloat ortho_dz = (2 / (ndc.f - ndc.n));
+sfloat ortho_dx = NULL;
+sfloat ortho_dy = NULL;
+sfloat ortho_dz = NULL;
 
-	sfloat ortho_dxw = -((ndc.r + ndc.l) / (ndc.r - ndc.l));
-	sfloat ortho_dyw = -((ndc.t + ndc.b) / (ndc.t - ndc.b));
-	sfloat ortho_dzw = -((ndc.f + ndc.n) / (ndc.f - ndc.n));
+sfloat ortho_dxw = NULL;
+sfloat ortho_dyw = NULL;
+sfloat ortho_dzw = NULL;
 
-	sfloat near_distance = 1;
-	sfloat far_distance  = -1;
-	sfloat z_factor = (far_distance / (far_distance - near_distance));
+sfloat z_factor = NULL;
 
-	sfloat far_plus_near = far_distance + near_distance; //(ndc.f + ndc.n);
-	sfloat far_mult_near = far_distance * near_distance; //(ndc.f * ndc.n);
+sfloat far_plus_near = NULL;
+sfloat far_mult_near = NULL;
 
-	sfloat perpsective_x_factor = NULL;
-	sfloat perspective_y_factor = NULL;
-	// =====================================
+sfloat perpsective_x_factor = NULL;
+sfloat perspective_y_factor = NULL;
 
-	// buffers
-	buffer<sfloat>* depth_buffer = nullptr; // z-buffer
-	buffer<scolor>* front_buffer = nullptr;
-	buffer<scolor>* back_buffer  = nullptr;
+// =====================================
 
-	sfloat max_depth_value = -(std::numeric_limits<float>::infinity());
+// ============= buffers =============
+buffer<sfloat>* depth_buffer = nullptr; // z-buffer
+buffer<scolor>* front_buffer = nullptr;
+buffer<scolor>* back_buffer  = nullptr;
 
-	BITMAPINFO bitmap_info = { 0 };
-	BITMAP     bitmap = { 0 };
-	HBITMAP    hbitmap = NULL;
-	HDC        bitmap_hdc = NULL;
+sfloat max_depth_value = -(std::numeric_limits<float>::infinity());
 
-	scolor clear_color = { 0,0,0,0 };
+BITMAPINFO bitmap_info = { 0 };
+BITMAP     bitmap = { 0 };
+HBITMAP    hbitmap = NULL;
+HDC        bitmap_hdc = NULL;
+
+scolor clear_color = { 0,0,0,0 };
 
 // few triangles for testing 
-vec3d p1 = { 0, 0, 0 }, p2 = { 1, 0, 0 }, p3 = { 0, 1, 0 }, p4 = { 1, 1, 0 };
+vec3d p1 = { 0, 0, -0.1 }, p2 = { 1, 0, -0.1 }, p3 = { 0, 1, -0.1 }, p4 = { 1, 1, -0.1 };
 vec3d p5 = { 0, 0, -1 }, p6 = { 1, 0, -1 }, p7 = { 0, 1, -1 }, p8 = { 1, 1, -1 };
 vec3d pivot = { 0, 0, -1.1, 1 };
 
 size_t trig_size = 2;
 triangle3d trigs[12] = {
 
-	triangle3d({ 0, 0, 0 },{ 1, 0, 0 },{ 0, 1, 0 }),
-	triangle3d({ 0, 0, -0.1 },{ 1, 0, -0.1 },{ 0, 1, -0.1 }),
-	/*
 	triangle3d(p1,p6,p8),
 	triangle3d(p2,p5,p7),
+
+	/*
+	triangle3d({ 0, 0, 0 }, { 0.5, 1, -0.5 }, { 1, 0, -1 }),
+	triangle3d({ 0, 0, -1}, { 0.5, 1, -0.5 }, { 1, 0, 0 }),
+	triangle3d({ 0, 0, 0 },{ 1, 0, 0 },{ 0, 1, 0 }),
+	triangle3d({ 0, 0, -0.1 },{ 1, 0, -0.1 },{ 0, 1, -0.1 }),
 
 	triangle3d(p1,p2,p3),
 	triangle3d(p2,p3,p4),
@@ -150,13 +148,35 @@ bool init() {
 		return false;
 	}
 
+	// setup rendering variables
 	half_screen_width  = (sfloat)back_buffer->width / 2;
 	half_screen_height = (sfloat)back_buffer->height / 2;
 
 	aspect_ratio = ((sfloat)window::height / (sfloat)window::width);
-	perpsective_x_factor = near_distance * aspect_ratio * hfov;// ndc.n* aspect_ratio* hfov;
-	perspective_y_factor = near_distance * hfov; // ndc.n* hfov;
+
+	frustum.l = 0;
+	frustum.r = back_buffer->width;
+	frustum.b = 0;
+	frustum.t = back_buffer->height;
+	frustum.n = 1;
+	frustum.f = 1000;
+
+	perpsective_x_factor = frustum.n * aspect_ratio * hfov;
+	perspective_y_factor = frustum.n * hfov;
 	
+	ortho_dx = (2 / (frustum.r - frustum.l));
+	ortho_dy = (2 / (frustum.t - frustum.b));
+	ortho_dz = (2 / (frustum.f - frustum.n));
+
+	ortho_dxw = -((frustum.r + frustum.l) / (frustum.r - frustum.l));
+	ortho_dyw = -((frustum.t + frustum.b) / (frustum.t - frustum.b));
+	ortho_dzw = -((frustum.f + frustum.n) / (frustum.f - frustum.n));
+
+	z_factor = (frustum.f / (frustum.f - frustum.n));
+
+	far_plus_near = frustum.f + frustum.n;
+	far_mult_near = frustum.f * frustum.n;
+
 	to_world_space();
 	clear_color.a = 255;
 	
@@ -207,7 +227,7 @@ void destroy() {
 
 void to_world_space() {
 	
-	int32_t x = -1 , y = -1 , z = -4, size = 2;
+	int32_t x = -1 , y = -1 , z = -8, size = 6;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -252,28 +272,16 @@ vec3d perspective_projection(vec3d& point) {
 		new_point.y = (point.y / -point.z) * perspective_y_factor;
 	}
 	else {
-		new_point.x = -point.x * perpsective_x_factor;
-		new_point.y = -point.y * perspective_y_factor;
+		new_point.x = point.x * perpsective_x_factor;
+		new_point.y = point.y * perspective_y_factor;
 	}
-
-	new_point.w = point.z;
-	new_point.z = point.z * (far_distance + near_distance)-(far_distance*near_distance);
-	/*
-	new_point.z = point.z * z_factor + -(z_factor * near_distance); //(ndc.f / (ndc.f - ndc.n)) + -((ndc.f / (ndc.f - ndc.n)) * ndc.n);
+	
+	new_point.w = -point.z;
 	new_point.z = point.z * far_plus_near - far_mult_near;
-	*/
 
-	// orthographic projection
-	new_point.x = new_point.x * ortho_dx + ortho_dxw;
-	new_point.y = new_point.y * ortho_dy + ortho_dyw;
-	new_point.z = new_point.z * ortho_dz + ortho_dzw;
-
-	// perspective divide
-	if (new_point.z != 0) {
-
-		new_point.x /= new_point.z;
-		new_point.y /= new_point.z;
-	}
+	// remap to 0,1 rangle
+	new_point.x = (new_point.x + 1) / 2;
+	new_point.y = (new_point.y + 1) / 2;
 
 	return new_point;
 }
@@ -328,10 +336,12 @@ void to_screen_space(vec3d& point) {
 	/*
 	point.x = point.x * back_buffer->width  + half_screen_width;
 	point.y = point.y * back_buffer->height + half_screen_height;
-	*/
 	
 	point.x = (point.x + 1) * half_screen_width;
 	point.y = (point.y + 1) * half_screen_height;
+	*/
+	point.x = point.x * back_buffer->width;
+	point.y = point.y * back_buffer->height;
 }
 
 void draw_fps_info() {
@@ -367,7 +377,7 @@ void rasterization() {
 	// draw to buffer
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 
-		draw::fill_3d_triangle(
+		draw::fill_3d_triangle_proto1(
 			ptrigs[t].points[0], ptrigs[t].points[1], ptrigs[t].points[2],
 			colors[t]
 		);
@@ -402,21 +412,18 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
-
 void render() {
 	
 	// transformation
-	/*
-	*/
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
-			trigs[t].points[p].z -= 0.01;
+			//trigs[t].points[p].z -= 0.01;
 			//math::z_rotate(pivot, trigs[t].points[p], -0.05);
-			//math::x_rotate(pivot, trigs[t].points[p], 0.005);
-			math::y_rotate(pivot, trigs[t].points[p], 0.02);
+			math::y_rotate(pivot, trigs[t].points[p], -0.02);
+			//math::x_rotate(pivot, trigs[t].points[p], 0.02);
 		}
 	}
-	pivot.z -= 0.01;
+	//pivot.z -= 0.01;
 
 
 	projection();
