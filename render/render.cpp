@@ -58,24 +58,17 @@ scolor clear_color = { 0,0,0,0 };
 // few triangles for testing 
 vec3d p1 = { 0, 0, -0.1 }, p2 = { 1, 0, -0.1 }, p3 = { 0, 1, -0.1 }, p4 = { 1, 1, -0.1 };
 vec3d p5 = { 0, 0, -1 }, p6 = { 1, 0, -1 }, p7 = { 0, 1, -1 }, p8 = { 1, 1, -1 };
-vec3d pivot = { 0, 0, -1.1, 1 };
+vec3d pivot = { 0, 0, 0,0 };
 
 size_t trig_size = 2;
 triangle3d trigs[12] = {
 
 	triangle3d(p1,p6,p8),
 	triangle3d(p2,p5,p7),
-
 	/*
-	triangle3d({ 0, 0, 0 }, { 0.5, 1, -0.5 }, { 1, 0, -1 }),
-	triangle3d({ 0, 0, -1}, { 0.5, 1, -0.5 }, { 1, 0, 0 }),
-	triangle3d({ 0, 0, 0 },{ 1, 0, 0 },{ 0, 1, 0 }),
-	triangle3d({ 0, 0, -0.1 },{ 1, 0, -0.1 },{ 0, 1, -0.1 }),
-
 	triangle3d(p1,p2,p3),
 	triangle3d(p2,p3,p4),
 	*/
-
 	triangle3d(p5,p6,p7),
 	triangle3d(p6,p7,p8),
 
@@ -154,19 +147,19 @@ bool init() {
 
 	aspect_ratio = ((sfloat)window::height / (sfloat)window::width);
 
-	frustum.l = 0;
-	frustum.r = back_buffer->width;
-	frustum.b = 0;
-	frustum.t = back_buffer->height;
-	frustum.n = 1;
-	frustum.f = 1000;
+	frustum.l = -half_screen_width;
+	frustum.r =  half_screen_width;
+	frustum.b = -half_screen_height;
+	frustum.t =  half_screen_height;
+	frustum.n = -1;
+	frustum.f = -100;
 
-	perpsective_x_factor = frustum.n * aspect_ratio * hfov;
-	perspective_y_factor = frustum.n * hfov;
+	perpsective_x_factor = frustum.n * aspect_ratio;//* hfov;
+	perspective_y_factor = frustum.n;//* hfov;
 	
 	ortho_dx = (2 / (frustum.r - frustum.l));
 	ortho_dy = (2 / (frustum.t - frustum.b));
-	ortho_dz = (2 / (frustum.f - frustum.n));
+	ortho_dz = (-2 / (frustum.f - frustum.n));
 
 	ortho_dxw = -((frustum.r + frustum.l) / (frustum.r - frustum.l));
 	ortho_dyw = -((frustum.t + frustum.b) / (frustum.t - frustum.b));
@@ -174,8 +167,8 @@ bool init() {
 
 	z_factor = (frustum.f / (frustum.f - frustum.n));
 
-	far_plus_near = frustum.f + frustum.n;
-	far_mult_near = frustum.f * frustum.n;
+	far_plus_near =  frustum.f + frustum.n;
+	far_mult_near = -(frustum.f * frustum.n);
 
 	to_world_space();
 	clear_color.a = 255;
@@ -227,7 +220,8 @@ void destroy() {
 
 void to_world_space() {
 	
-	int32_t x = -1 , y = -1 , z = -8, size = 6;
+	int32_t size = 10;
+	int32_t x = 0, y = 0, z = -40;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -267,18 +261,24 @@ vec3d perspective_projection(vec3d& point) {
 	vec3d new_point = {};
 
 	// perspective transformation
-	if (point.z != 0) {
-		new_point.x = (point.x / -point.z) * perpsective_x_factor;
-		new_point.y = (point.y / -point.z) * perspective_y_factor;
-	}
-	else {
-		new_point.x = point.x * perpsective_x_factor;
-		new_point.y = point.y * perspective_y_factor;
-	}
-	
-	new_point.w = -point.z;
-	new_point.z = point.z * far_plus_near - far_mult_near;
+	new_point.x = point.x * perpsective_x_factor; // near * aspect_ratio
+	new_point.y = point.y * perspective_y_factor; // near
+	new_point.w = point.z;
+	new_point.z = point.z * far_plus_near + far_mult_near;
 
+	// perspective divide
+	if (new_point.w != 0) {
+		new_point.x /= -new_point.w;
+		new_point.y /= -new_point.w;
+	}
+
+	// orthographics projection
+	/*
+	new_point.x = new_point.x * ortho_dx + ortho_dxw;
+	new_point.y = new_point.y * ortho_dy + ortho_dyw;
+	new_point.z = new_point.z * ortho_dz + ortho_dzw;
+	*/
+	
 	// remap to 0,1 rangle
 	new_point.x = (new_point.x + 1) / 2;
 	new_point.y = (new_point.y + 1) / 2;
@@ -298,13 +298,6 @@ vec3d orthographic_projection(vec3d& point){
 	new_point.x = new_point.x * ortho_dx + ortho_dxw;
 	new_point.y = new_point.y * ortho_dy + ortho_dyw;
 	new_point.z = new_point.z * ortho_dz + ortho_dzw;
-
-	// perspective divide
-	if (new_point.z != 0) {
-
-		new_point.x /= new_point.z;
-		new_point.y /= new_point.z;
-	}
 
 	return new_point;
 }
@@ -334,11 +327,11 @@ void projection() {
 
 void to_screen_space(vec3d& point) {
 	/*
-	point.x = point.x * back_buffer->width  + half_screen_width;
-	point.y = point.y * back_buffer->height + half_screen_height;
-	
 	point.x = (point.x + 1) * half_screen_width;
 	point.y = (point.y + 1) * half_screen_height;
+
+	point.x = point.x * back_buffer->width  + half_screen_width;
+	point.y = point.y * back_buffer->height + half_screen_height;
 	*/
 	point.x = point.x * back_buffer->width;
 	point.y = point.y * back_buffer->height;
@@ -412,19 +405,22 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
+bool debug_transform = 1;
 void render() {
 	
 	// transformation
-	for (uint32_t t = 0; t < trig_size; t += 1) {
-		for (uint32_t p = 0; p < 3; p += 1) {
-			//trigs[t].points[p].z -= 0.01;
-			//math::z_rotate(pivot, trigs[t].points[p], -0.05);
-			math::y_rotate(pivot, trigs[t].points[p], -0.02);
-			//math::x_rotate(pivot, trigs[t].points[p], 0.02);
+	if (debug_transform) {
+		for (uint32_t t = 0; t < trig_size; t += 1) {
+			for (uint32_t p = 0; p < 3; p += 1) {
+				//trigs[t].points[p].z -= 0.01;
+				//trigs[t].points[p].x += 1;
+				//math::z_rotate(pivot, trigs[t].points[p], -0.01);
+				//math::y_rotate(pivot, trigs[t].points[p], -0.02);
+				math::x_rotate(pivot, trigs[t].points[p], 0.01);
+			}
 		}
+		//pivot.z -= 0.01;
 	}
-	//pivot.z -= 0.01;
-
 
 	projection();
 

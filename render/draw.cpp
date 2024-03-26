@@ -456,11 +456,11 @@ void fill_3d_triangle_proto1(
 				beta  = math::area_of_2d_triangle(a, p, c) / area;
 				gamma = 1 - (alpha + beta);
 
-				z = 1 / ((alpha * wA) + (beta * wB) + (gamma * wC));
+				z = ((alpha * wA) + (beta * wB) + (gamma * wC));
 
 				if (z > graphics::depth_buffer->get(x_start, y)) {
-					graphics::back_buffer->set(x_start, y, color);
 					graphics::depth_buffer->set(x_start, y, z);
+					graphics::back_buffer->set(x_start, y, color);
 				}
 
 			}
@@ -485,11 +485,11 @@ void fill_3d_triangle_proto1(
 			beta  = math::area_of_2d_triangle(a, p, c) / area;
 			gamma = 1 - (alpha + beta);
 
-			z = 1 / ((alpha * wA) + (beta * wB) + (gamma * wC));
+			z = ((alpha * wA) + (beta * wB) + (gamma * wC));
 
 			if (z > graphics::depth_buffer->get(x_start, y)) {
-				graphics::back_buffer->set(x_start, y, color);
 				graphics::depth_buffer->set(x_start, y, z);
+				graphics::back_buffer->set(x_start, y, color);
 			}
 
 		}
@@ -519,11 +519,11 @@ void fill_3d_triangle_proto1(
 				beta  = math::area_of_2d_triangle(a, p, c) / area;
 				gamma = 1 - (alpha + beta);
 
-				z = 1 / ((alpha * wA) + (beta * wB) + (gamma * wC));
+				z = ((alpha * wA) + (beta * wB) + (gamma * wC));
 
 				if (z > graphics::depth_buffer->get(x_start, y)) {
-					graphics::back_buffer->set(x_start, y, color);
 					graphics::depth_buffer->set(x_start, y, z);
+					graphics::back_buffer->set(x_start, y, color);
 				}
 
 			}
