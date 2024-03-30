@@ -1,7 +1,7 @@
 
 /*
 	==============================
-	all the types are defined here
+	all the types defined here
 	==============================
 */
 
@@ -9,6 +9,8 @@
 
 #ifndef TYPES_HPP
 #define TYPES_HPP
+
+#include "../macros/macros.hpp"
 
 #ifndef _stdint
 #define _stdint	
@@ -45,12 +47,10 @@ typedef float        float32 , *ptr_float32;
 typedef double       float64 , *ptr_float64;
 typedef long double  float96 , *ptr_float96;
 
-#define FLOAT_TYPE 32
-
-#if FLOAT_TYPE == 32
-	#define sfloat float32
-#else 
+#if TARGET_ARCH == x64
 	#define sfloat float64
+#else 
+	#define sfloat float32
 #endif
 
 typedef class matrix {
@@ -165,12 +165,12 @@ typedef struct vec3d {
 
 // just for NDC 
 typedef struct cube {
-	sfloat n =  1;
-	sfloat f = -1;
-	sfloat l = -1;
-	sfloat r =  1;
-	sfloat t =  1;
-	sfloat b = -1;
+	sfloat n = 0;
+	sfloat f = 0;
+	sfloat l = 0;
+	sfloat r = 0;
+	sfloat t = 0;
+	sfloat b = 0;
 };
 
 vec2d create_vec2d(sfloat x=0, sfloat y=0);
@@ -364,6 +364,23 @@ public:
 
 };
 // end : class triangle3d
+
+class mesh {
+
+public :
+	vec3d* vertices = nullptr;
+	vec3d* normals  = nullptr;
+	uint64_t size = 0;
+
+	// constructor's
+	mesh();
+	mesh(uint64_t vertices_size);
+	mesh(vec3d* vertices_array , uint64_t vertices_size);
+
+	// destructor
+	~mesh();
+
+};
 
 /*
 	=================================================

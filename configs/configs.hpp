@@ -32,15 +32,15 @@ namespace global {
 	extern RECT			loop_msg_rect;
 
 }
-// end : namespace global
 
-namespace config{
+namespace config {
 	
 	extern uint16_t max_fps; // max frames per sec
 	extern bool draw_fps_info;
 
 	extern uint8_t projection_type;
+	extern uint8_t rendering_style;
+
 } 
-// end : namespace configs
 
 #endif

@@ -151,15 +151,15 @@ bool init() {
 	frustum.r =  half_screen_width;
 	frustum.b = -half_screen_height;
 	frustum.t =  half_screen_height;
-	frustum.n = -1;
-	frustum.f = -100;
+	frustum.n = 1;
+	frustum.f = 100;
 
-	perpsective_x_factor = frustum.n * aspect_ratio;//* hfov;
-	perspective_y_factor = frustum.n;//* hfov;
+	perpsective_x_factor = frustum.n * aspect_ratio * hfov;
+	perspective_y_factor = frustum.n * hfov;
 	
 	ortho_dx = (2 / (frustum.r - frustum.l));
 	ortho_dy = (2 / (frustum.t - frustum.b));
-	ortho_dz = (-2 / (frustum.f - frustum.n));
+	ortho_dz = (2 / (frustum.f - frustum.n));
 
 	ortho_dxw = -((frustum.r + frustum.l) / (frustum.r - frustum.l));
 	ortho_dyw = -((frustum.t + frustum.b) / (frustum.t - frustum.b));
@@ -220,8 +220,8 @@ void destroy() {
 
 void to_world_space() {
 	
-	int32_t size = 10;
-	int32_t x = 0, y = 0, z = -40;
+	int32_t size = 6;
+	int32_t x = -size/2, y = -size/2, z = -10;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -268,17 +268,11 @@ vec3d perspective_projection(vec3d& point) {
 
 	// perspective divide
 	if (new_point.w != 0) {
-		new_point.x /= -new_point.w;
-		new_point.y /= -new_point.w;
+		new_point.x /= new_point.w;
+		new_point.y /= new_point.w;
+		new_point.z /= new_point.w;
 	}
 
-	// orthographics projection
-	/*
-	new_point.x = new_point.x * ortho_dx + ortho_dxw;
-	new_point.y = new_point.y * ortho_dy + ortho_dyw;
-	new_point.z = new_point.z * ortho_dz + ortho_dzw;
-	*/
-	
 	// remap to 0,1 rangle
 	new_point.x = (new_point.x + 1) / 2;
 	new_point.y = (new_point.y + 1) / 2;
@@ -405,18 +399,18 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
-bool debug_transform = 1;
+bool debug_transform = 0;
 void render() {
 	
 	// transformation
 	if (debug_transform) {
 		for (uint32_t t = 0; t < trig_size; t += 1) {
 			for (uint32_t p = 0; p < 3; p += 1) {
-				//trigs[t].points[p].z -= 0.01;
-				//trigs[t].points[p].x += 1;
+				trigs[t].points[p].z += 0.1;
+				trigs[t].points[p].x += 0.01;
 				//math::z_rotate(pivot, trigs[t].points[p], -0.01);
 				//math::y_rotate(pivot, trigs[t].points[p], -0.02);
-				math::x_rotate(pivot, trigs[t].points[p], 0.01);
+				//math::x_rotate(pivot, trigs[t].points[p], 0.02);
 			}
 		}
 		//pivot.z -= 0.01;

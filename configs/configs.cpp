@@ -41,7 +41,7 @@ namespace config {
 	
 	bool draw_fps_info = true;
 	uint8_t projection_type = PERSPECTIVE_PROJECTION;
-
+	uint8_t rendering_style = PAINTING;
 }
 // end : namespace configs
 
