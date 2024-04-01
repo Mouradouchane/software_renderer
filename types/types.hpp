@@ -230,7 +230,7 @@ public :
 
 	}
 
-	void set(uint16_t X, uint16_t Y, type& new_value) {
+	void set(uint16_t X, uint16_t Y, type const& new_value) {
 		this->memory[ width * Y + X ] = new_value;
 	}
 

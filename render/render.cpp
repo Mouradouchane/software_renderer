@@ -31,7 +31,8 @@ sfloat ortho_dxw = NULL;
 sfloat ortho_dyw = NULL;
 sfloat ortho_dzw = NULL;
 
-sfloat z_factor = NULL;
+sfloat z_factor  = NULL;
+sfloat zn_factor = NULL;
 
 sfloat far_plus_near = NULL;
 sfloat far_mult_near = NULL;
@@ -63,8 +64,8 @@ vec3d pivot = { 0, 0, 0,0 };
 size_t trig_size = 2;
 triangle3d trigs[12] = {
 
-	triangle3d(p1,p6,p8),
-	triangle3d(p2,p5,p7),
+	triangle3d(p5,p2,{0.5,1,-0.5}),
+	triangle3d(p1,{0.5,1,-0.5},p6),
 	/*
 	triangle3d(p1,p2,p3),
 	triangle3d(p2,p3,p4),
@@ -146,13 +147,18 @@ bool init() {
 	half_screen_height = (sfloat)back_buffer->height / 2;
 
 	aspect_ratio = ((sfloat)window::height / (sfloat)window::width);
-
+	/*
 	frustum.l = -half_screen_width;
 	frustum.r =  half_screen_width;
 	frustum.b = -half_screen_height;
 	frustum.t =  half_screen_height;
-	frustum.n = 1;
-	frustum.f = 100;
+	*/
+	frustum.l = -1;
+	frustum.r =  1;
+	frustum.b = -1;
+	frustum.t =  1;
+	frustum.n =  1;
+	frustum.f =  100;
 
 	perpsective_x_factor = frustum.n * aspect_ratio * hfov;
 	perspective_y_factor = frustum.n * hfov;
@@ -165,7 +171,8 @@ bool init() {
 	ortho_dyw = -((frustum.t + frustum.b) / (frustum.t - frustum.b));
 	ortho_dzw = -((frustum.f + frustum.n) / (frustum.f - frustum.n));
 
-	z_factor = (frustum.f / (frustum.f - frustum.n));
+	z_factor  = (frustum.f / (frustum.f - frustum.n));
+	zn_factor = -z_factor * frustum.n;
 
 	far_plus_near =  frustum.f + frustum.n;
 	far_mult_near = -(frustum.f * frustum.n);
@@ -220,8 +227,8 @@ void destroy() {
 
 void to_world_space() {
 	
-	int32_t size = 6;
-	int32_t x = -size/2, y = -size/2, z = -10;
+	int32_t size = 4;
+	int32_t x = -size/2, y = -size/2, z = -15;
 
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 		for (uint32_t p = 0; p < 3; p += 1) {
@@ -264,18 +271,16 @@ vec3d perspective_projection(vec3d& point) {
 	new_point.x = point.x * perpsective_x_factor; // near * aspect_ratio
 	new_point.y = point.y * perspective_y_factor; // near
 	new_point.w = point.z;
-	new_point.z = point.z * far_plus_near + far_mult_near;
+	new_point.z = point.z * z_factor + zn_factor;
+	//new_point.z = point.z * far_plus_near + far_mult_near;
 
-	// perspective divide
+	// perspective divide "go to NDC"
 	if (new_point.w != 0) {
-		new_point.x /= new_point.w;
-		new_point.y /= new_point.w;
-		new_point.z /= new_point.w;
+		new_point.x /= -new_point.w;
+		new_point.y /= -new_point.w;
+		new_point.z /= -new_point.w;
 	}
 
-	// remap to 0,1 rangle
-	new_point.x = (new_point.x + 1) / 2;
-	new_point.y = (new_point.y + 1) / 2;
 
 	return new_point;
 }
@@ -324,11 +329,13 @@ void to_screen_space(vec3d& point) {
 	point.x = (point.x + 1) * half_screen_width;
 	point.y = (point.y + 1) * half_screen_height;
 
+	// remap to 0,1 rangle + going to screen space
+	point.x = ((point.x + 1) / 2).x * back_buffer->width;
+	point.y = ((point.y + 1) / 2).y * back_buffer->height;
+	*/
+
 	point.x = point.x * back_buffer->width  + half_screen_width;
 	point.y = point.y * back_buffer->height + half_screen_height;
-	*/
-	point.x = point.x * back_buffer->width;
-	point.y = point.y * back_buffer->height;
 }
 
 void draw_fps_info() {
@@ -364,7 +371,7 @@ void rasterization() {
 	// draw to buffer
 	for (uint32_t t = 0; t < trig_size; t += 1) {
 
-		draw::fill_3d_triangle_proto1(
+		draw::fill_3d_triangle(
 			ptrigs[t].points[0], ptrigs[t].points[1], ptrigs[t].points[2],
 			colors[t]
 		);
@@ -399,17 +406,17 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
-bool debug_transform = 0;
+bool debug_transform = 1;
 void render() {
 	
 	// transformation
 	if (debug_transform) {
 		for (uint32_t t = 0; t < trig_size; t += 1) {
 			for (uint32_t p = 0; p < 3; p += 1) {
-				trigs[t].points[p].z += 0.1;
-				trigs[t].points[p].x += 0.01;
-				//math::z_rotate(pivot, trigs[t].points[p], -0.01);
-				//math::y_rotate(pivot, trigs[t].points[p], -0.02);
+				//trigs[t].points[p].z -= 0.1;
+				//trigs[t].points[p].x += 0.01;
+				math::z_rotate(pivot, trigs[t].points[p], 0.01);
+				math::y_rotate(pivot, trigs[t].points[p], -0.02);
 				//math::x_rotate(pivot, trigs[t].points[p], 0.02);
 			}
 		}
