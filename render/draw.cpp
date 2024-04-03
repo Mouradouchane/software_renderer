@@ -41,7 +41,7 @@ void sort_by_x(vec3d& p1, vec3d& p2, vec3d& p3, bool bysmaller) {
 
 }
 
-scolor blend(scolor& back_color, scolor& front_color) {
+scolor blend(scolor const& back_color, scolor const& front_color) {
 	/*
 	if (front_color.a == 0) return back_color;
 	if (back_color.a == 0)  return front_color;
@@ -94,100 +94,119 @@ bgra8 random_bgra8(bool random_alpha) {
 
 /*
 	 draw lines functions
+*/
 
-void draw_line_over_x(vec3d& p1, vec3d& p2, sfloat slope, scolor& color){
+void draw_line_over_x(vec3d& p1, vec3d& p2, sfloat slope, scolor const& color){
 	
 	if (p1.x > p2.x) std::swap(p1, p2);
 
 	sfloat Y_intercept = math::y_intercept_at_x0_2d(p1 , slope);
-	int16_t x = p1.x;
-	int16_t y = p1.y;
-	
-	if (color.a < 255) {
+	uint32_t x = (uint32_t)p1.x;
+	uint32_t y = (uint32_t)p1.y;
+	uint32_t index = 0;
+
+	if (color.a < UINT8_MAX) {
 		for (   ; x <= p2.x; x += 1) {
-			y = (int16_t)math::y_intercept_2d(x, slope, Y_intercept);
-			set_pixel( x, y, blend(graphics::back_buffer->get(x, y),color) );
+			y = (int32_t)math::y_intercept_2d(x, slope, Y_intercept);
+			index = graphics::back_buffer->width * y + x;
+
+			graphics::back_buffer->memory[ index ] = blend(
+				graphics::back_buffer->memory[ index ] , color
+			);
 		}
 	}
 	else {
 		for (   ; x <= p2.x ; x += 1 ) {
 			y = (int32_t)math::y_intercept_2d(x, slope, Y_intercept);
-			set_pixel(x, y, color);
+			index = graphics::back_buffer->width * y + x;
+
+			graphics::back_buffer->memory[index] = color;
 		}
 	}
 
 }
 
-void draw_line_over_y(vec3d& p1, vec3d& p2, sfloat slope, scolor& color){
+void draw_line_over_y(vec3d& p1, vec3d& p2, sfloat slope, scolor const& color){
 
 	if (p1.y > p2.y) std::swap(p1, p2);
 
 	sfloat Y_intercept = math::y_intercept_at_x0_2d(p1,slope);
-	int16_t x = p1.x;
-	int16_t y = p1.y;
+	uint32_t x = (uint32_t)p1.x;
+	uint32_t y = (uint32_t)p1.y;
+	uint32_t index = 0;
 
-	if (color.a < 255) {
+	if (color.a < UINT8_MAX) {
 		for (   ; y <= p2.y; y += 1) {
-			x = (int16_t)math::x_intercept_2d(y, slope, Y_intercept);
-			set_pixel(x,y, blend(graphics::back_buffer->get(x,y), color));
+			x = (uint32_t)math::x_intercept_2d(y, slope, Y_intercept);
+			index = graphics::back_buffer->width * y + x;
+
+			graphics::back_buffer->memory[index] = blend(
+				graphics::back_buffer->memory[index], color
+			);
 		}
 	}
 	else {
 		for (   ; y <= p2.y ; y += 1 ) {
-			x = (int16_t)math::x_intercept_2d(y, slope, Y_intercept);
-			set_pixel(x, y, color);
+			x = (uint32_t)math::x_intercept_2d(y, slope, Y_intercept);
+			index = graphics::back_buffer->width * y + x;
+
+			graphics::back_buffer->memory[index] = color;
 		}
 	}
 
 }
 
-void draw_horizontal_line(vec3d& p1, vec3d& p2, scolor& color) {
+void draw_horizontal_line(int32_t x_start , int32_t x_end , int32_t Y , scolor const& color) {
 
 	if (x_start > x_end) std::swap(x_start, x_end);
+	uint32_t buffer_row = graphics::back_buffer->width * Y;
 
-	if (color.a < 255) {
-		for (   ; x_start <= x_end; x_start += 1) {
-			set_pixel(x_start, Y, blend(graphics::back_buffer->get(x_start,Y), color) );
+	if (color.a < UINT8_MAX) {
+		for (	; x_start <= x_end; x_start += 1) {
+			graphics::back_buffer->memory[buffer_row + x_start] = blend (
+				graphics::back_buffer->memory[buffer_row + x_start] , color
+			);
 		}
 	}
 	else {
 		for (   ; x_start <= x_end; x_start += 1) {
-			set_pixel(x_start, Y, color);
+			graphics::back_buffer->memory[buffer_row + x_start] = color;
 		}
 	}
 
 }
 
-void draw_vertical_line(vec3d& p1, vec3d& p2, scolor& color){
+void draw_vertical_line(int32_t y_start, int32_t y_end, int32_t X, scolor const& color){
 
 	if (y_start > y_end) std::swap(y_start, y_end);
 	
-	if (color.a < 255) {
+	if (color.a < UINT8_MAX) {
 		for (   ; y_start <= y_end; y_start += 1) {
-			set_pixel(X, y_start, blend(graphics::back_buffer->get(X, y_start), color) );
+			graphics::back_buffer->memory[graphics::back_buffer->width * y_start + X] = blend(
+				graphics::back_buffer->memory[graphics::back_buffer->width * y_start + X] , color
+			);
 		}
 	}
 	else {
 		for (   ; y_start <= y_end; y_start += 1) {
-			set_pixel(X, y_start, color);
+			graphics::back_buffer->memory[graphics::back_buffer->width * y_start + X] = color;
 		}
 	}
 
 }
 
-void line_3d(vec3d& p1, vec3d& p2, scolor& color{
-	// if invisible 
-	if (color.a == 0) return;
+void draw_line(vec3d& p1, vec3d& p2, scolor const& color){
 
 	// calc line slope 
 	sfloat slope = math::slope2d(p1, p2);
 
 	if (slope == 0) {
-		draw_horizontal_line(p1.x, p2.x, p1.y, color);
+		draw_horizontal_line(
+			(int32_t)p1.x, (int32_t)p2.x, (int32_t)p1.y, color
+		);
 		return;
 	}
 	
-	//if (slope > 999 || slope < -999) {
 	if ( p1.x == p2.x ) {
 		draw_vertical_line(p1.y, p2.y, p1.x, color);
 	}
@@ -202,7 +221,6 @@ void line_3d(vec3d& p1, vec3d& p2, scolor& color{
 	}
 
 }
-*/
 
 bool top_left_rule(vec3d& a, vec3d& b) {
 	return ((a.x < b.x) && (a.y == b.y)) || (a.y > b.y);
@@ -396,18 +414,63 @@ void fill_3d_triangle(
 }
 
 void draw_3d_triangle(
-	vec3d& p1, vec3d& p2, vec3d& p3,
-	scolor& color
+	vec3d& p1, vec3d& p2, vec3d& p3, scolor& color
 ) {
-	/*
-	if (color.a == 0) return;
-
-	line_3d(p1, p2, color);
-	line_3d(p1, p3, color);
-	line_3d(p2, p3, color);
-	*/
+	
+	draw_line(p1, p2, color);
+	draw_line(p1, p3, color);
+	draw_line(p2, p3, color);
+	
 }
 
+/*
+	draw circle functions
+*/
+void fill_circle_row(int32_t x_start, int32_t x_end, int32_t Y, scolor const& color) {
+
+	if (x_start > x_end) {
+		std::swap(x_start, x_end);
+	}
+
+	uint32_t y_row = graphics::back_buffer->width * Y;
+
+	if (color.a < UINT8_MAX) {
+		for (; x_start <= x_end; x_start++) {
+			graphics::back_buffer->memory[y_row + x_start] = blend(graphics::back_buffer->memory[y_row + x_start] , color);
+		}
+	}
+	else {
+		for (	; x_start <= x_end ; x_start++ ) {
+			graphics::back_buffer->memory[y_row + x_start] = color;
+		}
+	}
+
+}
+
+void fill_circle(int32_t x_origin, int32_t y_origin, int32_t radius, scolor const& color) {
+
+	uint32_t rsqr = radius * radius;
+	uint32_t ysqr = 0;
+
+	for (int32_t y = -radius; y < 0; y++ ) {
+
+		ysqr = y * y;
+
+		for (int32_t x = -radius; x <= radius; x++) {
+
+			if (x * x + ysqr <= rsqr) {
+
+				fill_circle_row(x_origin - x, x_origin + x, y_origin + y, color);
+				fill_circle_row(x_origin - x, x_origin + x, y_origin - y, color);
+				break;
+			}
+
+		}
+
+	}
+
+	fill_circle_row(x_origin - radius, x_origin + radius, y_origin , color);
+}
 
 
 }

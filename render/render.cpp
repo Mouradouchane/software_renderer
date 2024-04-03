@@ -56,36 +56,27 @@ HDC        bitmap_hdc = NULL;
 
 scolor clear_color = { 0,0,0,0 };
 
-// few triangles for testing 
-vec3d p1 = { 0, 0, -0.1 }, p2 = { 1, 0, -0.1 }, p3 = { 0, 1, -0.1 }, p4 = { 1, 1, -0.1 };
-vec3d p5 = { 0, 0, -1 }, p6 = { 1, 0, -1 }, p7 = { 0, 1, -1 }, p8 = { 1, 1, -1 };
 vec3d pivot = { 0, 0, 0,0 };
+uint32_t vert_size = 8;
 
-size_t trig_size = 2;
-triangle3d trigs[12] = {
-
-	triangle3d(p5,p2,{0.5,1,-0.5}),
-	triangle3d(p1,{0.5,1,-0.5},p6),
-	/*
-	triangle3d(p1,p2,p3),
-	triangle3d(p2,p3,p4),
-	*/
-	triangle3d(p5,p6,p7),
-	triangle3d(p6,p7,p8),
-
-	triangle3d(p2,p5,p6),
-	triangle3d(p2,p5,p1),
-
-	triangle3d(p3,p7,p8),
-	triangle3d(p3,p4,p8),
-
-	triangle3d(p3,p4,p8),
-	
-	triangle3d(p1,p5,p6),
-	triangle3d(p2,p7,p8),
-	triangle3d(p1,p7,p5),
+vec3d pvertices[8];
+vec3d vertices[8] = {
+	{ 0, 0,  0 },
+	{ 1, 0,  0 },
+	{ 0, 1,  0 },
+	{ 1, 1,  0 },
+	{ 0, 0, -1 },
+	{ 0, 1, -1 },
+	{ 1, 0, -1 },
+	{ 1, 1, -1 }
 };
-triangle3d ptrigs[12] = {};
+uint32_t faces_size = 8;
+face faces[8] = {
+	{0,1,2} , {1,2,3},
+	{4,5,6} , {5,6,7},
+	{2,3,7} , {2,6,7},
+	{0,4,5} , {0,1,5},
+};
 
 scolor colors[12] = {
 	scolor{255,0,0,255},
@@ -227,20 +218,14 @@ void destroy() {
 
 void to_world_space() {
 	
-	int32_t size = 4;
+	int32_t size = 6;
 	int32_t x = -size/2, y = -size/2, z = -15;
 
-	for (uint32_t t = 0; t < trig_size; t += 1) {
-		for (uint32_t p = 0; p < 3; p += 1) {
-			trigs[t].points[p].x = (trigs[t].points[p].x * size) + x;
-			trigs[t].points[p].y = (trigs[t].points[p].y * size) + y;
-			trigs[t].points[p].z = (trigs[t].points[p].z * size) + z;
-		}
+	for (uint32_t t = 0; t < vert_size; t += 1) {
+		vertices[t].x = (vertices[t].x * size) + x;
+		vertices[t].y = (vertices[t].y * size) + y;
+		vertices[t].z = (vertices[t].z * size) + z;
 	}
-
-	pivot.x = (pivot.x * size) + x;
-	pivot.y = (pivot.y * size) + y;
-	pivot.z = (pivot.z * size) + z;
 
 }
 
@@ -305,20 +290,14 @@ void projection() {
 
 	if (config::projection_type == PERSPECTIVE_PROJECTION) {
 
-		for (uint32_t t = 0; t < trig_size; t += 1) {
-			for (uint32_t p = 0; p < 3; p += 1) {
-				ptrigs[t].points[p] = perspective_projection(trigs[t].points[p]);
-			}
+		for (uint32_t t = 0; t < vert_size; t += 1) {
+			pvertices[t] = perspective_projection(vertices[t]);
 		}
 
 	}
-	else { // orthographic projection
+	else { // todo : orthographic projection
 
-		for (uint32_t t = 0; t < trig_size; t += 1) {
-			for (uint32_t p = 0; p < 3; p += 1) {
-				ptrigs[t].points[p] = orthographic_projection(trigs[t].points[p]);
-			}
-		}
+	
 
 	}
 
@@ -326,10 +305,7 @@ void projection() {
 
 void to_screen_space(vec3d& point) {
 	/*
-	point.x = (point.x + 1) * half_screen_width;
-	point.y = (point.y + 1) * half_screen_height;
-
-	// remap to 0,1 rangle + going to screen space
+	// remap to 0,1 rangle 
 	point.x = ((point.x + 1) / 2).x * back_buffer->width;
 	point.y = ((point.y + 1) / 2).y * back_buffer->height;
 	*/
@@ -369,14 +345,16 @@ void rasterization() {
 	depth_buffer->fill(max_depth_value);
 
 	// draw to buffer
-	for (uint32_t t = 0; t < trig_size; t += 1) {
-
-		draw::fill_3d_triangle(
-			ptrigs[t].points[0], ptrigs[t].points[1], ptrigs[t].points[2],
-			colors[t]
-		);
-
+	for (uint32_t f = 0; f < faces_size; f += 1) {
+		draw::draw_line(pvertices[faces[f].a], pvertices[faces[f].b], { 255,255,255,255 });
+		draw::draw_line(pvertices[faces[f].a], pvertices[faces[f].c], { 255,255,255,255 });
+		draw::draw_line(pvertices[faces[f].b], pvertices[faces[f].c], { 255,255,255,255 });
 	}
+	/*
+	for (uint32_t t = 0; t < vert_size; t += 1) {
+		draw::fill_circle(pvertices[t].x, pvertices[t].y, 4, { 0,255,255,255 });
+	}
+	*/
 
 	// update bitmap buffer address
 	SetBitmapBits(
@@ -406,29 +384,18 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
-bool debug_transform = 1;
+bool debug_transform = 0;
 void render() {
 	
 	// transformation
 	if (debug_transform) {
-		for (uint32_t t = 0; t < trig_size; t += 1) {
-			for (uint32_t p = 0; p < 3; p += 1) {
-				//trigs[t].points[p].z -= 0.1;
-				//trigs[t].points[p].x += 0.01;
-				math::z_rotate(pivot, trigs[t].points[p], 0.01);
-				math::y_rotate(pivot, trigs[t].points[p], -0.02);
-				//math::x_rotate(pivot, trigs[t].points[p], 0.02);
-			}
-		}
-		//pivot.z -= 0.01;
+		
 	}
 
 	projection();
 
-	for (uint32_t t = 0; t < trig_size; t += 1) {
-		for (uint32_t p = 0; p < 3; p += 1) {
-			to_screen_space(ptrigs[t].points[p]);
-		}
+	for (uint32_t t = 0; t < vert_size; t += 1) {
+		to_screen_space(pvertices[t]);
 	}
 
 	// draw objects

@@ -47,9 +47,10 @@ typedef float        float32 , *ptr_float32;
 typedef double       float64 , *ptr_float64;
 typedef long double  float96 , *ptr_float96;
 
-#if TARGET_ARCH == x64
+#if TARGET_ARCH == 64
 	#define sfloat float64
 #else 
+	// x86
 	#define sfloat float32
 #endif
 
@@ -142,7 +143,7 @@ rgba8  create_rgba8 (uint8_t  red, uint8_t  green, uint8_t  blue, uint8_t  alpha
 rgba16 create_rgba16(uint16_t red, uint16_t green, uint16_t blue, uint16_t alpha = UINT16_MAX);
 rgba32 create_rgba32(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha = UINT32_MAX);
 
-bgr8   create_bgr8(uint8_t  red, uint8_t green, uint8_t blue);
+bgr8   create_bgr8 (uint8_t red, uint8_t green, uint8_t blue);
 bgra8  create_bgra8(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = UINT8_MAX);
 
 /*
@@ -190,16 +191,16 @@ cube create_ndc(
 
 template<typename type> class buffer {
 
-public : 
-	
+public:
+
 	uint16_t x = 0;
 	uint16_t y = 0;
 
 	uint16_t height = 1;
-	uint16_t width  = 1;
+	uint16_t width = 1;
 
-	uint32_t size   = 0;
-	type *   memory = nullptr; // heap allocation !
+	uint32_t size = 0;
+	type* memory = nullptr; // heap allocation !
 
 	// constructor's
 
@@ -212,7 +213,7 @@ public :
 		this->y = y;
 
 		this->height = height;
-		this->width  = width;
+		this->width = width;
 
 		this->size = width * height;
 
@@ -231,15 +232,15 @@ public :
 	}
 
 	void set(uint16_t X, uint16_t Y, type const& new_value) {
-		this->memory[ width * Y + X ] = new_value;
+		this->memory[width * Y + X] = new_value;
 	}
 
 	type get(uint16_t X, uint16_t Y) {
-		return this->memory[ width * Y + X ];
+		return this->memory[width * Y + X];
 	}
 
 	void fill(type& value) {
-		
+
 		uint32_t Y = 0;
 		for (uint16_t y = 0; y < this->height; y += 1) {
 			Y = this->width * y;
@@ -248,6 +249,11 @@ public :
 			}
 		}
 		// memset(this->memory, value, this->size * sizeof(type));
+	}
+
+	/* be carefull ! */
+	type& operator[] (uint32_t direct_index) {
+		return this->memory[direct_index];
 	}
 
 };
@@ -365,17 +371,43 @@ public:
 };
 // end : class triangle3d
 
+typedef struct face {
+	uint32_t a = 0;
+	uint32_t b = 0;
+	uint32_t c = 0;
+};
+
+typedef struct face4 {
+	uint32_t a = 0;
+	uint32_t b = 0;
+	uint32_t c = 0;
+	uint32_t d = 0;
+};
+
+/*
+	===========================================
+	=================== mesh ==================
+	===========================================
+*/
 class mesh {
 
 public :
-	vec3d* vertices = nullptr;
-	vec3d* normals  = nullptr;
-	uint64_t size = 0;
+	// vertices
+	vec3d*   v = nullptr; 
+	uint64_t v_size = 0;
+
+	// faces
+	face*    f = nullptr; 
+	uint64_t f_size = 0;
+
+	// normals
+	vec3d*   n = nullptr; 
+	uint64_t n_size = 0;
 
 	// constructor's
-	mesh();
 	mesh(uint64_t vertices_size);
-	mesh(vec3d* vertices_array , uint64_t vertices_size);
+	mesh(uint64_t vertices_size, uint64_t faces_size);
+	mesh(uint64_t vertices_size, uint64_t faces_size , uint64_t normals_size);
 
 	// destructor
 	~mesh();

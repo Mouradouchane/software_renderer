@@ -41,7 +41,12 @@ namespace config {
 	
 	bool draw_fps_info = true;
 	uint8_t projection_type = PERSPECTIVE_PROJECTION;
-	uint8_t rendering_style = PAINTING;
+	uint8_t rendering_style = WIRE_FRAME;
+
+	bool   draw_vertices  = true;
+	scolor vertices_color = {  0,255,255,255};
+	scolor wire_color     = {255,255,255,255};
+
 }
 // end : namespace configs
 

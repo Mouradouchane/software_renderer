@@ -47,7 +47,7 @@ namespace graphics {
 	void to_world_space();
 
 	vec3d orthographic_projection(vec3d& point);
-	vec3d perspective_projection( vec3d& point); // + ortho
+	vec3d perspective_projection(vec3d& point); // + ortho
 	void  projection();
 
 	// convert point from ndc to screen space

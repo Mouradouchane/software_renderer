@@ -290,6 +290,9 @@ sfloat x_intercept_2d(sfloat y, sfloat slope, sfloat y_at_x0) {
 sfloat y_intercept_at_x0_2d(vec2d const& point, sfloat slope) {
     return point.y - (slope * point.x);
 }
+sfloat y_intercept_at_x0_2d(vec3d const& point, sfloat slope) {
+    return point.y - (slope * point.x);
+}
 
 // X_intercept = (y - y_at_x0) / slope
 sfloat x_intercept_at_y0_2d(sfloat y_at_x0, sfloat slope) {

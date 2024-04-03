@@ -1,6 +1,6 @@
 
 /*
-	here all global variables and "configs/settings"
+	here all the global variables and configs
 */
 
 #pragma once
@@ -16,14 +16,14 @@
 #include "../macros/macros.hpp"
 #include "../types/types.hpp"
 
-// namespace for all global variables
+// program global variables
 namespace global {
+
+	extern bool running; 
 
 	extern std::string error_title;
 	extern std::string warn_title;
 	extern std::string info_title;
-
-	extern bool running; 
 
 	extern std::string	fps_msg;
 	extern RECT			fps_msg_rect;
@@ -33,13 +33,18 @@ namespace global {
 
 }
 
+// program config
 namespace config {
-	
-	extern uint16_t max_fps; // max frames per sec
+
+	extern uint16_t max_fps;
 	extern bool draw_fps_info;
 
 	extern uint8_t projection_type;
 	extern uint8_t rendering_style;
+
+	extern bool   draw_vertices;
+	extern scolor vertices_color;
+	extern scolor wire_color;
 
 } 
 

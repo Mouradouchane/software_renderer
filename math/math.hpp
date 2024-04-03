@@ -113,6 +113,7 @@ namespace math {
 	// find y when x = 0 on the line 
 	// Y = p.y - (slope * p.x)
 	sfloat y_intercept_at_x0_2d(vec2d const& point, sfloat slope);
+	sfloat y_intercept_at_x0_2d(vec3d const& point, sfloat slope);
 
 	// find x when y = 0 on the line
 	// X = (y - y_at_x0) / slope

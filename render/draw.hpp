@@ -22,7 +22,7 @@ namespace draw {
 	);
 
 	scolor blend(
-		scolor& back_color, scolor& front_color
+		scolor const& back_color, scolor const& front_color
 	);
 
 	void set_pixel( 
@@ -35,24 +35,25 @@ namespace draw {
 
 	/*
 		draw line functions
-	void draw_line(vec3d& p1, vec3d& p2, scolor color);
-	
-	void draw_horizontal_line(vec3d& p1, vec3d& p2, scolor& color);
-	void draw_vertical_line(vec3d& p1, vec3d& p2, scolor& color);
-	
-	void draw_line_over_x(vec3d& p1, vec3d& p2, sfloat slope, scolor& color);
-	void draw_line_over_y(vec3d& p1, vec3d& p2, sfloat slope, scolor& color);
 	*/
+	void draw_line(vec3d& p1, vec3d& p2, scolor const& color);
+	
+	void draw_horizontal_line(int32_t x_start, int32_t x_end, int32_t Y, scolor const& color);
+	void draw_vertical_line(int32_t y_start, int32_t y_end, int32_t X, scolor const& color);
+	void draw_line_over_x(vec3d& p1, vec3d& p2, sfloat slope, scolor const& color);
+	void draw_line_over_y(vec3d& p1, vec3d& p2, sfloat slope, scolor const& color);
 
 	/*
 		draw circle functions
 	*/
-	void draw_point(vec3d& point, uint16_t radius, scolor& color);
+	void draw_circle(int32_t x_origin, int32_t y_origin, int32_t raduis, scolor const& color);
+	void fill_circle(int32_t x_origin, int32_t y_origin, int32_t raduis, scolor const& color);
+	void fill_circle_row(int32_t x_start, int32_t x_end, int32_t Y, scolor const& color);
 
 	/*
 		draw triangle functions
 	*/
-	void draw_triangle(vec3d& p1, vec3d& p2, vec3d& p3, scolor& color);
+	void draw_3d_triangle(vec3d& p1, vec3d& p2, vec3d& p3, scolor& color);
 	void fill_3d_triangle(vec3d p1, vec3d p2, vec3d p3, scolor& color);
 
 	// fill row of a 3d shape with taken in count z values
