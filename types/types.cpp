@@ -4,19 +4,6 @@
 #ifndef TYPES_CPP
 #define TYPES_CPP
 
-cube create_ndc(
-	sfloat near_ , sfloat far_,
-	sfloat left  , sfloat right,
-	sfloat top   , sfloat buttom 
-) {
-
-	return cube{
-		near_, far_,
-		left, right,
-		top, buttom,
-	};
-}
-
 /*
 	few function for vector's creation
 */
@@ -251,6 +238,103 @@ sfloat matrix::get(uint16_t row, uint16_t column){
 
 	return this->memory[ this->w * column + row ];
 }
+
+/*
+	====================================
+	=============== mesh ===============
+	====================================
+*/
+
+mesh::mesh() { }
+
+mesh::mesh(
+	vec3d* vertices, uint64_t vertices_size,
+	face3* faces, uint64_t faces_size
+){ 
+
+	if (vertices != nullptr) {
+		this->v_size = vertices_size;
+		this->v = vertices;
+	}
+
+	if (faces != nullptr) {
+		this->f_size = faces_size;
+		this->f = faces;
+	}
+
+}
+
+mesh::mesh(
+	vec3d* vertices, uint64_t vertices_size,
+	vec3d* normals, uint64_t normals_size,
+	face3* faces, uint64_t faces_size
+) {
+
+	if (vertices != nullptr) {
+		this->v_size = vertices_size;
+		this->v = vertices;
+	}
+
+	if (faces != nullptr) {
+		this->f_size = faces_size;
+		this->f = faces;
+	}
+	
+	if (normals != nullptr) {
+		this->n_size = normals_size;
+		this->n = normals;
+	}
+
+}
+
+mesh::mesh(
+	vec3d* vertices, uint64_t vertices_size,
+	vec3d* normals, uint64_t normals_size,
+	face3* faces, uint64_t faces_size,
+	texture_vertex* texture_coordinates,
+	uint64_t texture_coordinates_size
+) {
+
+	if (vertices != nullptr) {
+		this->v_size = vertices_size;
+		this->v = vertices;
+	}
+
+	if (faces != nullptr) {
+		this->f_size = faces_size;
+		this->f = faces;
+	}
+
+	if (normals != nullptr) {
+		this->n_size = normals_size;
+		this->n = normals;
+	}
+
+	if (texture_coordinates != nullptr) {
+		this->tv_size = texture_coordinates_size;
+		this->tv = texture_coordinates;
+	}
+
+}
+
+// destructor
+mesh::~mesh() {
+	if (this->v != nullptr) {
+		delete[] this->v;
+		this->v = nullptr;
+	}
+}
+
+// static function
+void mesh::move_mesh(mesh* source, mesh* destination) {
+	std::memmove(destination, source, sizeof(mesh));
+}
+
+// static function
+void mesh::copy_mesh(mesh* source, mesh* destination) {
+	std::memcpy(destination, source, sizeof(mesh));
+}
+
 
 
 #endif

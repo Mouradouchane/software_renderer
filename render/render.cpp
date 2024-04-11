@@ -71,7 +71,7 @@ vec3d vertices[8] = {
 	{ 1, 1, -1 }
 };
 uint32_t faces_size = 8;
-face faces[8] = {
+face3 faces[8] = {
 	{0,1,2} , {1,2,3},
 	{4,5,6} , {5,6,7},
 	{2,3,7} , {2,6,7},

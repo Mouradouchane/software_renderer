@@ -177,11 +177,6 @@ typedef struct cube {
 vec2d create_vec2d(sfloat x=0, sfloat y=0);
 vec3d create_vec3d(sfloat x=0, sfloat y=0, sfloat z=1, sfloat w=1);
 
-cube create_ndc(
-	sfloat near_, sfloat far_,
-	sfloat left, sfloat right,
-	sfloat top, sfloat buttom
-);
 
 /*
 	=================================================
@@ -371,18 +366,27 @@ public:
 };
 // end : class triangle3d
 
-typedef struct face {
+// triangle face
+typedef struct face3 {
 	uint32_t a = 0;
 	uint32_t b = 0;
 	uint32_t c = 0;
 };
 
+// quad face
 typedef struct face4 {
 	uint32_t a = 0;
 	uint32_t b = 0;
 	uint32_t c = 0;
 	uint32_t d = 0;
 };
+
+// for 2d texture
+typedef struct texture_vertex {
+	sfloat u = 0;
+	sfloat v = 0;
+};
+
 
 /*
 	===========================================
@@ -391,26 +395,51 @@ typedef struct face4 {
 */
 class mesh {
 
-public :
+public:
 	// vertices
-	vec3d*   v = nullptr; 
+	vec3d* v = nullptr;
 	uint64_t v_size = 0;
 
 	// faces
-	face*    f = nullptr; 
+	face3* f = nullptr;
 	uint64_t f_size = 0;
 
 	// normals
-	vec3d*   n = nullptr; 
+	vec3d* n = nullptr;
 	uint64_t n_size = 0;
 
+	// texture coordinates
+	texture_vertex* tv = nullptr;
+	uint64_t        tv_size = 0;
+
 	// constructor's
-	mesh(uint64_t vertices_size);
-	mesh(uint64_t vertices_size, uint64_t faces_size);
-	mesh(uint64_t vertices_size, uint64_t faces_size , uint64_t normals_size);
+	mesh();
+
+	mesh(
+		vec3d* vertices, uint64_t vertices_size,
+		face3* faces, uint64_t faces_size
+	);
+
+	mesh(
+		vec3d* vertices, uint64_t vertices_size,
+		vec3d* normals, uint64_t normals_size,
+		face3* faces, uint64_t faces_size
+	);
+
+	mesh(
+		vec3d* vertices, uint64_t vertices_size,
+		vec3d* normals, uint64_t normals_size,
+		face3* faces, uint64_t faces_size,
+		texture_vertex* texture_coordinates,
+		uint64_t texture_coordinates_size
+	);
 
 	// destructor
 	~mesh();
+
+	// static function
+	static void move_mesh(mesh* source, mesh* destination);
+	static void copy_mesh(mesh* source, mesh* destination);
 
 };
 
