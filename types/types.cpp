@@ -319,10 +319,31 @@ mesh::mesh(
 
 // destructor
 mesh::~mesh() {
+
 	if (this->v != nullptr) {
 		delete[] this->v;
 		this->v = nullptr;
+		this->v_size = NULL;
 	}
+
+	if (this->f != nullptr) {
+		delete[] this->f;
+		this->f = nullptr;
+		this->f_size = NULL;
+	}
+
+	if (this->n != nullptr) {
+		delete[] this->n;
+		this->n = nullptr;
+		this->n_size = NULL;
+	}
+
+	if (this->tv != nullptr) {
+		delete[] this->tv;
+		this->tv = nullptr;
+		this->tv_size = NULL;
+	}
+
 }
 
 // static function
@@ -334,7 +355,6 @@ void mesh::move_mesh(mesh* source, mesh* destination) {
 void mesh::copy_mesh(mesh* source, mesh* destination) {
 	std::memcpy(destination, source, sizeof(mesh));
 }
-
 
 
 #endif
