@@ -9,11 +9,10 @@
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
-build/obj/*
 .vs/
 *.swp
 **.pdb
-
+
 # Compiled Object files
 *.slo
 *.lo
