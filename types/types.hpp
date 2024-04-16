@@ -443,40 +443,6 @@ public:
 
 };
 
-/*
-	===================================
-	============= files ===============
-	===================================
-*/
-class file {
-
-private:
-
-	std::string _path   = "";
-	std::string _last_change_date = "";
-
-	uint64_t _size = NULL; // size in bytes
-	int8_t _permissions = -1;
-
-	void* _buffer = nullptr;
-	 
-public:
-
-	// constructors
-	file();
-	file(std::string path);
-	file(std::string path , int8_t permissions);
-
-	// destructor
-	~file();
-
-	// methods
-	uint64_t size();
-	int8_t permissions();
-
-	uint8_t* operator[] (uint64_t index);
-
-};
 
 /*
 	=================================================
