@@ -37,6 +37,11 @@
 	#include <thread>
 #endif
 
+#ifndef VECTOR_H
+	#define VECTOR_H
+	#include <vector>
+#endif
+
 /*
 	=================================================
 	================ standard types =================
@@ -397,41 +402,36 @@ class mesh {
 
 public:
 	// vertices
-	vec3d* v = nullptr;
-	uint64_t v_size = 0;
+	std::vector<vec3d>* v = nullptr;
 
 	// faces
-	face3* f = nullptr;
-	uint64_t f_size = 0;
+	std::vector<face3>* f = nullptr;
 
 	// normals
-	vec3d* n = nullptr;
-	uint64_t n_size = 0;
+	std::vector<vec3d>* n = nullptr;
 
 	// texture coordinates
-	texture_vertex* tv = nullptr;
-	uint64_t        tv_size = 0;
+	std::vector<texture_vertex>* tv = nullptr;
 
 	// constructor's
 	mesh();
 
 	mesh(
-		vec3d* vertices, uint64_t vertices_size,
-		face3* faces, uint64_t faces_size
+		std::vector<vec3d>* vertices,
+		std::vector<face3>* faces
 	);
 
 	mesh(
-		vec3d* vertices, uint64_t vertices_size,
-		vec3d* normals, uint64_t normals_size,
-		face3* faces, uint64_t faces_size
+		std::vector<vec3d>* vertices,
+		std::vector<face3>* faces,
+		std::vector<vec3d>* normals
 	);
 
 	mesh(
-		vec3d* vertices, uint64_t vertices_size,
-		vec3d* normals, uint64_t normals_size,
-		face3* faces, uint64_t faces_size,
-		texture_vertex* texture_coordinates,
-		uint64_t texture_coordinates_size
+		std::vector<vec3d>* vertices, 
+		std::vector<face3>* faces,
+		std::vector<vec3d>* normals, 
+		std::vector<texture_vertex>* texture_coordinates
 	);
 
 	// destructor

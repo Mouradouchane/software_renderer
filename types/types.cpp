@@ -13,7 +13,7 @@ vec2d create_vec2d(sfloat x, sfloat y){
 	return vector;
 }
 
-vec3d create_vec3d(sfloat x, sfloat y, sfloat z) {
+vec3d create_vec3d(sfloat x, sfloat y, sfloat z){
 	vec3d  vector = { x = x , y = y , z = z };
 	return vector;
 }
@@ -248,70 +248,60 @@ sfloat matrix::get(uint16_t row, uint16_t column){
 mesh::mesh() { }
 
 mesh::mesh(
-	vec3d* vertices, uint64_t vertices_size,
-	face3* faces, uint64_t faces_size
+	std::vector<vec3d>* vertices,
+	std::vector<face3>* faces
 ){ 
 
 	if (vertices != nullptr) {
-		this->v_size = vertices_size;
 		this->v = vertices;
 	}
 
 	if (faces != nullptr) {
-		this->f_size = faces_size;
 		this->f = faces;
 	}
 
 }
 
 mesh::mesh(
-	vec3d* vertices, uint64_t vertices_size,
-	vec3d* normals, uint64_t normals_size,
-	face3* faces, uint64_t faces_size
+	std::vector<vec3d>* vertices,
+	std::vector<face3>* faces,
+	std::vector<vec3d>* normals
 ) {
 
 	if (vertices != nullptr) {
-		this->v_size = vertices_size;
 		this->v = vertices;
 	}
 
 	if (faces != nullptr) {
-		this->f_size = faces_size;
 		this->f = faces;
 	}
 	
 	if (normals != nullptr) {
-		this->n_size = normals_size;
 		this->n = normals;
 	}
 
 }
 
 mesh::mesh(
-	vec3d* vertices, uint64_t vertices_size,
-	vec3d* normals, uint64_t normals_size,
-	face3* faces, uint64_t faces_size,
-	texture_vertex* texture_coordinates,
-	uint64_t texture_coordinates_size
+	std::vector<vec3d>* vertices,
+	std::vector<face3>* faces,
+	std::vector<vec3d>* normals,
+	std::vector<texture_vertex>* texture_coordinates
 ) {
 
 	if (vertices != nullptr) {
-		this->v_size = vertices_size;
 		this->v = vertices;
 	}
 
 	if (faces != nullptr) {
-		this->f_size = faces_size;
 		this->f = faces;
 	}
 
 	if (normals != nullptr) {
-		this->n_size = normals_size;
 		this->n = normals;
 	}
 
 	if (texture_coordinates != nullptr) {
-		this->tv_size = texture_coordinates_size;
 		this->tv = texture_coordinates;
 	}
 
@@ -321,27 +311,23 @@ mesh::mesh(
 mesh::~mesh() {
 
 	if (this->v != nullptr) {
-		delete[] this->v;
+		delete this->v;
 		this->v = nullptr;
-		this->v_size = NULL;
 	}
 
 	if (this->f != nullptr) {
-		delete[] this->f;
+		delete this->f;
 		this->f = nullptr;
-		this->f_size = NULL;
 	}
 
 	if (this->n != nullptr) {
-		delete[] this->n;
+		delete this->n;
 		this->n = nullptr;
-		this->n_size = NULL;
 	}
 
 	if (this->tv != nullptr) {
-		delete[] this->tv;
+		delete this->tv;
 		this->tv = nullptr;
-		this->tv_size = NULL;
 	}
 
 }
