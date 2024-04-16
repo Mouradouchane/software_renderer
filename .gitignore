@@ -18,6 +18,7 @@
 *.lo
 *.o
 *.obj
+!build/models/*
 obj/
 object/
 x64/
