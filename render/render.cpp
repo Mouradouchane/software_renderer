@@ -56,44 +56,6 @@ HDC        bitmap_hdc = NULL;
 
 scolor clear_color = { 0,0,0,0 };
 
-vec3d pivot = { 0, 0, 0,0 };
-uint32_t vert_size = 8;
-
-vec3d pvertices[8];
-vec3d vertices[8] = {
-	{ 0, 0,  0 },
-	{ 1, 0,  0 },
-	{ 0, 1,  0 },
-	{ 1, 1,  0 },
-	{ 0, 0, -1 },
-	{ 0, 1, -1 },
-	{ 1, 0, -1 },
-	{ 1, 1, -1 }
-};
-uint32_t faces_size = 8;
-face3 faces[8] = {
-	{0,1,2} , {1,2,3},
-	{4,5,6} , {5,6,7},
-	{2,3,7} , {2,6,7},
-	{0,4,5} , {0,1,5},
-};
-
-scolor colors[12] = {
-	scolor{255,0,0,255},
-	scolor{0,0,255,255},
-	scolor{255,0,0,255},
-	scolor{255,255,0,255},
-
-	scolor{255,0,0,255},
-	scolor{255,255,0,255},
-	scolor{255,0,0,255},
-	scolor{255,255,0,255},
-
-	scolor{255,0,0,255},
-	scolor{255,255,0,255},
-	scolor{255,0,0,255},
-	scolor{255,255,0,255}
-};
 
 bool init() {
 
@@ -104,7 +66,7 @@ bool init() {
 
 	if (back_buffer == nullptr) {
 		exceptions::show_error(
-			global::error_title, "failed to allocate memory for 'back buffer' !"
+			error_title, "failed to allocate memory for 'back buffer' !"
 		);
 		return false;
 	}
@@ -116,7 +78,7 @@ bool init() {
 
 	if (front_buffer == nullptr) {
 		exceptions::show_error(
-			global::error_title, "failed to allocate memory for 'front buffer' !"
+			error_title, "failed to allocate memory for 'front buffer' !"
 		);
 		return false;
 	}
@@ -128,7 +90,7 @@ bool init() {
 
 	if (depth_buffer == nullptr) {
 		exceptions::show_error(
-			global::error_title, "failed to allocate memory for 'depth buffer' !"
+			error_title, "failed to allocate memory for 'depth buffer' !"
 		);
 		return false;
 	}
@@ -148,25 +110,25 @@ bool init() {
 	frustum.r =  1;
 	frustum.b = -1;
 	frustum.t =  1;
-	frustum.n =  1;
+	frustum.vn =  1;
 	frustum.f =  100;
 
-	perpsective_x_factor = frustum.n * aspect_ratio * hfov;
-	perspective_y_factor = frustum.n * hfov;
+	perpsective_x_factor = frustum.vn * aspect_ratio * hfov;
+	perspective_y_factor = frustum.vn * hfov;
 	
 	ortho_dx = (2 / (frustum.r - frustum.l));
 	ortho_dy = (2 / (frustum.t - frustum.b));
-	ortho_dz = (2 / (frustum.f - frustum.n));
+	ortho_dz = (2 / (frustum.f - frustum.vn));
 
 	ortho_dxw = -((frustum.r + frustum.l) / (frustum.r - frustum.l));
 	ortho_dyw = -((frustum.t + frustum.b) / (frustum.t - frustum.b));
-	ortho_dzw = -((frustum.f + frustum.n) / (frustum.f - frustum.n));
+	ortho_dzw = -((frustum.f + frustum.vn) / (frustum.f - frustum.vn));
 
-	z_factor  = (frustum.f / (frustum.f - frustum.n));
-	zn_factor = -z_factor * frustum.n;
+	z_factor  = (frustum.f / (frustum.f - frustum.vn));
+	zn_factor = -z_factor * frustum.vn;
 
-	far_plus_near =  frustum.f + frustum.n;
-	far_mult_near = -(frustum.f * frustum.n);
+	far_plus_near =  frustum.f + frustum.vn;
+	far_mult_near = -(frustum.f * frustum.vn);
 
 	to_world_space();
 	clear_color.a = 255;
@@ -216,15 +178,19 @@ void destroy() {
 
 }
 
-void to_world_space() {
+void to_world_space(std::vector<mesh*>& models) {
 	
-	int32_t size = 6;
+	int32_t size = 1;
 	int32_t x = -size/2, y = -size/2, z = -15;
 
-	for (uint32_t t = 0; t < vert_size; t += 1) {
-		vertices[t].x = (vertices[t].x * size) + x;
-		vertices[t].y = (vertices[t].y * size) + y;
-		vertices[t].z = (vertices[t].z * size) + z;
+
+	for (mesh* model : models) {
+
+		for (uint32_t i = 0; i < model->v->size(); i += 1) {
+			
+
+		}
+
 	}
 
 }
@@ -233,7 +199,7 @@ void to_world_space() {
 void transform_thread() {
 	Sleep(500);
 
-	while (global::running) {
+	while (running) {
 
 		for (uint32_t t = 0; t < trig_size; t += 1) {
 			for (uint32_t p = 0; p < 3; p += 1) {
@@ -316,23 +282,23 @@ void to_screen_space(vec3d& point) {
 
 void draw_fps_info() {
 
-	global::fps_msg = "FPS : " + std::to_string(preformance::fps);
+	fps_msg = "FPS : " + std::to_string(preformance::fps);
 
 	DrawTextA(
 		bitmap_hdc,
-		global::fps_msg.c_str(),
-		global::fps_msg.length(),
-		&(global::fps_msg_rect),
+		fps_msg.c_str(),
+		fps_msg.length(),
+		&(fps_msg_rect),
 		DT_LEFT
 	);
 
-	global::loop_msg = "LOOP TIME : " + std::to_string(preformance::total_taken_time) + "ms";
+	loop_msg = "LOOP TIME : " + std::to_string(preformance::total_taken_time) + "ms";
 
 	DrawTextA(
 		bitmap_hdc,
-		global::loop_msg.c_str(),
-		global::loop_msg.length(),
-		&(global::loop_msg_rect),
+		loop_msg.c_str(),
+		loop_msg.length(),
+		&(loop_msg_rect),
 		DT_LEFT
 	);
 

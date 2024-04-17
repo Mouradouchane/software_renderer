@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <string>
 
-typedef struct file{
+typedef struct file {
     uint32_t size = 0;
     void*  buffer = nullptr;
 };

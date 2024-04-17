@@ -277,7 +277,7 @@ mesh::mesh(
 	}
 	
 	if (normals != nullptr) {
-		this->n = normals;
+		this->vn = normals;
 	}
 
 }
@@ -286,7 +286,7 @@ mesh::mesh(
 	std::vector<vec3d>* vertices,
 	std::vector<face3>* faces,
 	std::vector<vec3d>* normals,
-	std::vector<texture_vertex>* texture_coordinates
+	std::vector<vec_uv>* texture_coordinates
 ) {
 
 	if (vertices != nullptr) {
@@ -298,11 +298,11 @@ mesh::mesh(
 	}
 
 	if (normals != nullptr) {
-		this->n = normals;
+		this->vn = normals;
 	}
 
 	if (texture_coordinates != nullptr) {
-		this->tv = texture_coordinates;
+		this->vt = texture_coordinates;
 	}
 
 }
@@ -320,14 +320,14 @@ mesh::~mesh() {
 		this->f = nullptr;
 	}
 
-	if (this->n != nullptr) {
-		delete this->n;
-		this->n = nullptr;
+	if (this->vn != nullptr) {
+		delete this->vn;
+		this->vn = nullptr;
 	}
 
-	if (this->tv != nullptr) {
-		delete this->tv;
-		this->tv = nullptr;
+	if (this->vt != nullptr) {
+		delete this->vt;
+		this->vt = nullptr;
 	}
 
 }
@@ -341,6 +341,55 @@ void mesh::move_mesh(mesh* source, mesh* destination) {
 void mesh::copy_mesh(mesh* source, mesh* destination) {
 	std::memcpy(destination, source, sizeof(mesh));
 }
+
+
+/*
+	====================================
+	============== faces ===============
+	====================================
+*/
+
+face3::face3() { }
+
+face3::face3(index3 const& vertices) 
+	:v{ vertices } { 
+}
+
+face3::face3(index3 const& vertices, index3 const& textuer_vertex)
+	: v{ vertices }, vt{ textuer_vertex } {
+}
+/*
+face3::face3(index3 const& vertices, index3 const& normals_vertex)
+	: v{ vertices }, vn{ normals_vertex } {
+}
+*/
+
+face3::face3(index3 const& vertices, index3 const& normals_vertex, index3 const& textuer_vertex)
+	: v{ vertices }, vn{ normals_vertex }, vt{textuer_vertex} {
+}
+
+face3::~face3() {}// = default;
+
+// ===== face4 =========================================
+face4::face4(index4 const& vertices)
+	: v{ vertices } {
+}
+
+face4::face4(index4 const& vertices, index4 const& textuer_vertex)
+	: v{ vertices }, vt{ textuer_vertex } {
+}
+
+/*
+face4::face4(index4 const& vertices, index4 const& normals_vertex)
+	: v{ vertices }, vn{ normals_vertex } {
+}
+*/
+
+face4::face4(index4 const& vertices, index4 const& normals_vertex, index4 const& textuer_vertex)
+	: v{ vertices }, vn{ normals_vertex }, vt{ textuer_vertex } {
+}
+
+face4::~face4() {}// = default;
 
 
 #endif

@@ -44,20 +44,26 @@ namespace graphics {
 	bool init();
 	void destroy();
 
-	void to_world_space();
+	void to_world_space(std::vector<mesh*>& models);
 
-	vec3d orthographic_projection(vec3d& point);
-	vec3d perspective_projection(vec3d& point); // + ortho
-	void  projection();
+	void orthographic_projection(
+		std::vector<mesh*>& models , std::vector<mesh*>& where_to_output
+	);
+	void perspective_projection(
+		std::vector<mesh*>& models , std::vector<mesh*>& where_to_output
+	);
+	void projection(
+		std::vector<mesh*>& models , std::vector<mesh*>& where_to_output
+	);
 
-	// convert point from ndc to screen space
-	void to_screen_space(vec3d& point);
+	// move from ndc to screen space
+	void to_screen_space(std::vector<mesh*>& models);
 
 	// draw primitives
-	void rasterization();
+	void rasterization(std::vector<mesh*>& models);
 
 	// all the rendering stages called here
-	void render();
+	void render(std::vector<mesh*>& models);
 
 }
 // end : graphics namespace

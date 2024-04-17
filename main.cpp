@@ -6,27 +6,29 @@ int WINAPI WinMain(
 ){
 
     if ( !window::init(h_instance, n_cmd_show) ) {
-        exceptions::show_error(global::error_title, exceptions::get_last_error_window());
+        exceptions::show_error(error_title, exceptions::get_last_error_window());
         return GetLastError();
     }
   
     if ( !graphics::init() ) {
         window::destroy();
 
-        exceptions::show_error(global::error_title, "failed to init renderer !");
+        exceptions::show_error(error_title, "failed to init renderer !");
         return 0;
     }
 
     if ( !preformance::init() ) {
-        exceptions::show_warn(global::warn_title, "unexpected error while setuping some preformance threads !");
+        exceptions::show_warn(warn_title, "unexpected error while setuping some preformance threads !");
     }
   
-    periodic_timer fpspt;
+    models = files::load_3d_models( models_path );
+
+    periodic_timer fps_pt;
 
     // main loop 
-    while( global::running ){
+    while( running ){
 
-        fpspt.update();
+        fps_pt.update();
         preformance::main_timer.start();
 
         // window message + inputs
@@ -39,7 +41,7 @@ int WINAPI WinMain(
 
         preformance::frames += 1;
     
-        if (fpspt.is_time_for_work()) {
+        if (fps_pt.is_time_for_work()) {
             preformance::fps = preformance::frames;
             preformance::frames = 0;
         }

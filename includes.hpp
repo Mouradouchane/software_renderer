@@ -1,6 +1,7 @@
 
 /*
-	all the needed includes for main.cpp
+	here all the included headers
+	note : used in main.cpp and few other headers
 */
 
 #pragma once 
@@ -9,34 +10,29 @@
 #define INCLUDES_HPP
 
 #ifndef UNICODE
-#define UNICODE
+	#define UNICODE
 #endif
 
-#ifndef MUTEX_H
-#define MUTEX_H
-	#include <mutex>
-#endif
+#ifndef EXTERNAL_LIBS
+#define EXTERNAL_LIBS
 
-#ifndef THREAD_H
-#define THREAD_H
-	#include <thread>
-#endif
+#include <mutex>
+#include <thread>
+#include <string>
+#include <vector>
+#include <initializer_list>
 
-#ifndef WINDOWS_H
-#define WINDOWS_H
-	#include <windows.h>
-#endif
+#include <windows.h>
 
-#ifndef STRING_H
-#define STRING_H
-	#include <string>
 #endif
 
 #include "types/types.hpp"
 #include "timer/timer.hpp"
-#include "configs/configs.hpp"
 #include "preformance/preformance.hpp"
+#include "global/global.hpp"
+#include "configs/configs.hpp"
 #include "window/window.hpp"
 #include "render/render.hpp"
+#include "files/files.hpp"
 
 #endif

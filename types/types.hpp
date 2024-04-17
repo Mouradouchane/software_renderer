@@ -10,37 +10,19 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 
-#include "../macros/macros.hpp"
+#ifndef EXTERNAL_LIBS
+#define EXTERNAL_LIBS
 
-#ifndef _stdint
-#define _stdint	
-	#include <stdint.h> // for int32 int64 ...
+#include <mutex>
+#include <thread>
+#include <string>
+#include <vector>
+#include <initializer_list>
+
+#include <windows.h>
+
 #endif
 
-#ifndef STRING_H
-#define STRING_H
-	#include <string>
-#endif
-
-#ifndef CHRONO_H
-#define CHRONO_H
-	#include <chrono>
-#endif
-
-#ifndef MUTEX_H
-#define MUTEX_H
-	#include <mutex>
-#endif
-
-#ifndef THREAD_H
-#define THREAD_H
-	#include <thread>
-#endif
-
-#ifndef VECTOR_H
-	#define VECTOR_H
-	#include <vector>
-#endif
 
 /*
 	=================================================
@@ -171,7 +153,7 @@ typedef struct vec3d {
 
 // just for NDC 
 typedef struct cube {
-	sfloat n = 0;
+	sfloat vn = 0;
 	sfloat f = 0;
 	sfloat l = 0;
 	sfloat r = 0;
@@ -371,27 +353,65 @@ public:
 };
 // end : class triangle3d
 
-// triangle face
-typedef struct face3 {
-	uint32_t a = 0;
-	uint32_t b = 0;
-	uint32_t c = 0;
+typedef struct index3 {
+	uint32_t a = NULL;
+	uint32_t b = NULL;
+	uint32_t c = NULL;
 };
 
-// quad face
-typedef struct face4 {
-	uint32_t a = 0;
-	uint32_t b = 0;
-	uint32_t c = 0;
-	uint32_t d = 0;
+typedef struct index4 {
+	uint32_t a = NULL;
+	uint32_t b = NULL;
+	uint32_t c = NULL;
+	uint32_t d = NULL;
 };
 
-// for 2d texture
-typedef struct texture_vertex {
+class face3 { // triangle face
+
+public:
+	index3 v  = { 0 };
+	index3 vt = { 0 };
+	index3 vn = { 0 };
+
+	// constructor's
+	face3();
+	face3(index3 const& vertices);
+	face3(index3 const& vertices, index3 const& textuer_vertex);
+	// face3(index3 const& vertices, index3 const& normals_vertex);
+	face3(index3 const& vertices, index3 const& normals_vertex, index3 const& textuer_vertex);
+	
+	// destructor
+	~face3();
+
+};
+
+class face4 { // quad face
+public:
+	index4 v  = { 0 };
+	index4 vt = { 0 };
+	index4 vn = { 0 };
+
+	face4();
+	face4(index4 const& vertices);
+	face4(index4 const& vertices, index4 const& textuer_vertex);
+	//face4(index4 const& vertices, index4 const& normals_vertex);
+	face4(index4 const& vertices, index4 const& normals_vertex, index4 const& textuer_vertex);
+
+	~face4();
+};
+
+// textuer coordinates 2d texture
+typedef struct vec_uv {
 	sfloat u = 0;
 	sfloat v = 0;
 };
 
+// textuer coordinates 3d texture
+typedef struct vec_uvw {
+	sfloat u = 0;
+	sfloat v = 0;
+	sfloat w = 0;
+};
 
 /*
 	===========================================
@@ -404,14 +424,14 @@ public:
 	// vertices
 	std::vector<vec3d>* v = nullptr;
 
-	// faces
-	std::vector<face3>* f = nullptr;
-
 	// normals
-	std::vector<vec3d>* n = nullptr;
+	std::vector<vec3d>* vn = nullptr;
 
 	// texture coordinates
-	std::vector<texture_vertex>* tv = nullptr;
+	std::vector<vec_uv>* vt = nullptr;
+
+	// faces
+	std::vector<face3>* f = nullptr;
 
 	// constructor's
 	mesh();
@@ -431,7 +451,7 @@ public:
 		std::vector<vec3d>* vertices, 
 		std::vector<face3>* faces,
 		std::vector<vec3d>* normals, 
-		std::vector<texture_vertex>* texture_coordinates
+		std::vector<vec_uv>* texture_coordinates
 	);
 
 	// destructor
