@@ -13,8 +13,8 @@
 #include "../includes.hpp"
 
 
-extern std::vector<mesh*>   models;
-extern std::vector<mesh*> p_models; // projected models
+extern std::vector<mesh*>*   models;
+extern std::vector<mesh*>* p_models; // where meshes get projected
 
 extern std::initializer_list<std::string> models_path;
 

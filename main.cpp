@@ -36,7 +36,7 @@ int WINAPI WinMain(
 
         // rendering
         InvalidateRect(window::handle, 0, 0);
-        graphics::render();
+        graphics::render(models , p_models);
         UpdateWindow(window::handle);
 
         preformance::frames += 1;

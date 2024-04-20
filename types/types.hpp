@@ -41,7 +41,17 @@ typedef long double  float96 , *ptr_float96;
 	#define sfloat float32
 #endif
 
-typedef class matrix {
+typedef struct transform {
+	sfloat x = 0; 
+	sfloat y = 0;
+	sfloat z = 0;
+	
+	sfloat xr = 0;
+	sfloat yr = 0;
+	sfloat zr = 0;
+};
+
+class matrix {
 
 public:
 	sfloat* memory = nullptr; // matrix memory as 1d
@@ -153,7 +163,7 @@ typedef struct vec3d {
 
 // just for NDC 
 typedef struct cube {
-	sfloat vn = 0;
+	sfloat n = 0;
 	sfloat f = 0;
 	sfloat l = 0;
 	sfloat r = 0;
@@ -371,7 +381,7 @@ class face3 { // triangle face
 public:
 	index3 v  = { 0 };
 	index3 vt = { 0 };
-	index3 vn = { 0 };
+	index3 n = { 0 };
 
 	// constructor's
 	face3();
@@ -389,7 +399,7 @@ class face4 { // quad face
 public:
 	index4 v  = { 0 };
 	index4 vt = { 0 };
-	index4 vn = { 0 };
+	index4 n = { 0 };
 
 	face4();
 	face4(index4 const& vertices);
@@ -425,7 +435,7 @@ public:
 	std::vector<vec3d>* v = nullptr;
 
 	// normals
-	std::vector<vec3d>* vn = nullptr;
+	std::vector<vec3d>* n = nullptr;
 
 	// texture coordinates
 	std::vector<vec_uv>* vt = nullptr;

@@ -27,10 +27,10 @@ mesh* parser::obj(char* obj_data, uint32_t size) {
 
 	mesh* obj = new mesh();
 
-	std::vector<vec_uv>* tvs = new std::vector<vec_uv>();
-	std::vector<vec3d>* vertices = new std::vector<vec3d>();
-	std::vector<vec3d>* normals = new std::vector<vec3d>();
-	std::vector<face3>* faces = new std::vector<face3>();
+	std::vector<vec_uv>* tvs      = new std::vector<vec_uv>();
+	std::vector<vec3d>*  vertices = new std::vector<vec3d>();
+	std::vector<vec3d>*  normals  = new std::vector<vec3d>();
+	std::vector<face3>*  faces    = new std::vector<face3>();
 
 	for (uint32_t s = 0; s < size; s++) {
 
@@ -90,7 +90,7 @@ vec3d parse_vertex(char* obj_buffer, uint32_t& start , uint32_t end) {
 	bool loop = true;
 
 	std::string float_as_str = "";
-	uint32_t i = start+1;
+	uint32_t i = start+2;
 	uint32_t s = i, e = i;
 	
 	vec3d vertex = { 0 };
@@ -105,14 +105,14 @@ vec3d parse_vertex(char* obj_buffer, uint32_t& start , uint32_t end) {
 
 		if (obj_buffer[i] == ' ' || !loop ) {
 			e = i;
-			float_as_str = std::string(obj_buffer, s, e);
+			float_as_str = std::string(obj_buffer, s, e-s);
 			
 			*(f_ptr + vertex_index) = (sfloat)std::atof(float_as_str.c_str());
 			vertex_index += 1;
 
 			s = e;
 		}
-
+		i += 1;
 	}
 
 	start = i+1;

@@ -13,11 +13,11 @@
 
 bool running = true;
 
-std::vector<mesh*>   models = {};
-std::vector<mesh*> p_models = {}; // projected models
+std::vector<mesh*>*   models = nullptr;
+std::vector<mesh*>* p_models = nullptr;
 
 std::initializer_list<std::string> models_path = {
-	"./models/teapot.obj"
+	"models/teapot.obj"
 };
 
 std::string error_title = "error";

@@ -44,26 +44,35 @@ namespace graphics {
 	bool init();
 	void destroy();
 
-	void to_world_space(std::vector<mesh*>& models);
+	// transform meshes from "model space" to "world space"
+	void to_world_space(std::vector<mesh*>* models);
+
 
 	void orthographic_projection(
-		std::vector<mesh*>& models , std::vector<mesh*>& where_to_output
+		std::vector<mesh*>* models_ , 
+		std::vector<mesh*>* where_to_project
 	);
 	void perspective_projection(
-		std::vector<mesh*>& models , std::vector<mesh*>& where_to_output
+		std::vector<mesh*>* models_ , 
+		std::vector<mesh*>* where_to_project
 	);
 	void projection(
-		std::vector<mesh*>& models , std::vector<mesh*>& where_to_output
+		std::vector<mesh*>* models_ , 
+		std::vector<mesh*>* where_to_project
 	);
 
 	// move from ndc to screen space
-	void to_screen_space(std::vector<mesh*>& models);
+	void to_screen_space(std::vector<mesh*>* projected_models);
 
-	// draw primitives
-	void rasterization(std::vector<mesh*>& models);
+	// draw models
+	void rasterization(std::vector<mesh*>* projected_models);
 
-	// all the rendering stages called here
-	void render(std::vector<mesh*>& models);
+	// all of the rendering stages happend here 
+	// take a look in function code in render.cpp for deatils
+	void render(
+		std::vector<mesh*>* models_ ,
+		std::vector<mesh*>* where_to_project
+	);
 
 }
 // end : graphics namespace

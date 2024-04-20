@@ -17,7 +17,7 @@ namespace files {
 		function load a list of "3d models" from files
 		and create meshes from them
 	*/
-	std::vector<mesh*> load_3d_models(
+	std::vector<mesh*>* load_3d_models(
 		std::initializer_list<std::string> const& files
 	);
 

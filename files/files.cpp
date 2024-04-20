@@ -5,11 +5,11 @@
 
 #include "files.hpp"
 
-std::vector<mesh*> files::load_3d_models(
+std::vector<mesh*>* files::load_3d_models(
 	std::initializer_list <std::string> const& files
 ){
 
-	std::vector<mesh*> models = {};
+	std::vector<mesh*>* models = new std::vector<mesh*>;
 	file current_file;
 
 	for (std::string const& file : files) {
@@ -18,9 +18,14 @@ std::vector<mesh*> files::load_3d_models(
 		current_file = s_files::read_from_file(file, false);
 
 		// create mesh from loaded data
-		models.push_back(
-			parser::obj((char*)current_file.buffer, current_file.size)
-		);
+		if (current_file.buffer != nullptr){
+			models->push_back(
+				parser::obj((char*)current_file.buffer, current_file.size)
+			);
+		}
+		else {
+			// log warning
+		}
 
 	}
 
