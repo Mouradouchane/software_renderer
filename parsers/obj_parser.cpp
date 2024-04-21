@@ -87,35 +87,49 @@ mesh* parser::obj(char* obj_data, uint32_t size) {
 
 vec3d parse_vertex(char* obj_buffer, uint32_t& start , uint32_t end) {
 
-	bool loop = true;
-
 	std::string float_as_str = "";
-	uint32_t i = start+2;
-	uint32_t s = i, e = i;
+	uint32_t i = start+1;
 	
-	vec3d vertex = { 0 };
-	sfloat* f_ptr = (sfloat*)(&vertex); // a pointer to "vertex.x" 
-	uint8_t vertex_index = 0; // used with f_ptr to go from .x to ".y , .z"
+	uint32_t spaces[3] = { NULL , NULL , NULL };
+	uint8_t s = 0;
 
-	while (loop) {
+	vec3d vertex = { 0 };
+
+	// find spaces indexs for parsing
+	while (i <= end) {
 
 		if (obj_buffer[i] == '\n' || obj_buffer[i] == '\0') {
-			loop = false;
+			break;
 		}
 
-		if (obj_buffer[i] == ' ' || !loop ) {
-			e = i;
-			float_as_str = std::string(obj_buffer, s, e-s);
-			
-			*(f_ptr + vertex_index) = (sfloat)std::atof(float_as_str.c_str());
-			vertex_index += 1;
-
-			s = e;
+		if (obj_buffer[i] == ' ' && s < 3) {
+			spaces[s] = i;
+			s += 1;
 		}
+
 		i += 1;
 	}
 
-	start = i+1;
+	// parse x 
+	if (spaces[0] != NULL && spaces[1] != NULL) {
+		vertex.x = (sfloat)std::stod(
+			std::string(obj_buffer, spaces[0], spaces[1] - spaces[0]).c_str()
+		);
+	}
+	// parse y
+	if (spaces[1] != NULL && spaces[2] != NULL) {
+		vertex.y = (sfloat)std::stod(
+			std::string(obj_buffer, spaces[1], spaces[2] - spaces[1]).c_str()
+		);
+	}
+	// parse z
+	if (spaces[2] != NULL) {
+		vertex.z = (sfloat)std::stod(
+			std::string(obj_buffer, spaces[2], i - spaces[2]).c_str()
+		);
+	}
+
+	start = i;
 	return vertex;
 }
 
