@@ -104,25 +104,25 @@ bool init() {
 	frustum.r =  1;
 	frustum.b = -1;
 	frustum.t =  1;
-	frustum.n =  1;
+	frustum.vn =  1;
 	frustum.f =  100;
 	
-	perpsective_x_factor = frustum.n * aspect_ratio * hfov;
-	perspective_y_factor = frustum.n * hfov;
+	perpsective_x_factor = frustum.vn * aspect_ratio * hfov;
+	perspective_y_factor = frustum.vn * hfov;
 	
 	ortho_dx = (2 / (frustum.r - frustum.l));
 	ortho_dy = (2 / (frustum.t - frustum.b));
-	ortho_dz = (2 / (frustum.f - frustum.n));
+	ortho_dz = (2 / (frustum.f - frustum.vn));
 
 	ortho_dxw = -((frustum.r + frustum.l) / (frustum.r - frustum.l));
 	ortho_dyw = -((frustum.t + frustum.b) / (frustum.t - frustum.b));
-	ortho_dzw = -((frustum.f + frustum.n) / (frustum.f - frustum.n));
+	ortho_dzw = -((frustum.f + frustum.vn) / (frustum.f - frustum.vn));
 
-	z_factor  = (frustum.f / (frustum.f - frustum.n));
-	zn_factor = -z_factor * frustum.n;
+	z_factor  = (frustum.f / (frustum.f - frustum.vn));
+	zn_factor = -z_factor * frustum.vn;
 
-	far_plus_near =  frustum.f + frustum.n;
-	far_mult_near = -(frustum.f * frustum.n);
+	far_plus_near =  frustum.f + frustum.vn;
+	far_mult_near = -(frustum.f * frustum.vn);
 
 	to_world_space(models);
 	clear_color.a = 255;

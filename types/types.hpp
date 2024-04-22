@@ -163,7 +163,7 @@ typedef struct vec3d {
 
 // just for NDC 
 typedef struct cube {
-	sfloat n = 0;
+	sfloat vn = 0;
 	sfloat f = 0;
 	sfloat l = 0;
 	sfloat r = 0;
@@ -381,7 +381,7 @@ class face3 { // triangle face
 public:
 	index3 v  = { 0 };
 	index3 vt = { 0 };
-	index3 n = { 0 };
+	index3 vn = { 0 };
 
 	// constructor's
 	face3();
@@ -399,7 +399,7 @@ class face4 { // quad face
 public:
 	index4 v  = { 0 };
 	index4 vt = { 0 };
-	index4 n = { 0 };
+	index4 vn = { 0 };
 
 	face4();
 	face4(index4 const& vertices);
@@ -435,7 +435,7 @@ public:
 	std::vector<vec3d>* v = nullptr;
 
 	// normals
-	std::vector<vec3d>* n = nullptr;
+	std::vector<vec3d>* vn = nullptr;
 
 	// texture coordinates
 	std::vector<vec_uv>* vt = nullptr;

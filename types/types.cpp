@@ -277,7 +277,7 @@ mesh::mesh(
 	}
 	
 	if (normals != nullptr) {
-		this->n = normals;
+		this->vn = normals;
 	}
 
 }
@@ -298,7 +298,7 @@ mesh::mesh(
 	}
 
 	if (normals != nullptr) {
-		this->n = normals;
+		this->vn = normals;
 	}
 
 	if (texture_coordinates != nullptr) {
@@ -320,9 +320,9 @@ mesh::~mesh() {
 		this->f = nullptr;
 	}
 
-	if (this->n != nullptr) {
-		delete this->n;
-		this->n = nullptr;
+	if (this->vn != nullptr) {
+		delete this->vn;
+		this->vn = nullptr;
 	}
 
 	if (this->vt != nullptr) {
@@ -365,7 +365,7 @@ face3::face3(index3 const& vertices, index3 const& normals_vertex)
 */
 
 face3::face3(index3 const& vertices, index3 const& normals_vertex, index3 const& textuer_vertex)
-	: v{ vertices }, n{ normals_vertex }, vt{textuer_vertex} {
+	: v{ vertices }, vn{ normals_vertex }, vt{textuer_vertex} {
 }
 
 face3::~face3() {}// = default;
@@ -386,7 +386,7 @@ face4::face4(index4 const& vertices, index4 const& normals_vertex)
 */
 
 face4::face4(index4 const& vertices, index4 const& normals_vertex, index4 const& textuer_vertex)
-	: v{ vertices }, n{ normals_vertex }, vt{ textuer_vertex } {
+	: v{ vertices }, vn{ normals_vertex }, vt{ textuer_vertex } {
 }
 
 face4::~face4() {}// = default;
