@@ -11,26 +11,26 @@
 */
 static inline vec3d parse_to_vec3d(char* obj_buffer, uint32_t& start, uint32_t end);
 
-static face3    make_face(char* obj_buffer, uint32_t& start, uint32_t end);
 static vec3d  make_vertex(char* obj_buffer, uint32_t& start, uint32_t end);
 static vec3d  make_normal(char* obj_buffer, uint32_t& start, uint32_t end);
+static face3  make_face(  char* obj_buffer, uint32_t& start, uint32_t end);
 static vec_uv make_vertex_texture(char* obj_buffer, uint32_t& start, uint32_t end);
 
 // to check if face line is "v v v" or "v/vt/vn v/vt/vn v/vt/vn"
 static bool is_simple_face(char* obj_buffer, uint32_t s, uint32_t e);
 
-static void parse_simple_face(
-	face3& face, char* obj_buffer, uint32_t* spaces , uint32_t end_of_line
+static void make_face_from_simple_str(
+	face3& face, char* obj_buffer, uint32_t* spaces
 );
-static void parse_composite_face(
-	face3& face, char* obj_buffer, uint32_t* spaces, uint32_t end_of_line
+static void make_face_from_composite_str(
+	face3& face, char* obj_buffer, uint32_t* spaces
 );
 // ==========================================
 
 
 /*
 	=====================================
-	==== namespace parser function ======
+	===== namespace parser function =====
 	=====================================
 */
 
@@ -90,7 +90,6 @@ mesh* parser::obj(char* obj_data, uint32_t size) {
 
 	return obj;
 }
-
 
 /*
 	=====================================
@@ -182,12 +181,12 @@ static face3 make_face(char* obj_buffer, uint32_t& index , uint32_t end) {
 	}
 
 	// if face just => f v v v
-	if (is_simple_face(obj_buffer, spaces[0], spaces[1])) {
-		parse_simple_face(face, obj_buffer, spaces);
+	if ( is_simple_face(obj_buffer, spaces[0], spaces[1]) ) {
+		make_face_from_simple_str(face, obj_buffer, spaces);
 	}
 	else { 
 	// if face => f v/vt/vn v/vt/vn v/vt/vn or v//vt//vn...
-		parse_composite_face(face, obj_buffer, spaces , index);
+		make_face_from_composite_str(face, obj_buffer, spaces);
 	}
 
 	return face;
@@ -204,7 +203,7 @@ static bool is_simple_face(char* obj_buffer, uint32_t s, uint32_t e) {
 	return true;
 }
 
-static void parse_simple_face(face3& face, char* obj_buffer, uint32_t* spaces) {
+static void make_face_from_simple_str(face3& face, char* obj_buffer, uint32_t* spaces) {
 	
 	face.v.a = uint32_t(
 		std::string(obj_buffer , spaces[0] , spaces[1] - spaces[0]).c_str()
@@ -220,23 +219,27 @@ static void parse_simple_face(face3& face, char* obj_buffer, uint32_t* spaces) {
 
 }
 
-static void str_to_face3_value(
-	char* buffer, uint32_t start, uint32_t end , face3& face, uint32_t index
+static void make_face_from_composite_str(
+	face3& face, char* obj_buffer, uint32_t* spaces
 ) {
+
+	uint32_t s = NULL, e = NULL;
+	uint32_t vi = 0;
+
+	for (uint32_t i = 0; i < 3; i++) {
+		s = spaces[i];  e = spaces[i + 1];
 	
-}
+		while (s <= e) {
 
-static void parse_composite_face(face3& face, char* obj_buffer, uint32_t* spaces, uint32_t end_of_line) {
+			if (obj_buffer[s] == '/') {
+				
+					
+				vi++;
+			}
 
-	std::vector<std::string> parts = {
-		std::string(obj_buffer, spaces[0], spaces[1] - spaces[0]),
-		std::string(obj_buffer, spaces[1], spaces[2] - spaces[1]),
-		std::string(obj_buffer, spaces[2], end_of_line - spaces[2])
-	};
-	
-	for (std::string& part : parts) {
+			s++;
+		}
 
-		
 	}
 
 }
