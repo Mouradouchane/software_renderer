@@ -363,51 +363,48 @@ public:
 };
 // end : class triangle3d
 
-typedef struct index3 {
-	uint32_t a = NULL;
-	uint32_t b = NULL;
-	uint32_t c = NULL;
-};
-
-typedef struct index4 {
-	uint32_t a = NULL;
-	uint32_t b = NULL;
-	uint32_t c = NULL;
-	uint32_t d = NULL;
+typedef struct indxs{
+	uint32_t v  = NULL;
+	uint32_t vt = NULL;
+	uint32_t vn = NULL;
 };
 
 class face3 { // triangle face
 
 public:
-	index3 v  = { 0 };
-	index3 vt = { 0 };
-	index3 vn = { 0 };
+	indxs a = { NULL };
+	indxs b = { NULL };
+	indxs c = { NULL };
 
 	// constructor's
-	face3();
-	face3(index3 const& vertices);
-	face3(index3 const& vertices, index3 const& textuer_vertex);
-	// face3(index3 const& vertices, index3 const& normals_vertex);
-	face3(index3 const& vertices, index3 const& normals_vertex, index3 const& textuer_vertex);
+	face3() = default;
+	face3(indxs const& a, indxs const& b, indxs const& c);
 	
 	// destructor
-	~face3();
+	~face3() = default;
+
+	// operators
+	indxs& operator[](char vertex_name);
+	indxs& operator[](uint8_t vertex_index);
 
 };
 
-class face4 { // quad face
+class face4 : public face3 { // quad face
+
 public:
-	index4 v  = { 0 };
-	index4 vt = { 0 };
-	index4 vn = { 0 };
+	indxs d = { NULL };
 
-	face4();
-	face4(index4 const& vertices);
-	face4(index4 const& vertices, index4 const& textuer_vertex);
-	//face4(index4 const& vertices, index4 const& normals_vertex);
-	face4(index4 const& vertices, index4 const& normals_vertex, index4 const& textuer_vertex);
+	face4() = default;
+	face4(
+		indxs const& vertex_a, indxs const& vertex_b, 
+		indxs const& vertex_c, indxs const& vertex_d
+	);
 
-	~face4();
+	~face4() = default;
+
+	indxs& operator[](char vertex_name);
+	indxs& operator[](uint8_t vertex_index);
+
 };
 
 // textuer coordinates 2d texture

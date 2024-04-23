@@ -25,6 +25,9 @@ static void make_face_from_simple_str(
 static void make_face_from_composite_str(
 	face3& face, char* obj_buffer, uint32_t* spaces
 );
+static void extract_values(
+	face3& face, char* obj_buffer, char op, uint32_t start, uint32_t end
+);
 // ==========================================
 
 
@@ -192,7 +195,9 @@ static face3 make_face(char* obj_buffer, uint32_t& index , uint32_t end) {
 	return face;
 }
 
-static bool is_simple_face(char* obj_buffer, uint32_t s, uint32_t e) {
+static bool is_simple_face(
+	char* obj_buffer, uint32_t s, uint32_t e
+) {
 
 	while (s <= e) {
 
@@ -203,18 +208,51 @@ static bool is_simple_face(char* obj_buffer, uint32_t s, uint32_t e) {
 	return true;
 }
 
-static void make_face_from_simple_str(face3& face, char* obj_buffer, uint32_t* spaces) {
+static void make_face_from_simple_str(
+	face3& face, char* obj_buffer, uint32_t* spaces
+) {
 	
-	face.v.a = uint32_t(
+	face.a.v = uint32_t(
 		std::string(obj_buffer , spaces[0] , spaces[1] - spaces[0]).c_str()
 	);
 
-	face.v.b = uint32_t(
+	face.b.v = uint32_t(
 		std::string(obj_buffer, spaces[1], spaces[2] - spaces[1]).c_str()
 	);
 
-	face.v.c = uint32_t(
+	face.c.v = uint32_t(
 		std::string(obj_buffer, spaces[2], spaces[3] - spaces[2]).c_str()
+	);
+
+}
+
+static void extract_values(
+	face3& face, char* obj_buffer, char op, uint32_t s, uint32_t e
+) {
+
+	uint32_t spaces[4] = { s , NULL , NULL , e };
+	uint8_t i = 1;
+
+	while (s <= e) {
+		
+		if (obj_buffer[s] == '/') {
+			spaces[i] = s;
+			i++;
+		}
+
+		s++;
+	}
+
+	face[op].v = uint32_t(
+		std::stoul(std::string(obj_buffer, spaces[0], spaces[1] - spaces[0]))
+	);
+
+	face[op].vt = uint32_t(
+		std::stoul(std::string(obj_buffer, spaces[1], spaces[2] - spaces[1]))
+	);
+
+	face[op].vn = uint32_t(
+		std::stoul(std::string(obj_buffer, spaces[2], spaces[3] - spaces[2]))
 	);
 
 }
@@ -223,24 +261,9 @@ static void make_face_from_composite_str(
 	face3& face, char* obj_buffer, uint32_t* spaces
 ) {
 
-	uint32_t s = NULL, e = NULL;
-	uint32_t vi = 0;
-
-	for (uint32_t i = 0; i < 3; i++) {
-		s = spaces[i];  e = spaces[i + 1];
-	
-		while (s <= e) {
-
-			if (obj_buffer[s] == '/') {
-				
-					
-				vi++;
-			}
-
-			s++;
-		}
-
-	}
+	extract_values(face, obj_buffer, 'a', spaces[0], spaces[1]);
+	extract_values(face, obj_buffer, 'b', spaces[1], spaces[2]);
+	extract_values(face, obj_buffer, 'c', spaces[2], spaces[3]);
 
 }
 

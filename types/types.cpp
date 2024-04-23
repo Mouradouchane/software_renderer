@@ -349,47 +349,68 @@ void mesh::copy_mesh(mesh* source, mesh* destination) {
 	====================================
 */
 
-face3::face3() { }
+face3::face3(
+	indxs const& vertex_a, indxs const& vertex_b, indxs const& vertex_c
+) :a{ vertex_a }, b{ vertex_b }, c{ vertex_c } 
+{
 
-face3::face3(index3 const& vertices) 
-	:v{ vertices } { 
 }
 
-face3::face3(index3 const& vertices, index3 const& textuer_vertex)
-	: v{ vertices }, vt{ textuer_vertex } {
-}
-/*
-face3::face3(index3 const& vertices, index3 const& normals_vertex)
-	: v{ vertices }, vn{ normals_vertex } {
-}
-*/
+indxs& face3::operator[](char vertex_name) {
 
-face3::face3(index3 const& vertices, index3 const& normals_vertex, index3 const& textuer_vertex)
-	: v{ vertices }, vn{ normals_vertex }, vt{textuer_vertex} {
+	switch (vertex_name) {
+		case 'a': return this->a;
+		case 'b': return this->b;
+		case 'c': return this->c;
+	}
+
+	return indxs{ 0 };
 }
 
-face3::~face3() {}// = default;
+indxs& face3::operator[](uint8_t vertex_index) {
+
+	switch (vertex_index) {
+		case 0 : return this->a;
+		case 1 : return this->b;
+		case 2 : return this->c;
+	}
+
+	return indxs{ 0 };
+}
 
 // ===== face4 =========================================
-face4::face4(index4 const& vertices)
-	: v{ vertices } {
+
+face4::face4(
+	indxs const& vertex_a, indxs const& vertex_b, 
+	indxs const& vertex_c, indxs const& vertex_d
+) 
+  : face3(vertex_a, vertex_b, vertex_c), d{ vertex_d }
+{
+
 }
 
-face4::face4(index4 const& vertices, index4 const& textuer_vertex)
-	: v{ vertices }, vt{ textuer_vertex } {
+indxs& face4::operator[](char vertex_name) {
+
+	switch (vertex_name) {
+		case 'a': return this->a;
+		case 'b': return this->b;
+		case 'c': return this->c;
+		case 'd': return this->d;
+	}
+
+	return indxs{ 0 };
 }
 
-/*
-face4::face4(index4 const& vertices, index4 const& normals_vertex)
-	: v{ vertices }, vn{ normals_vertex } {
+indxs& face4::operator[](uint8_t vertex_index) {
+
+	switch (vertex_index) {
+		case 0: return this->a;
+		case 1: return this->b;
+		case 2: return this->c;
+		case 3: return this->d;
+	}
+
+	return indxs{ 0 };
 }
-*/
-
-face4::face4(index4 const& vertices, index4 const& normals_vertex, index4 const& textuer_vertex)
-	: v{ vertices }, vn{ normals_vertex }, vt{ textuer_vertex } {
-}
-
-face4::~face4() {}// = default;
-
 
 #endif
