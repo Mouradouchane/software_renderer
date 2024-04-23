@@ -1,0 +1,21 @@
+
+# Polygonal face element (see below)
+f 1 2 3
+f 3/1 4/2 5/3
+f 6/4/1 3/5/3 7/6/5
+f 7//1 8//2 9//3
+
+v 0.123 0.234 0.345
+v 1 2 3
+
+# Parameter space vertices in (u, [v, w]) form; free form geometry statement
+vp 0.310000 3.210000 2.100000
+vp ...
+
+# List of vertex normals in (x,y,z) form; normals might not be unit vectors.
+vn 0.707 0.000 0.707
+vn 1 2 3
+
+vt 0.500 1 [0]
+vt 0.500 1
+vt 0.500 1 0

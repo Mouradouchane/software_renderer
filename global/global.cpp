@@ -17,6 +17,7 @@ std::vector<mesh*>*   models = nullptr;
 std::vector<mesh*>* p_models = nullptr;
 
 std::initializer_list<std::string> models_path = {
+	"models/test.obj",
 	"models/teapot.obj"
 };
 
