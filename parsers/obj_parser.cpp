@@ -48,6 +48,11 @@ mesh* parser::obj(char* obj_data, uint32_t size) {
 
 	for (uint32_t s = 0; s < size; s++) {
 
+		if (obj_data[s] == '#') {
+			// skip comment
+			while (obj_data[s] != '\n') s++;
+		}
+
 		if (obj_data[s] == 'f') {
 			faces->push_back(
 				make_face(obj_data, s, size)
@@ -157,7 +162,6 @@ static vec3d make_normal(char* obj_buffer, uint32_t& start , uint32_t end) {
 	return parse_to_vec3d(obj_buffer, start, end);
 }
 
-
 static face3 make_face(char* obj_buffer, uint32_t& index , uint32_t end) {
 
 	index += 1;
@@ -188,7 +192,7 @@ static face3 make_face(char* obj_buffer, uint32_t& index , uint32_t end) {
 		make_face_from_simple_str(face, obj_buffer, spaces);
 	}
 	else { 
-	// if face => f v/vt/vn v/vt/vn v/vt/vn or v//vt//vn...
+		// if face => f v/vt/vn v/vt/vn v/vt/vn or v//vt//vn...
 		make_face_from_composite_str(face, obj_buffer, spaces);
 	}
 
@@ -213,15 +217,15 @@ static void make_face_from_simple_str(
 ) {
 	
 	face.a.v = uint32_t(
-		std::string(obj_buffer , spaces[0] , spaces[1] - spaces[0]).c_str()
+		std::stoul( std::string(obj_buffer + spaces[0], obj_buffer + spaces[1]) )
 	);
 
 	face.b.v = uint32_t(
-		std::string(obj_buffer, spaces[1], spaces[2] - spaces[1]).c_str()
+		std::stoul( std::string(obj_buffer + spaces[1], obj_buffer + spaces[2]) )
 	);
 
 	face.c.v = uint32_t(
-		std::string(obj_buffer, spaces[2], spaces[3] - spaces[2]).c_str()
+		std::stoul( std::string(obj_buffer + spaces[2], obj_buffer + spaces[3]) )
 	);
 
 }
@@ -236,24 +240,41 @@ static void extract_values(
 	while (s <= e) {
 		
 		if (obj_buffer[s] == '/') {
-			spaces[i] = s;
+			spaces[i] = s+1;
 			i++;
 		}
 
 		s++;
 	}
 
-	face[op].v = uint32_t(
-		std::stoul(std::string(obj_buffer, spaces[0], spaces[1] - spaces[0]))
-	);
+	if (i == 3) {
 
-	face[op].vt = uint32_t(
-		std::stoul(std::string(obj_buffer, spaces[1], spaces[2] - spaces[1]))
-	);
+		face[op].v = uint32_t(
+			std::stoul(std::string(obj_buffer + spaces[0], obj_buffer + spaces[1]))
+		);
 
-	face[op].vn = uint32_t(
-		std::stoul(std::string(obj_buffer, spaces[2], spaces[3] - spaces[2]))
-	);
+		// in case not ==> v//n
+		if (spaces[1] + 1 != spaces[2]) {
+			face[op].vt = uint32_t(
+				std::stoul( std::string(obj_buffer + spaces[1], obj_buffer + spaces[2]) )
+			);
+		}
+
+		face[op].vn = uint32_t(
+			std::stoul( std::string(obj_buffer + spaces[2], obj_buffer + spaces[3]) )
+		);
+
+	}
+	else {
+
+		face[op].v = uint32_t(
+			std::stoul( std::string(obj_buffer + spaces[0], obj_buffer + spaces[1]) )
+		);
+		
+		face[op].vt = uint32_t(
+			std::stoul( std::string(obj_buffer + spaces[1], obj_buffer + spaces[3]) )
+		);
+	}
 
 }
 
@@ -268,7 +289,39 @@ static void make_face_from_composite_str(
 }
 
 static vec_uv make_vertex_texture(char* obj_buffer, uint32_t& s, uint32_t end) {
-	return vec_uv();
+	
+	vec_uv coordinates = { 0 };
+	
+	s++;
+	uint32_t spaces[4] = { s , NULL , NULL , NULL };
+	uint8_t  i = 1;
+	s++; 
+
+	while ( s <= end ) {
+
+		if ( obj_buffer[s] == '\n' || obj_buffer[s] == '\0') {
+			spaces[3] = s;
+			break;
+		}
+
+		if (obj_buffer[s] == ' ' && i < 3) {
+			spaces[i] = s;
+			i++;
+		}
+
+		s++;
+	}
+	
+	coordinates.u = sfloat(
+		std::stof( std::string(obj_buffer + spaces[0], obj_buffer + spaces[1]) )
+	);
+
+	coordinates.v = sfloat(
+		std::stof( std::string(obj_buffer + spaces[1], obj_buffer + spaces[3]) )
+	);
+
+	return coordinates;
 }
 
 #endif
+
