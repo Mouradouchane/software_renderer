@@ -429,19 +429,19 @@ class mesh {
 
 public:
 	// vertices
-	std::vector<vec3d>* v = nullptr;
+	std::vector<vec3d>*  v  = nullptr;
 
 	// normals
-	std::vector<vec3d>* vn = nullptr;
+	std::vector<vec3d>*  vn = nullptr;
 
 	// texture coordinates
 	std::vector<vec_uv>* vt = nullptr;
 
 	// faces
-	std::vector<face3>* f = nullptr;
+	std::vector<face3>*  f  = nullptr;
 
 	// constructor's
-	mesh();
+	mesh() = default;
 
 	mesh(
 		std::vector<vec3d>* vertices,

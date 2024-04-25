@@ -49,15 +49,15 @@ namespace graphics {
 
 
 	void orthographic_projection(
-		std::vector<mesh*>* models_ , 
+		std::vector<mesh*>* models , 
 		std::vector<mesh*>* where_to_project
 	);
 	void perspective_projection(
-		std::vector<mesh*>* models_ , 
+		std::vector<mesh*>* models , 
 		std::vector<mesh*>* where_to_project
 	);
 	void projection(
-		std::vector<mesh*>* models_ , 
+		std::vector<mesh*>* models , 
 		std::vector<mesh*>* where_to_project
 	);
 
@@ -70,7 +70,7 @@ namespace graphics {
 	// all of the rendering stages happend here 
 	// take a look in function code in render.cpp for deatils
 	void render(
-		std::vector<mesh*>* models_ ,
+		std::vector<mesh*>* models ,
 		std::vector<mesh*>* where_to_project
 	);
 

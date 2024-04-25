@@ -124,7 +124,7 @@ bool init() {
 	far_plus_near =  frustum.f + frustum.vn;
 	far_mult_near = -(frustum.f * frustum.vn);
 
-	to_world_space(models);
+	to_world_space(meshes);
 	clear_color.a = 255;
 	
 	// setup bitmap stuff
@@ -175,18 +175,20 @@ void destroy() {
 void to_world_space(std::vector<mesh*>* models) {
 	
 	if (models != nullptr) {
-		int32_t size = 1;
-		int32_t x = -size / 2, y = -size / 2, z = -10;
-
+		int32_t z = -10;
+		std::vector<vec3d>& vertices = {};
 
 		for (mesh* model : *models) {
+			
+			if (model != nullptr) {
+				vertices = *model->v;
 
-			for (uint32_t i = 0; i < model->v->size(); i += 1) {
-
-
+				for (uint32_t i = 0; i < vertices.size(); i += 1) {
+					vertices[i].z += z;
+				}
 			}
-
 		}
+
 	}
 
 }
@@ -195,23 +197,39 @@ void to_world_space(std::vector<mesh*>* models) {
 void perspective_projection(
 	std::vector<mesh*>* models, std::vector<mesh*>* where_to_output
 ) {
-	/*
-	vec3d new_point = {};
 
-	// perspective transformation
-	new_point.x = point.x * perpsective_x_factor; // near * aspect_ratio
-	new_point.y = point.y * perspective_y_factor; // near
-	new_point.w = point.z;
-	new_point.z = point.z * z_factor + zn_factor;
-	//new_point.z = point.z * far_plus_near + far_mult_near;
+if (models != nullptr) {
+	int32_t z = -10;
+	std::vector<vec3d>& vertices = {};
 
-	// perspective divide "go to NDC"
-	if (new_point.w != 0) {
-		new_point.x /= -new_point.w;
-		new_point.y /= -new_point.w;
-		new_point.z /= -new_point.w;
+	for (mesh* model : *models) {
+
+		if (model != nullptr) {
+			vertices = *model->v;
+
+			for (uint32_t i = 0; i < vertices.size(); i += 1) {
+
+				// perspective transformation
+				new_point.x = point.x * perpsective_x_factor; // near * aspect_ratio
+				new_point.y = point.y * perspective_y_factor; // near
+				new_point.w = point.z;
+				new_point.z = point.z * z_factor + zn_factor;
+				//new_point.z = point.z * far_plus_near + far_mult_near;
+
+				// perspective divide "go to NDC"
+				if (new_point.w != 0) {
+					new_point.x /= -new_point.w;
+					new_point.y /= -new_point.w;
+					new_point.z /= -new_point.w;
+				}
+
+				vertices[i].z += z;
+
+			}
+		}
 	}
-	*/
+
+}
 
 }
 

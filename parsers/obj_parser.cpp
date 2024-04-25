@@ -41,7 +41,7 @@ mesh* parser::obj(char* obj_data, uint32_t size) {
 
 	mesh* obj = new mesh();
 
-	std::vector<vec_uv>* tvs      = new std::vector<vec_uv>();
+	std::vector<vec_uv>* vts      = new std::vector<vec_uv>();
 	std::vector<vec3d>*  vertices = new std::vector<vec3d>();
 	std::vector<vec3d>*  normals  = new std::vector<vec3d>();
 	std::vector<face3>*  faces    = new std::vector<face3>();
@@ -74,7 +74,7 @@ mesh* parser::obj(char* obj_data, uint32_t size) {
 
 					case 't': { // vt
 						s += 1;
-						tvs->push_back(
+						vts->push_back(
 							make_vertex_texture(obj_data, s, size)
 						);
 					}
@@ -95,6 +95,11 @@ mesh* parser::obj(char* obj_data, uint32_t size) {
 		}
 
 	}
+
+	obj->v  = vertices;
+	obj->f  = faces;
+	obj->vn = normals;
+	obj->vt = vts;
 
 	return obj;
 }

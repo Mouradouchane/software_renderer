@@ -245,8 +245,6 @@ sfloat matrix::get(uint16_t row, uint16_t column){
 	====================================
 */
 
-mesh::mesh() { }
-
 mesh::mesh(
 	std::vector<vec3d>* vertices,
 	std::vector<face3>* faces
@@ -311,21 +309,25 @@ mesh::mesh(
 mesh::~mesh() {
 
 	if (this->v != nullptr) {
+		*(this->v) = std::vector<vec3d>();
 		delete this->v;
 		this->v = nullptr;
 	}
 
 	if (this->f != nullptr) {
+		*(this->f) = std::vector<face3>();
 		delete this->f;
 		this->f = nullptr;
 	}
 
 	if (this->vn != nullptr) {
+		*(this->vn) = std::vector<vec3d>();
 		delete this->vn;
 		this->vn = nullptr;
 	}
 
 	if (this->vt != nullptr) {
+		*(this->vt) = std::vector<vec_uv>();
 		delete this->vt;
 		this->vt = nullptr;
 	}

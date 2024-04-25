@@ -13,11 +13,11 @@
 
 bool running = true;
 
-std::vector<mesh*>*   models = nullptr;
-std::vector<mesh*>* p_models = nullptr;
+std::vector<mesh*>*   meshes = nullptr;
+std::vector<mesh*>* p_meshes = nullptr;
 
 std::initializer_list<std::string> models_path = {
-	"models/test.obj",
+	//"models/test.obj",
 	"models/teapot.obj"
 };
 
