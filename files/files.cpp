@@ -23,7 +23,7 @@ std::vector<mesh*>* files::load_3d_models(
 			meshes->push_back(
 				parser::obj((char*)current_file.buffer, current_file.size)
 			);
-
+			
 		}
 		else {
 			// log warning

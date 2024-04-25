@@ -41,38 +41,30 @@ namespace graphics {
 	extern HDC        bitmap_hdc;
 	extern BITMAPINFO bitmap_info;
 
+	bool alloc_meshes_for_projection(
+		std::vector<mesh*>* meshes_
+	);
+
 	bool init();
 	void destroy();
 
 	// transform meshes from "model space" to "world space"
-	void to_world_space(std::vector<mesh*>* models);
+	void to_world_space();
 
 
-	void orthographic_projection(
-		std::vector<mesh*>* models , 
-		std::vector<mesh*>* where_to_project
-	);
-	void perspective_projection(
-		std::vector<mesh*>* models , 
-		std::vector<mesh*>* where_to_project
-	);
-	void projection(
-		std::vector<mesh*>* models , 
-		std::vector<mesh*>* where_to_project
-	);
+	void orthographic_projection();
+	void perspective_projection();
+	void projection();
 
 	// move from ndc to screen space
-	void to_screen_space(std::vector<mesh*>* projected_models);
+	void to_screen_space();
 
 	// draw models
-	void rasterization(std::vector<mesh*>* projected_models);
+	void rasterization();
 
 	// all of the rendering stages happend here 
 	// take a look in function code in render.cpp for deatils
-	void render(
-		std::vector<mesh*>* models ,
-		std::vector<mesh*>* where_to_project
-	);
+	void render();
 
 }
 // end : graphics namespace

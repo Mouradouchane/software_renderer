@@ -246,91 +246,51 @@ sfloat matrix::get(uint16_t row, uint16_t column){
 */
 
 mesh::mesh(
-	std::vector<vec3d>* vertices,
-	std::vector<face3>* faces
-){ 
-
-	if (vertices != nullptr) {
-		this->v = vertices;
-	}
-
-	if (faces != nullptr) {
-		this->f = faces;
-	}
-
+	std::vector<vec3d>& vertices
+){
+	v = vertices;
 }
 
 mesh::mesh(
-	std::vector<vec3d>* vertices,
-	std::vector<face3>* faces,
-	std::vector<vec3d>* normals
+	std::vector<vec3d>& vertices,
+	std::vector<face3>& faces
+){
+
+	f = faces;
+	v = vertices;
+}
+
+mesh::mesh(
+	std::vector<vec3d>& vertices,
+	std::vector<face3>& faces,
+	std::vector<vec3d>& normals
+){
+
+	f  = faces;
+	v  = vertices;
+	vn = normals;
+}
+
+mesh::mesh(
+	std::vector<vec3d>& vertices,
+	std::vector<face3>& faces,
+	std::vector<vec3d>& normals,
+	std::vector<vec_uv>& texture_coordinates
 ) {
-
-	if (vertices != nullptr) {
-		this->v = vertices;
-	}
-
-	if (faces != nullptr) {
-		this->f = faces;
-	}
 	
-	if (normals != nullptr) {
-		this->vn = normals;
-	}
-
-}
-
-mesh::mesh(
-	std::vector<vec3d>* vertices,
-	std::vector<face3>* faces,
-	std::vector<vec3d>* normals,
-	std::vector<vec_uv>* texture_coordinates
-) {
-
-	if (vertices != nullptr) {
-		this->v = vertices;
-	}
-
-	if (faces != nullptr) {
-		this->f = faces;
-	}
-
-	if (normals != nullptr) {
-		this->vn = normals;
-	}
-
-	if (texture_coordinates != nullptr) {
-		this->vt = texture_coordinates;
-	}
-
+	f  = faces;
+	v  = vertices; 
+	vn = normals;
+	vt = texture_coordinates;
 }
 
 // destructor
 mesh::~mesh() {
 
-	if (this->v != nullptr) {
-		*(this->v) = std::vector<vec3d>();
-		delete this->v;
-		this->v = nullptr;
-	}
-
-	if (this->f != nullptr) {
-		*(this->f) = std::vector<face3>();
-		delete this->f;
-		this->f = nullptr;
-	}
-
-	if (this->vn != nullptr) {
-		*(this->vn) = std::vector<vec3d>();
-		delete this->vn;
-		this->vn = nullptr;
-	}
-
-	if (this->vt != nullptr) {
-		*(this->vt) = std::vector<vec_uv>();
-		delete this->vt;
-		this->vt = nullptr;
-	}
+	this->v = std::vector<vec3d>();
+	this->f = std::vector<face3>();
+	this->vn = std::vector<vec3d>();
+	this->vt = std::vector<vec_uv>();
 
 }
 

@@ -39,69 +39,60 @@ static void extract_values(
 
 mesh* parser::obj(char* obj_data, uint32_t size) {
 
-	mesh* obj = new mesh();
+mesh* obj = new mesh();
 
-	std::vector<vec_uv>* vts      = new std::vector<vec_uv>();
-	std::vector<vec3d>*  vertices = new std::vector<vec3d>();
-	std::vector<vec3d>*  normals  = new std::vector<vec3d>();
-	std::vector<face3>*  faces    = new std::vector<face3>();
+for (uint32_t s = 0; s < size; s++) {
 
-	for (uint32_t s = 0; s < size; s++) {
+	if (obj_data[s] == '#') {
+		// skip comment
+		while (obj_data[s] != '\n') s++;
+	}
 
-		if (obj_data[s] == '#') {
-			// skip comment
-			while (obj_data[s] != '\n') s++;
-		}
+	if (obj_data[s] == 'f') {
+		obj->f.push_back(
+			make_face(obj_data, s, size)
+		);
+	}
 
-		if (obj_data[s] == 'f') {
-			faces->push_back(
-				make_face(obj_data, s, size)
-			);
-		}
+	if (obj_data[s] == 'v') {
 
-		if (obj_data[s] == 'v') {
+		if ((s < size - 1)) {
 
-			if ((s < size - 1)) {
+			switch (obj_data[s + 1]) {
 
-				switch (obj_data[s + 1]) {
-
-					case ' ': { // v
-						vertices->push_back(
-							make_vertex(obj_data, s, size)
-						);
-					}
-					break;
-
-					case 't': { // vt
-						s += 1;
-						vts->push_back(
-							make_vertex_texture(obj_data, s, size)
-						);
-					}
-					break;
-
-					case 'n': { // vn
-						s += 1;
-						normals->push_back(
-							make_normal(obj_data, s, size)
-						);
-					}
-					break;
-
-				}
-
+			case ' ': { // v
+				obj->v.push_back(
+					make_vertex(obj_data, s, size)
+				);
 			}
+			break;
+
+			case 't': { // vt
+				s += 1;
+				obj->vt.push_back(
+					make_vertex_texture(obj_data, s, size)
+				);
+			}
+			break;
+
+			case 'n': { // vn
+				s += 1;
+				obj->vn.push_back(
+					make_normal(obj_data, s, size)
+				);
+			}
+			break;
 
 		}
 
 	}
 
-	obj->v  = vertices;
-	obj->f  = faces;
-	obj->vn = normals;
-	obj->vt = vts;
+	}
+
+}
 
 	return obj;
+
 }
 
 /*
@@ -222,15 +213,15 @@ static void make_face_from_simple_str(
 ) {
 	
 	face.a.v = uint32_t(
-		std::stoul( std::string(obj_buffer + spaces[0], obj_buffer + spaces[1]) )
+		std::stoul( std::string(obj_buffer + spaces[0], obj_buffer + spaces[1]) ) -1
 	);
 
 	face.b.v = uint32_t(
-		std::stoul( std::string(obj_buffer + spaces[1], obj_buffer + spaces[2]) )
+		std::stoul( std::string(obj_buffer + spaces[1], obj_buffer + spaces[2]) ) -1
 	);
 
 	face.c.v = uint32_t(
-		std::stoul( std::string(obj_buffer + spaces[2], obj_buffer + spaces[3]) )
+		std::stoul( std::string(obj_buffer + spaces[2], obj_buffer + spaces[3]) ) -1
 	);
 
 }
@@ -255,29 +246,29 @@ static void extract_values(
 	if (i == 3) {
 
 		face[op].v = uint32_t(
-			std::stoul(std::string(obj_buffer + spaces[0], obj_buffer + spaces[1]))
+			std::stoul(std::string(obj_buffer + spaces[0], obj_buffer + spaces[1])) -1
 		);
 
 		// in case not ==> v//n
 		if (spaces[1] + 1 != spaces[2]) {
 			face[op].vt = uint32_t(
-				std::stoul( std::string(obj_buffer + spaces[1], obj_buffer + spaces[2]) )
+				std::stoul(std::string(obj_buffer + spaces[1], obj_buffer + spaces[2])) -1
 			);
 		}
 
 		face[op].vn = uint32_t(
-			std::stoul( std::string(obj_buffer + spaces[2], obj_buffer + spaces[3]) )
+			std::stoul(std::string(obj_buffer + spaces[2], obj_buffer + spaces[3])) -1
 		);
 
 	}
 	else {
 
 		face[op].v = uint32_t(
-			std::stoul( std::string(obj_buffer + spaces[0], obj_buffer + spaces[1]) )
+			std::stoul(std::string(obj_buffer + spaces[0], obj_buffer + spaces[1])) -1
 		);
 		
 		face[op].vt = uint32_t(
-			std::stoul( std::string(obj_buffer + spaces[1], obj_buffer + spaces[3]) )
+			std::stoul(std::string(obj_buffer + spaces[1], obj_buffer + spaces[3])) -1
 		);
 	}
 

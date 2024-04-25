@@ -429,36 +429,40 @@ class mesh {
 
 public:
 	// vertices
-	std::vector<vec3d>*  v  = nullptr;
-
-	// normals
-	std::vector<vec3d>*  vn = nullptr;
-
-	// texture coordinates
-	std::vector<vec_uv>* vt = nullptr;
+	std::vector<vec3d>  v;
 
 	// faces
-	std::vector<face3>*  f  = nullptr;
+	std::vector<face3>  f;
+
+	// normals
+	std::vector<vec3d>  vn;
+
+	// texture coordinates
+	std::vector<vec_uv> vt;
 
 	// constructor's
 	mesh() = default;
 
 	mesh(
-		std::vector<vec3d>* vertices,
-		std::vector<face3>* faces
+		std::vector<vec3d>& vertices
 	);
 
 	mesh(
-		std::vector<vec3d>* vertices,
-		std::vector<face3>* faces,
-		std::vector<vec3d>* normals
+		std::vector<vec3d>& vertices,
+		std::vector<face3>& faces
 	);
 
 	mesh(
-		std::vector<vec3d>* vertices, 
-		std::vector<face3>* faces,
-		std::vector<vec3d>* normals, 
-		std::vector<vec_uv>* texture_coordinates
+		std::vector<vec3d>& vertices,
+		std::vector<face3>& faces,
+		std::vector<vec3d>& normals
+	);
+
+	mesh(
+		std::vector<vec3d>& vertices, 
+		std::vector<face3>& faces,
+		std::vector<vec3d>& normals, 
+		std::vector<vec_uv>& texture_coordinates
 	);
 
 	// destructor

@@ -56,6 +56,8 @@ HDC        bitmap_hdc = NULL;
 
 scolor clear_color = { 0,0,0,0 };
 
+bool alloc_meshes_for_projection( std::vector<mesh*>* meshes_ );
+
 bool init() {
 
 	// allocate back-buffer
@@ -124,7 +126,12 @@ bool init() {
 	far_plus_near =  frustum.f + frustum.vn;
 	far_mult_near = -(frustum.f * frustum.vn);
 
-	to_world_space(meshes);
+	// setup models
+	meshes = files::load_3d_models(models_path);
+	alloc_meshes_for_projection(meshes);
+
+	to_world_space();
+	
 	clear_color.a = 255;
 	
 	// setup bitmap stuff
@@ -172,20 +179,33 @@ void destroy() {
 
 }
 
-void to_world_space(std::vector<mesh*>* models) {
+bool alloc_meshes_for_projection(std::vector<mesh*>* meshes_) {
+
+	if (meshes == nullptr) return false;
+
+	// alloc vector for projection meshes
+	p_meshes = new std::vector<mesh*>(meshes->size());
+
+	uint32_t p = 0;
+	for (mesh* model : meshes[0]) {
+
+		*(p_meshes->begin()+p) = new mesh(model->v,model->f,model->vn,model->vt);
+		p++;
+	}
+
+}
+
+void to_world_space() {
 	
-	if (models != nullptr) {
+	if (meshes != nullptr) {
 		int32_t z = -10;
-		std::vector<vec3d>& vertices = {};
-
-		for (mesh* model : *models) {
+		
+		for (uint32_t m = 0; m < meshes->size(); m++ ) {
 			
-			if (model != nullptr) {
-				vertices = *model->v;
+			mesh* model = *(meshes->begin() + m);
 
-				for (uint32_t i = 0; i < vertices.size(); i += 1) {
-					vertices[i].z += z;
-				}
+			for (uint32_t i = 0; i < model->v.size(); i += 1) {
+				model->v[i].z += z;
 			}
 		}
 
@@ -194,48 +214,54 @@ void to_world_space(std::vector<mesh*>* models) {
 }
 
 
-void perspective_projection(
-	std::vector<mesh*>* models, std::vector<mesh*>* where_to_output
-) {
+void perspective_projection() {
 
-if (models != nullptr) {
-	int32_t z = -10;
-	std::vector<vec3d>& vertices = {};
+	if (meshes != nullptr) {
 
-	for (mesh* model : *models) {
+		for (uint32_t m = 0; m < meshes->size(); m++) {
 
-		if (model != nullptr) {
-			vertices = *model->v;
+			mesh* model = *(meshes->begin() + m);
+			mesh* pmodel = *(p_meshes->begin() + m);
 
-			for (uint32_t i = 0; i < vertices.size(); i += 1) {
+			for (uint32_t i = 0; i < model->v.size(); i += 1) {
 
 				// perspective transformation
-				new_point.x = point.x * perpsective_x_factor; // near * aspect_ratio
-				new_point.y = point.y * perspective_y_factor; // near
-				new_point.w = point.z;
-				new_point.z = point.z * z_factor + zn_factor;
-				//new_point.z = point.z * far_plus_near + far_mult_near;
+				pmodel->v[i].x = model->v[i].x * perpsective_x_factor;
+				pmodel->v[i].y = model->v[i].y * perspective_y_factor;
+				pmodel->v[i].w = model->v[i].z;
+				pmodel->v[i].z = model->v[i].z * z_factor + zn_factor;
 
 				// perspective divide "go to NDC"
-				if (new_point.w != 0) {
-					new_point.x /= -new_point.w;
-					new_point.y /= -new_point.w;
-					new_point.z /= -new_point.w;
+				if (pmodel->v[i].w != 0) {
+
+					pmodel->v[i].x /= -pmodel->v[i].w;
+					pmodel->v[i].y /= -pmodel->v[i].w;
+					pmodel->v[i].z /= -pmodel->v[i].w;
 				}
 
-				vertices[i].z += z;
-
 			}
+
 		}
+		/*
+		// perspective transformation
+		new_point.x = point.x * perpsective_x_factor; // near * aspect_ratio
+		new_point.y = point.y * perspective_y_factor; // near
+		new_point.w = point.z;
+		new_point.z = point.z * z_factor + zn_factor;
+		//new_point.z = point.z * far_plus_near + far_mult_near;
+
+		// perspective divide "go to NDC"
+		if (new_point.w != 0) {
+			new_point.x /= -new_point.w;
+			new_point.y /= -new_point.w;
+			new_point.z /= -new_point.w;
+		}
+		*/
 	}
-
 }
 
-}
-
-void orthographic_projection(
-	std::vector<mesh*>* models, std::vector<mesh*>* where_to_output
-){
+// todo : orthographic projection
+void orthographic_projection( ) {
 	/*
 	vec3d new_point = { 
 		point.x * aspect_ratio * hfov , 
@@ -250,36 +276,43 @@ void orthographic_projection(
 	*/
 }
 
-void projection(
-	std::vector<mesh*>* models, std::vector<mesh*>* where_to_output
-) {
-	/*
+void projection() {
+
 	if (config::projection_type == PERSPECTIVE_PROJECTION) {
 
-		for (uint32_t t = 0; t < vert_size; t += 1) {
-			pvertices[t] = perspective_projection(vertices[t]);
+		perspective_projection();
+	}
+	else { 
+
+		orthographic_projection();
+	}
+
+}
+
+void to_screen_space(){
+
+/*
+// remap to 0,1 rangle 
+point.x = ((point.x + 1) / 2).x * back_buffer->width;
+point.y = ((point.y + 1) / 2).y * back_buffer->height;
+*/
+
+if (p_meshes != nullptr) {
+
+	for (uint32_t m = 0; m < p_meshes->size(); m++) {
+
+		mesh* pmodel = *(p_meshes->begin() + m);
+
+		for (uint32_t i = 0; i < pmodel->v.size(); i += 1){
+			// x = x * w + (w/2);
+			pmodel->v[i].x = pmodel->v[i].x * back_buffer->width + half_screen_width;
+			pmodel->v[i].y = pmodel->v[i].y * back_buffer->height + half_screen_height;
 		}
 
 	}
-	else { // todo : orthographic projection
 
-	
-
-	}
-	*/
 }
 
-void to_screen_space(std::vector<mesh*>* models){
-	/*
-	// remap to 0,1 rangle 
-	point.x = ((point.x + 1) / 2).x * back_buffer->width;
-	point.y = ((point.y + 1) / 2).y * back_buffer->height;
-	*/
-	
-	/*
-	point.x = point.x * back_buffer->width  + half_screen_width;
-	point.y = point.y * back_buffer->height + half_screen_height;
-	*/
 }
 
 void draw_fps_info() {
@@ -306,17 +339,47 @@ void draw_fps_info() {
 
 }
 
-void rasterization(std::vector<mesh*>* models) {
-	/*
+void rasterization() {
+
 	// clear buffers
 	back_buffer->fill(clear_color);
 	depth_buffer->fill(max_depth_value);
 
 	// draw to buffer
-	for (uint32_t f = 0; f < faces_size; f += 1) {
-		draw::draw_line(pvertices[faces[f].a], pvertices[faces[f].b], { 255,255,255,255 });
-		draw::draw_line(pvertices[faces[f].a], pvertices[faces[f].c], { 255,255,255,255 });
-		draw::draw_line(pvertices[faces[f].b], pvertices[faces[f].c], { 255,255,255,255 });
+	for (uint32_t m = 0; m < p_meshes->size(); m++) {
+
+		mesh* pmodel = *(p_meshes->begin() + m);
+		vec3d v;
+
+		for (uint32_t f = 0; f < pmodel->f.size(); f++ ) {
+			/*
+			draw::draw_line(
+				pmodel->v[pmodel->f[f].a.v],
+				pmodel->v[pmodel->f[f].b.v], 
+				{ 255,255,255,255 }
+			);
+			draw::draw_line(
+				pmodel->v[pmodel->f[f].a.v],
+				pmodel->v[pmodel->f[f].c.v],
+				{ 255,255,255,255 }
+			);
+			draw::draw_line(
+				pmodel->v[pmodel->f[f].b.v],
+				pmodel->v[pmodel->f[f].c.v],
+				{ 255,255,255,255 }
+			);
+			*/
+			v = pmodel->v[pmodel->f[f].a.v];
+			draw::fill_circle(v.x, v.y, 2, scolor{ 255,255,0,255 });
+
+			v = pmodel->v[pmodel->f[f].b.v];
+			draw::fill_circle(v.x, v.y, 2, scolor{ 255,255,0,255 });
+			
+			v = pmodel->v[pmodel->f[f].c.v];
+			draw::fill_circle(v.x, v.y, 2, scolor{ 255,255,0,255 });
+
+		}
+
 	}
 
 	// update bitmap buffer address
@@ -345,14 +408,10 @@ void rasterization(std::vector<mesh*>* models) {
 
 	// swap buffers
 	std::swap(front_buffer, back_buffer);
-	*/
 }
 
 bool interval_transform_test = false;
-void render(
-	std::vector<mesh*>* models_,
-	std::vector<mesh*>* projected_models
-) {
+void render() {
 	
 	// transform models
 	if (interval_transform_test) {
@@ -360,13 +419,13 @@ void render(
 	}
 
 	// project models
-	projection(models_, projected_models);
+	projection();
 
 	// move projected models to screen space
-	to_screen_space(projected_models);
+	to_screen_space();
 
 	// "draw or shade or ..." => projected models
-	rasterization(projected_models);
+	rasterization();
 
 }
 

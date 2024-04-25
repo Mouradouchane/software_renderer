@@ -21,8 +21,6 @@ int WINAPI WinMain(
         exceptions::show_warn(warn_title, "unexpected error while setuping some preformance threads !");
     }
   
-    meshes = files::load_3d_models( models_path );
-
     periodic_timer fps_pt;
 
     // main loop 
@@ -36,7 +34,7 @@ int WINAPI WinMain(
 
         // rendering
         InvalidateRect(window::handle, 0, 0);
-        graphics::render(meshes , p_meshes);
+        graphics::render();
         UpdateWindow(window::handle);
 
         preformance::frames += 1;
