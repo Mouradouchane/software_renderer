@@ -5,31 +5,21 @@
 	========================================
 */
 
-#include "../types/types.hpp"
-
-#ifndef TIME_H
-#define TIME_H
-	#include <time.h>
-#endif
-
-#ifndef RANDOM_H
-#define RANDOM_H
-	#include <random>
-#endif
-
-#ifndef MATH_H
-#define MATH_H
-	#include <math.h>
-#endif
-
-#ifndef IOSTREAM_H
-#define IOSTREAM_H
-	#include <iostream>
-#endif
+#pragma once
 
 #ifndef MATH_HPP
-	
 #define MATH_HPP
+
+#ifndef EXTERNAL_HEADERS_MATH
+#define EXTERNAL_HEADERS_MATH
+
+#include <time.h>
+#include <random>
+#include <math.h>
+#include <iostream>
+#include "../types/types.hpp"
+
+#endif
 
 /*
 	global vector operators 

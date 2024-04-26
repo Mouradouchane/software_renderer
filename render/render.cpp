@@ -21,7 +21,7 @@ sfloat aspect_ratio = NULL;
 sfloat half_screen_width  = NULL;
 sfloat half_screen_height = NULL;
 
-cube frustum = { 0 }; // view frustum variables
+frustum view_frustum = { 0 }; // view frustum variables
 
 sfloat ortho_dx = NULL;
 sfloat ortho_dy = NULL;
@@ -49,7 +49,7 @@ buffer<scolor>* back_buffer  = nullptr;
 
 sfloat max_depth_value = -(std::numeric_limits<float>::infinity());
 
-BITMAPINFO bitmap_info = { 0 };
+//BITMAPINFO bitmap_info = { 0 };
 BITMAP     bitmap = { 0 };
 HBITMAP    hbitmap = NULL;
 HDC        bitmap_hdc = NULL;
@@ -63,7 +63,7 @@ bool init() {
 	// allocate back-buffer
 	back_buffer = new buffer<scolor>(
 		0, 0, window::width, window::height
-	);
+		);
 
 	if (back_buffer == nullptr) {
 		exceptions::show_error(
@@ -75,7 +75,7 @@ bool init() {
 	// allocate front-buffer
 	front_buffer = new buffer<scolor>(
 		0, 0, window::width, window::height
-	);
+		);
 
 	if (front_buffer == nullptr) {
 		exceptions::show_error(
@@ -86,8 +86,8 @@ bool init() {
 
 	// allocate depth-buffer
 	depth_buffer = new buffer<sfloat>(
-		0,0, window::width, window::height 
-	);
+		0, 0, window::width, window::height
+		);
 
 	if (depth_buffer == nullptr) {
 		exceptions::show_error(
@@ -97,43 +97,43 @@ bool init() {
 	}
 
 	// setup rendering variables
-	half_screen_width  = (sfloat)back_buffer->width / 2;
+	half_screen_width = (sfloat)back_buffer->width / 2;
 	half_screen_height = (sfloat)back_buffer->height / 2;
 
 	aspect_ratio = ((sfloat)window::height / (sfloat)window::width);
 
-	frustum.l = -1;
-	frustum.r =  1;
-	frustum.b = -1;
-	frustum.t =  1;
-	frustum.vn =  1;
-	frustum.f =  100;
-	
-	perpsective_x_factor = frustum.vn * aspect_ratio * hfov;
-	perspective_y_factor = frustum.vn * hfov;
-	
-	ortho_dx = (2 / (frustum.r - frustum.l));
-	ortho_dy = (2 / (frustum.t - frustum.b));
-	ortho_dz = (2 / (frustum.f - frustum.vn));
+	view_frustum.l  = -1;
+	view_frustum.r  =  1;
+	view_frustum.b  = -1;
+	view_frustum.t  =  1;
+	view_frustum.n  = -1;
+	view_frustum.f  = -100;
 
-	ortho_dxw = -((frustum.r + frustum.l) / (frustum.r - frustum.l));
-	ortho_dyw = -((frustum.t + frustum.b) / (frustum.t - frustum.b));
-	ortho_dzw = -((frustum.f + frustum.vn) / (frustum.f - frustum.vn));
+	perpsective_x_factor = view_frustum.n * aspect_ratio * hfov;
+	perspective_y_factor = view_frustum.n * hfov;
 
-	z_factor  = (frustum.f / (frustum.f - frustum.vn));
-	zn_factor = -z_factor * frustum.vn;
+	ortho_dx = (2 / (view_frustum.r - view_frustum.l));
+	ortho_dy = (2 / (view_frustum.t - view_frustum.b));
+	ortho_dz = (2 / (view_frustum.f - view_frustum.n));
 
-	far_plus_near =  frustum.f + frustum.vn;
-	far_mult_near = -(frustum.f * frustum.vn);
+	ortho_dxw = -((view_frustum.r + view_frustum.l) / (view_frustum.r - view_frustum.l));
+	ortho_dyw = -((view_frustum.t + view_frustum.b) / (view_frustum.t - view_frustum.b));
+	ortho_dzw = -((view_frustum.f + view_frustum.n) / (view_frustum.f - view_frustum.n));
+
+	z_factor  = (view_frustum.f / (view_frustum.f - view_frustum.n));
+	zn_factor = -z_factor * view_frustum.n;
+
+	far_plus_near = view_frustum.f + view_frustum.n;
+	far_mult_near = -(view_frustum.f * view_frustum.n);
 
 	// setup models
 	meshes = files::load_3d_models(models_path);
 	alloc_meshes_for_projection(meshes);
 
 	to_world_space();
-	
+
 	clear_color.a = 255;
-	
+
 	// setup bitmap stuff
 	GetClientRect(window::handle, &window::rect);
 	AdjustWindowRectEx(&window::rect, window::style, 0, 0);
@@ -185,11 +185,20 @@ bool alloc_meshes_for_projection(std::vector<mesh*>* meshes_) {
 
 	// alloc vector for projection meshes
 	p_meshes = new std::vector<mesh*>(meshes->size());
+	mesh* pmodel;
 
 	uint32_t p = 0;
 	for (mesh* model : meshes[0]) {
 
-		*(p_meshes->begin()+p) = new mesh(model->v,model->f,model->vn,model->vt);
+		pmodel = new mesh(model->v,model->f,model->n,model->vt);
+		pmodel->c = std::vector<scolor>(pmodel->f.size());
+		
+		for (uint32_t c  = 0; c < pmodel->c.size(); c++) {
+			pmodel->c[c] = random_scolor();
+		}
+		
+
+		*(p_meshes->begin() + p) = pmodel;
 		p++;
 	}
 
@@ -207,12 +216,12 @@ void to_world_space() {
 			for (uint32_t i = 0; i < model->v.size(); i += 1) {
 				model->v[i].z += z;
 			}
+
 		}
 
 	}
 
 }
-
 
 void perspective_projection() {
 
@@ -260,7 +269,7 @@ void perspective_projection() {
 	}
 }
 
-// todo : orthographic projection
+// todo : add orthographic projection
 void orthographic_projection( ) {
 	/*
 	vec3d new_point = { 
@@ -352,6 +361,13 @@ void rasterization() {
 		vec3d v;
 
 		for (uint32_t f = 0; f < pmodel->f.size(); f++ ) {
+		
+			draw::fill_3d_triangle(
+				pmodel->v[pmodel->f[f].a.v],
+				pmodel->v[pmodel->f[f].b.v],
+				pmodel->v[pmodel->f[f].c.v],
+				pmodel->c[f]
+			);
 			/*
 			draw::draw_line(
 				pmodel->v[pmodel->f[f].a.v],
@@ -368,7 +384,6 @@ void rasterization() {
 				pmodel->v[pmodel->f[f].c.v],
 				{ 255,255,255,255 }
 			);
-			*/
 			v = pmodel->v[pmodel->f[f].a.v];
 			draw::fill_circle(v.x, v.y, 2, scolor{ 255,255,0,255 });
 
@@ -377,9 +392,9 @@ void rasterization() {
 			
 			v = pmodel->v[pmodel->f[f].c.v];
 			draw::fill_circle(v.x, v.y, 2, scolor{ 255,255,0,255 });
-
+			*/
 		}
-
+	
 	}
 
 	// update bitmap buffer address
@@ -388,7 +403,7 @@ void rasterization() {
 		back_buffer->size * sizeof(scolor),
 		back_buffer->memory
 	);
-
+	
 	SelectObject(bitmap_hdc, hbitmap);
 	 
 	if(config::draw_fps_info) draw_fps_info();
@@ -396,13 +411,13 @@ void rasterization() {
 	// blt buffer into screen
 	BitBlt(
 		window::hdc,
-		0,0,
+		0, 0,
 
 		back_buffer->width,
 		back_buffer->height,
 
 		bitmap_hdc,
-		0,0,
+		0, 0,
 		SRCCOPY
 	);
 

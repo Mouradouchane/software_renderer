@@ -10,8 +10,8 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
 
-#ifndef EXTERNAL_LIBS
-#define EXTERNAL_LIBS
+#ifndef EXTERNAL_HEADERS_TYPES
+#define EXTERNAL_HEADERS_TYPES
 
 #include <mutex>
 #include <thread>
@@ -143,6 +143,9 @@ rgba32 create_rgba32(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha
 bgr8   create_bgr8 (uint8_t red, uint8_t green, uint8_t blue);
 bgra8  create_bgra8(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = UINT8_MAX);
 
+bgra8  random_bgra8 (bool random_alpha = false);
+scolor random_scolor(bool random_alpha = false);
+
 /*
 	===================================================
 	==================== vector's =====================
@@ -161,9 +164,8 @@ typedef struct vec3d {
 	sfloat w = 1;
 }; 
 
-// just for NDC 
-typedef struct cube {
-	sfloat vn = 0;
+typedef struct frustum {
+	sfloat n = 0;
 	sfloat f = 0;
 	sfloat l = 0;
 	sfloat r = 0;
@@ -189,10 +191,11 @@ public:
 	uint16_t y = 0;
 
 	uint16_t height = 1;
-	uint16_t width = 1;
+	uint16_t width  = 1;
 
 	uint32_t size = 0;
-	type* memory = nullptr; // heap allocation !
+	type*  memory = nullptr;
+
 
 	// constructor's
 
@@ -205,7 +208,7 @@ public:
 		this->y = y;
 
 		this->height = height;
-		this->width = width;
+		this->width  = width;
 
 		this->size = width * height;
 
@@ -366,7 +369,7 @@ public:
 typedef struct indxs{
 	uint32_t v  = NULL;
 	uint32_t vt = NULL;
-	uint32_t vn = NULL;
+	uint32_t n  = NULL;
 };
 
 class face3 { // triangle face
@@ -435,10 +438,13 @@ public:
 	std::vector<face3>  f;
 
 	// normals
-	std::vector<vec3d>  vn;
+	std::vector<vec3d>  n;
 
 	// texture coordinates
 	std::vector<vec_uv> vt;
+
+	// for testing only
+	std::vector<scolor> c;
 
 	// constructor's
 	mesh() = default;

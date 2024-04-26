@@ -72,6 +72,36 @@ bgra8 create_bgra8(
 	};
 }
 
+bgra8 random_bgra8(bool random_alpha) {
+
+	if (random_alpha) {
+
+		return bgra8{
+			(uint8_t)(std::rand() % (256)) ,
+			(uint8_t)(std::rand() % (256)) ,
+			(uint8_t)(std::rand() % (256)) ,
+			(uint8_t)(std::rand() % (256))
+		};
+	}
+	else return bgra8{
+		(uint8_t)(std::rand() % (256)) ,
+		(uint8_t)(std::rand() % (256)) ,
+		(uint8_t)(std::rand() % (256)) ,
+		255
+	};
+
+}
+
+scolor random_scolor(bool random_alpha) {
+	scolor color;
+
+	color.b = (uint8_t)(std::rand() % (256)),
+	color.r = (uint8_t)(std::rand() % (256)),
+	color.g = (uint8_t)(std::rand() % (256)),
+	color.a = (random_alpha) ? (uint8_t)(std::rand() % (256)) : 255;
+
+	return color;
+}
 
 /*
 	=================================================
@@ -268,7 +298,7 @@ mesh::mesh(
 
 	f  = faces;
 	v  = vertices;
-	vn = normals;
+	n = normals;
 }
 
 mesh::mesh(
@@ -280,7 +310,7 @@ mesh::mesh(
 	
 	f  = faces;
 	v  = vertices; 
-	vn = normals;
+	n = normals;
 	vt = texture_coordinates;
 }
 
@@ -289,7 +319,7 @@ mesh::~mesh() {
 
 	this->v = std::vector<vec3d>();
 	this->f = std::vector<face3>();
-	this->vn = std::vector<vec3d>();
+	this->n = std::vector<vec3d>();
 	this->vt = std::vector<vec_uv>();
 
 }

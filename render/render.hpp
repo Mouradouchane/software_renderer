@@ -27,7 +27,7 @@ namespace graphics {
 
 	extern sfloat aspect_ratio;
 
-	extern cube frustum;
+	extern frustum view_frustum;
 
 	// main frame buffer's
 	extern buffer<scolor>* back_buffer;

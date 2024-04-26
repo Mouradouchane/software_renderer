@@ -77,7 +77,7 @@ for (uint32_t s = 0; s < size; s++) {
 
 			case 'n': { // vn
 				s += 1;
-				obj->vn.push_back(
+				obj->n.push_back(
 					make_normal(obj_data, s, size)
 				);
 			}
@@ -256,7 +256,7 @@ static void extract_values(
 			);
 		}
 
-		face[op].vn = uint32_t(
+		face[op].n = uint32_t(
 			std::stoul(std::string(obj_buffer + spaces[2], obj_buffer + spaces[3])) -1
 		);
 
