@@ -51,7 +51,6 @@ namespace graphics {
 	// transform meshes from "model space" to "world space"
 	void to_world_space();
 
-
 	void orthographic_projection();
 	void perspective_projection();
 	void projection();
@@ -65,6 +64,12 @@ namespace graphics {
 	// all of the rendering stages happend here 
 	// take a look in function code in render.cpp for deatils
 	void render();
+
+	void rotate_mesh(
+		mesh* model , 
+		vec3d const& rotate_point , // point to rotate around
+		vec3d const& directions // x,y,z rotation values
+	);
 
 }
 // end : graphics namespace

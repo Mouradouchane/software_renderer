@@ -362,13 +362,13 @@ void rasterization() {
 
 		for (uint32_t f = 0; f < pmodel->f.size(); f++ ) {
 		
+			/*
 			draw::fill_3d_triangle(
 				pmodel->v[pmodel->f[f].a.v],
 				pmodel->v[pmodel->f[f].b.v],
 				pmodel->v[pmodel->f[f].c.v],
 				pmodel->c[f]
 			);
-			/*
 			draw::draw_line(
 				pmodel->v[pmodel->f[f].a.v],
 				pmodel->v[pmodel->f[f].b.v], 
@@ -384,15 +384,15 @@ void rasterization() {
 				pmodel->v[pmodel->f[f].c.v],
 				{ 255,255,255,255 }
 			);
+			*/
 			v = pmodel->v[pmodel->f[f].a.v];
-			draw::fill_circle(v.x, v.y, 2, scolor{ 255,255,0,255 });
+			draw::fill_circle(v.x, v.y, 1, scolor{ 255,255,0,255 });
 
 			v = pmodel->v[pmodel->f[f].b.v];
-			draw::fill_circle(v.x, v.y, 2, scolor{ 255,255,0,255 });
+			draw::fill_circle(v.x, v.y, 1, scolor{ 255,255,0,255 });
 			
 			v = pmodel->v[pmodel->f[f].c.v];
-			draw::fill_circle(v.x, v.y, 2, scolor{ 255,255,0,255 });
-			*/
+			draw::fill_circle(v.x, v.y, 1, scolor{ 255,255,0,255 });
 		}
 	
 	}
@@ -425,12 +425,14 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
-bool interval_transform_test = false;
+bool interval_transform_test = true;
 void render() {
 	
 	// transform models
 	if (interval_transform_test) {
-		
+		rotate_mesh(
+			*meshes->begin(), vec3d{ 0,0,-10 }, vec3d{-0.01,0.02,0.03}
+		);
 	}
 
 	// project models
@@ -444,6 +446,22 @@ void render() {
 
 }
 
+void rotate_mesh(
+	mesh* model,
+	vec3d const& rotate_point, // point to rotate around
+	vec3d const& directions // x,y,z rotation values
+){
+
+	for (uint32_t v = 0; v < model->v.size(); v++) {
+
+		math::x_rotate(rotate_point, model->v[v], directions.x);
+		math::y_rotate(rotate_point, model->v[v], directions.y);
+		math::z_rotate(rotate_point, model->v[v], directions.z);
+	}
+
 }
+
+}
+// end of namespace "render"
 
 #endif
