@@ -21,6 +21,7 @@
 
 #include <windows.h>
 
+#include "../macros/macros.hpp"
 #endif
 
 
@@ -34,11 +35,10 @@ typedef float        float32 , *ptr_float32;
 typedef double       float64 , *ptr_float64;
 typedef long double  float96 , *ptr_float96;
 
-#if TARGET_ARCH == 64
-	#define sfloat float64
-#else 
-	// x86
+#if TARGET_ARCH == 32
 	#define sfloat float32
+#else 
+	#define sfloat float64
 #endif
 
 typedef struct transform {

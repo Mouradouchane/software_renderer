@@ -2,13 +2,14 @@
 -- workspace/solution setup
 workspace("workspace") 
   configurations{ "Debug" , "Release" }
+  bindirs("$(SolutionDir)build")
 
 -- project setup
 project("software_renderer")
   
   kind("WindowedApp")
   language "C++"
-
+  
   targetdir("build/") -- exe output folder
   objdir("build/obj/") -- obj output folder
   

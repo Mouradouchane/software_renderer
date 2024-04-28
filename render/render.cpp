@@ -251,21 +251,7 @@ void perspective_projection() {
 			}
 
 		}
-		/*
-		// perspective transformation
-		new_point.x = point.x * perpsective_x_factor; // near * aspect_ratio
-		new_point.y = point.y * perspective_y_factor; // near
-		new_point.w = point.z;
-		new_point.z = point.z * z_factor + zn_factor;
-		//new_point.z = point.z * far_plus_near + far_mult_near;
 
-		// perspective divide "go to NDC"
-		if (new_point.w != 0) {
-			new_point.x /= -new_point.w;
-			new_point.y /= -new_point.w;
-			new_point.z /= -new_point.w;
-		}
-		*/
 	}
 }
 
@@ -430,9 +416,11 @@ void render() {
 	
 	// transform models
 	if (interval_transform_test) {
-		rotate_mesh(
-			*meshes->begin(), vec3d{ 0,0,-10 }, vec3d{-0.01,0.02,0.03}
-		);
+		if (*meshes->begin() != nullptr) {
+			rotate_mesh(
+				*meshes->begin(), vec3d{ 0,0,-10 }, vec3d{-0.01,0.02,0.03}
+			);
+		}
 	}
 
 	// project models

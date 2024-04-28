@@ -10,7 +10,7 @@
 	#define ORTHOGRAPHIC_PROJECTION 2
 
 	#define DEBUG_BUILD 1
-	#define TARGET_ARCH 86
+	#define TARGET_ARCH 32
 
 	#define WIRE_FRAME 0
 	#define PAINTING   1

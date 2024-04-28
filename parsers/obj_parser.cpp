@@ -170,7 +170,7 @@ static face3 make_face(char* obj_buffer, uint32_t& index , uint32_t end) {
 	// find spaces indexs for parsing
 	while (index <= end) {
 
-		if (obj_buffer[index] == '\n' || obj_buffer[index] == '\0') {
+		if (obj_buffer[index] == '\n' || obj_buffer[index] == '\0' || index == end) {
 			spaces[3] = index;
 			break;
 		}
@@ -182,6 +182,8 @@ static face3 make_face(char* obj_buffer, uint32_t& index , uint32_t end) {
 
 		index++;
 	}
+
+	if (spaces[0] == spaces[1] == spaces[2] == spaces[3]) return face;
 
 	// if face just => f v v v
 	if ( is_simple_face(obj_buffer, spaces[0], spaces[1]) ) {
@@ -198,6 +200,8 @@ static face3 make_face(char* obj_buffer, uint32_t& index , uint32_t end) {
 static bool is_simple_face(
 	char* obj_buffer, uint32_t s, uint32_t e
 ) {
+	
+	if (s == e) return false;
 
 	while (s <= e) {
 
@@ -278,9 +282,17 @@ static void make_face_from_composite_str(
 	face3& face, char* obj_buffer, uint32_t* spaces
 ) {
 
-	extract_values(face, obj_buffer, 'a', spaces[0], spaces[1]);
-	extract_values(face, obj_buffer, 'b', spaces[1], spaces[2]);
-	extract_values(face, obj_buffer, 'c', spaces[2], spaces[3]);
+	if (spaces[0] != NULL && spaces[0] != spaces[1]) {
+		extract_values(face, obj_buffer, 'a', spaces[0], spaces[1]);
+	}
+
+	if (spaces[1] != NULL && spaces[1] != spaces[2]) {
+		extract_values(face, obj_buffer, 'b', spaces[1], spaces[2]);
+	}
+
+	if (spaces[2] != NULL && spaces[2] != spaces[3]) {
+		extract_values(face, obj_buffer, 'c', spaces[2], spaces[3]);
+	}
 
 }
 
