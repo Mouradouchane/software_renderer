@@ -347,7 +347,7 @@ void rasterization() {
 		vec3d v;
 
 		for (uint32_t f = 0; f < pmodel->f.size(); f++ ) {
-		
+
 			/*
 			draw::fill_3d_triangle(
 				pmodel->v[pmodel->f[f].a.v],
@@ -355,22 +355,23 @@ void rasterization() {
 				pmodel->v[pmodel->f[f].c.v],
 				pmodel->c[f]
 			);
+			*/
 			draw::draw_line(
 				pmodel->v[pmodel->f[f].a.v],
 				pmodel->v[pmodel->f[f].b.v], 
-				{ 255,255,255,255 }
+				{ 255,0,255,255 }
 			);
 			draw::draw_line(
 				pmodel->v[pmodel->f[f].a.v],
 				pmodel->v[pmodel->f[f].c.v],
-				{ 255,255,255,255 }
+				{ 255,0,255,255 }
 			);
 			draw::draw_line(
 				pmodel->v[pmodel->f[f].b.v],
 				pmodel->v[pmodel->f[f].c.v],
-				{ 255,255,255,255 }
+				{ 255,0,255,255 }
 			);
-			*/
+			/*
 			v = pmodel->v[pmodel->f[f].a.v];
 			draw::fill_circle(v.x, v.y, 1, scolor{ 255,255,0,255 });
 
@@ -379,6 +380,7 @@ void rasterization() {
 			
 			v = pmodel->v[pmodel->f[f].c.v];
 			draw::fill_circle(v.x, v.y, 1, scolor{ 255,255,0,255 });
+			*/
 		}
 	
 	}

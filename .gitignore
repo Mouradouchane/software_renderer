@@ -42,6 +42,7 @@ x86/
 *.la
 *.a
 # .lib
+*.db
 
 # Executables
 *.exe
