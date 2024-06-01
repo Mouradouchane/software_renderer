@@ -63,7 +63,7 @@ bool init() {
 	// allocate back-buffer
 	back_buffer = new buffer<scolor>(
 		0, 0, window::width, window::height
-		);
+	);
 
 	if (back_buffer == nullptr) {
 		exceptions::show_error(
@@ -75,7 +75,7 @@ bool init() {
 	// allocate front-buffer
 	front_buffer = new buffer<scolor>(
 		0, 0, window::width, window::height
-		);
+	);
 
 	if (front_buffer == nullptr) {
 		exceptions::show_error(
@@ -87,7 +87,7 @@ bool init() {
 	// allocate depth-buffer
 	depth_buffer = new buffer<sfloat>(
 		0, 0, window::width, window::height
-		);
+	);
 
 	if (depth_buffer == nullptr) {
 		exceptions::show_error(
@@ -97,7 +97,7 @@ bool init() {
 	}
 
 	// setup rendering variables
-	half_screen_width = (sfloat)back_buffer->width / 2;
+	half_screen_width  = (sfloat)back_buffer->width / 2;
 	half_screen_height = (sfloat)back_buffer->height / 2;
 
 	aspect_ratio = ((sfloat)window::height / (sfloat)window::width);
@@ -107,7 +107,7 @@ bool init() {
 	view_frustum.b  = -1;
 	view_frustum.t  =  1;
 	view_frustum.n  = -1;
-	view_frustum.f  = -100;
+	view_frustum.f  = -50;
 
 	perpsective_x_factor = view_frustum.n * aspect_ratio * hfov;
 	perspective_y_factor = view_frustum.n * hfov;
@@ -181,7 +181,7 @@ void destroy() {
 
 bool alloc_meshes_for_projection(std::vector<mesh*>* meshes_) {
 
-	if (meshes == nullptr) return false;
+	if (meshes_ == nullptr || meshes_->size() == 0) return false;
 
 	// alloc vector for projection meshes
 	p_meshes = new std::vector<mesh*>(meshes->size());
@@ -207,7 +207,7 @@ bool alloc_meshes_for_projection(std::vector<mesh*>* meshes_) {
 void to_world_space() {
 	
 	if (meshes != nullptr) {
-		int32_t z = -10;
+		int32_t z = -60;
 		
 		for (uint32_t m = 0; m < meshes->size(); m++ ) {
 			
@@ -418,9 +418,9 @@ void render() {
 	
 	// transform models
 	if (interval_transform_test) {
-		if (*meshes->begin() != nullptr) {
+		if (meshes->size() != 0) {
 			rotate_mesh(
-				*meshes->begin(), vec3d{ 0,0,-10 }, vec3d{-0.01,0.02,0.03}
+				*(meshes->begin()), vec3d{ 0,0,-10 }, vec3d{-0.01,0.02,0.03}
 			);
 		}
 	}
@@ -439,7 +439,7 @@ void render() {
 void rotate_mesh(
 	mesh* model,
 	vec3d const& rotate_point, // point to rotate around
-	vec3d const& directions // x,y,z rotation values
+	vec3d const& directions    // x,y,z rotation values
 ){
 
 	for (uint32_t v = 0; v < model->v.size(); v++) {
@@ -447,6 +447,7 @@ void rotate_mesh(
 		math::x_rotate(rotate_point, model->v[v], directions.x);
 		math::y_rotate(rotate_point, model->v[v], directions.y);
 		math::z_rotate(rotate_point, model->v[v], directions.z);
+
 	}
 
 }

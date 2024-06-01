@@ -17,8 +17,11 @@ std::vector<mesh*>*   meshes = nullptr;
 std::vector<mesh*>* p_meshes = nullptr;
 
 std::initializer_list<std::string> models_path = {
-	//"models/test.obj",
-	"models/teapot.obj"
+	"models/stanford-bunny.obj",
+	/*
+	"models/test.obj",
+	"models/teapot.obj",
+	*/
 };
 
 std::string error_title = "error";
