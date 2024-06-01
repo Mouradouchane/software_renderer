@@ -1,5 +1,5 @@
 # Software Renderer
-### i start this project to learn the fundamentals of 3D graphics , this project currently under progress there's a lot i have to learn and cover .
+### i start this project to learn the fundamentals of 3D graphics , this project currently under progress there's a lot i have to cover .
 
 # preview 
 
