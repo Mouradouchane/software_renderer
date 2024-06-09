@@ -207,7 +207,8 @@ bool alloc_meshes_for_projection(std::vector<mesh*>* meshes_) {
 void to_world_space() {
 	
 	if (meshes != nullptr) {
-		int32_t z = -60;
+		int32_t z = -9;
+		float32 y = -1.5;
 		
 		for (uint32_t m = 0; m < meshes->size(); m++ ) {
 			
@@ -215,6 +216,7 @@ void to_world_space() {
 
 			for (uint32_t i = 0; i < model->v.size(); i += 1) {
 				model->v[i].z += z;
+				model->v[i].y += y;
 			}
 
 		}
@@ -348,14 +350,6 @@ void rasterization() {
 
 		for (uint32_t f = 0; f < pmodel->f.size(); f++ ) {
 
-			/*
-			draw::fill_3d_triangle(
-				pmodel->v[pmodel->f[f].a.v],
-				pmodel->v[pmodel->f[f].b.v],
-				pmodel->v[pmodel->f[f].c.v],
-				pmodel->c[f]
-			);
-			*/
 			draw::draw_line(
 				pmodel->v[pmodel->f[f].a.v],
 				pmodel->v[pmodel->f[f].b.v], 
@@ -413,14 +407,14 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
-bool interval_transform_test = true;
+bool interval_transform_test = false;
 void render() {
 	
 	// transform models
 	if (interval_transform_test) {
 		if (meshes->size() != 0) {
 			rotate_mesh(
-				*(meshes->begin()), vec3d{ 0,0,-10 }, vec3d{-0.01,0.02,0.03}
+				*(meshes->begin()), vec3d{0,0,0}, vec3d{ -0.01,0.02,0.03 }
 			);
 		}
 	}
