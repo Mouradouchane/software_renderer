@@ -1,13 +1,10 @@
 
 #pragma once
 
-#include "exceptions.hpp"
-
 #ifndef EXCEPTION_CPP
-
 #define EXCEPTION_CPP
 
-namespace exceptions {
+#include "exceptions.hpp"
 
 std::string get_last_error_window() {
 
@@ -76,8 +73,5 @@ void show_warn(std::string const& title, std::string const& message, bool sound)
     }
 
 }
-
-}
-// end : namespace exceptions
 
 #endif

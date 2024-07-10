@@ -51,7 +51,7 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
     monitor_info.cbSize = sizeof(MONITORINFO);
 
     if (!GetMonitorInfoA(h_monitor, &monitor_info)) {
-        exceptions::show_error("error", "failed to get monitor info");
+        show_error("error", "failed to get monitor info");
         return false;
     }
 
@@ -69,8 +69,8 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
 
     // resigster window using class
     if (RegisterClassW(&(window::cls)) == NULL) {
-        std::string err = exceptions::get_last_error_window();
-        exceptions::show_error(
+        std::string err = get_last_error_window();
+        show_error(
             "error", err
         );
         
@@ -95,9 +95,9 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
     );
 
     if (window::handle == NULL) {
-        std::string err = exceptions::get_last_error_window();
+        std::string err = get_last_error_window();
 
-        exceptions::show_error(
+        show_error(
             "error", err
         );
 
@@ -121,7 +121,7 @@ bool init(HINSTANCE h_instance , int n_cmd_show) {
             )
         )
     ) {
-        exceptions::show_error("error", "failed to set window to full-screen mode !");
+        show_error("error", "failed to set window to full-screen mode !");
         return false;
     }
 

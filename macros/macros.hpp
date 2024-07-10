@@ -6,6 +6,11 @@
 #ifndef MACROS_HPP
 #define MACROS_HPP
 
+	#define INIT_FAILED 0
+	
+	#define SUCCESSED 1
+	#define INIT_SUCCESSED 1
+
 	#define PERSPECTIVE_PROJECTION  1
 	#define ORTHOGRAPHIC_PROJECTION 2
 

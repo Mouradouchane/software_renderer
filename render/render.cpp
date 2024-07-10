@@ -4,7 +4,6 @@
 #define RENDER_CPP
 
 #include "render.hpp"
-// #include "draw.cpp"
 
 namespace graphics {
 
@@ -66,7 +65,7 @@ bool init() {
 	);
 
 	if (back_buffer == nullptr) {
-		exceptions::show_error(
+		show_error(
 			error_title, "failed to allocate memory for 'back buffer' !"
 		);
 		return false;
@@ -78,7 +77,7 @@ bool init() {
 	);
 
 	if (front_buffer == nullptr) {
-		exceptions::show_error(
+		show_error(
 			error_title, "failed to allocate memory for 'front buffer' !"
 		);
 		return false;
@@ -90,7 +89,7 @@ bool init() {
 	);
 
 	if (depth_buffer == nullptr) {
-		exceptions::show_error(
+		show_error(
 			error_title, "failed to allocate memory for 'depth buffer' !"
 		);
 		return false;

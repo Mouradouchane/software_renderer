@@ -1,7 +1,6 @@
 
 /*
-	here all the included headers
-	note : used in main.cpp and few other headers
+	here is all the includes for main
 */
 
 #pragma once 
@@ -13,26 +12,9 @@
 	#define UNICODE
 #endif
 
-#ifndef EXTERNAL_LIBS
-#define EXTERNAL_LIBS
-
-#include <mutex>
-#include <thread>
 #include <string>
-#include <vector>
-#include <initializer_list>
-
 #include <windows.h>
 
-#endif
-
-#include "types/types.hpp"
-#include "timer/timer.hpp"
-#include "preformance/preformance.hpp"
-#include "global/global.hpp"
-#include "configs/configs.hpp"
-#include "window/window.hpp"
-#include "render/render.hpp"
-#include "files/files.hpp"
+#include "application/application.hpp"
 
 #endif

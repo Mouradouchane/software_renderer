@@ -5,14 +5,17 @@
 	the rendering stage's .
 */
 
+#pragma once 
+
 #ifndef RENDER_HPP
 #define RENDER_HPP
 
 #include "../macros/macros.hpp"
 #include "../types/types.hpp"
 #include "../math/math.hpp"
-#include "../preformance/preformance.hpp"
 #include "../configs/configs.hpp"
+#include "../files/files.hpp"
+#include "../preformance/preformance.hpp"
 #include "../window/window.hpp"
 #include "draw.hpp"
 
