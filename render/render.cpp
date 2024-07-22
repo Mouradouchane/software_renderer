@@ -189,11 +189,11 @@ bool alloc_meshes_for_projection(std::vector<mesh*>* meshes_) {
 	uint32_t p = 0;
 	for (mesh* model : meshes[0]) {
 
-		pmodel = new mesh(model->v,model->f,model->n,model->vt);
-		pmodel->c = std::vector<scolor>(pmodel->f.size());
+		pmodel = new mesh(model->vertices,model->faces,model->normals,model->texture_coordinates);
+		pmodel->colors = std::vector<scolor>(pmodel->faces.size());
 		
-		for (uint32_t c  = 0; c < pmodel->c.size(); c++) {
-			pmodel->c[c] = random_scolor();
+		for (uint32_t c  = 0; c < pmodel->colors.size(); c++) {
+			pmodel->colors[c] = random_scolor();
 		}
 		
 
@@ -213,9 +213,9 @@ void to_world_space() {
 			
 			mesh* model = *(meshes->begin() + m);
 
-			for (uint32_t i = 0; i < model->v.size(); i += 1) {
-				model->v[i].z += z;
-				model->v[i].y += y;
+			for (uint32_t i = 0; i < model->vertices.size(); i += 1) {
+				model->vertices[i].z += z;
+				model->vertices[i].y += y;
 			}
 
 		}
@@ -233,20 +233,20 @@ void perspective_projection() {
 			mesh* model = *(meshes->begin() + m);
 			mesh* pmodel = *(p_meshes->begin() + m);
 
-			for (uint32_t i = 0; i < model->v.size(); i += 1) {
+			for (uint32_t i = 0; i < model->vertices.size(); i += 1) {
 
 				// perspective transformation
-				pmodel->v[i].x = model->v[i].x * perpsective_x_factor;
-				pmodel->v[i].y = model->v[i].y * perspective_y_factor;
-				pmodel->v[i].w = model->v[i].z;
-				pmodel->v[i].z = model->v[i].z * z_factor + zn_factor;
+				pmodel->vertices[i].x = model->vertices[i].x * perpsective_x_factor;
+				pmodel->vertices[i].y = model->vertices[i].y * perspective_y_factor;
+				pmodel->vertices[i].w = model->vertices[i].z;
+				pmodel->vertices[i].z = model->vertices[i].z * z_factor + zn_factor;
 
 				// perspective divide "go to NDC"
-				if (pmodel->v[i].w != 0) {
+				if (pmodel->vertices[i].w != 0) {
 
-					pmodel->v[i].x /= -pmodel->v[i].w;
-					pmodel->v[i].y /= -pmodel->v[i].w;
-					pmodel->v[i].z /= -pmodel->v[i].w;
+					pmodel->vertices[i].x /= -pmodel->vertices[i].w;
+					pmodel->vertices[i].y /= -pmodel->vertices[i].w;
+					pmodel->vertices[i].z /= -pmodel->vertices[i].w;
 				}
 
 			}
@@ -299,10 +299,10 @@ if (p_meshes != nullptr) {
 
 		mesh* pmodel = *(p_meshes->begin() + m);
 
-		for (uint32_t i = 0; i < pmodel->v.size(); i += 1){
+		for (uint32_t i = 0; i < pmodel->vertices.size(); i += 1){
 			// x = x * w + (w/2);
-			pmodel->v[i].x = pmodel->v[i].x * back_buffer->width + half_screen_width;
-			pmodel->v[i].y = pmodel->v[i].y * back_buffer->height + half_screen_height;
+			pmodel->vertices[i].x = pmodel->vertices[i].x * back_buffer->width + half_screen_width;
+			pmodel->vertices[i].y = pmodel->vertices[i].y * back_buffer->height + half_screen_height;
 		}
 
 	}
@@ -347,21 +347,21 @@ void rasterization() {
 		mesh* pmodel = *(p_meshes->begin() + m);
 		vec3d v;
 
-		for (uint32_t f = 0; f < pmodel->f.size(); f++ ) {
+		for (uint32_t f = 0; f < pmodel->faces.size(); f++ ) {
 
 			draw::draw_line(
-				pmodel->v[pmodel->f[f].a.v],
-				pmodel->v[pmodel->f[f].b.v], 
+				pmodel->vertices[pmodel->faces[f].a.v],
+				pmodel->vertices[pmodel->faces[f].b.v], 
 				{ 255,0,255,255 }
 			);
 			draw::draw_line(
-				pmodel->v[pmodel->f[f].a.v],
-				pmodel->v[pmodel->f[f].c.v],
+				pmodel->vertices[pmodel->faces[f].a.v],
+				pmodel->vertices[pmodel->faces[f].c.v],
 				{ 255,0,255,255 }
 			);
 			draw::draw_line(
-				pmodel->v[pmodel->f[f].b.v],
-				pmodel->v[pmodel->f[f].c.v],
+				pmodel->vertices[pmodel->faces[f].b.v],
+				pmodel->vertices[pmodel->faces[f].c.v],
 				{ 255,0,255,255 }
 			);
 			/*
@@ -435,11 +435,11 @@ void rotate_mesh(
 	vec3d const& directions    // x,y,z rotation values
 ){
 
-	for (uint32_t v = 0; v < model->v.size(); v++) {
+	for (uint32_t v = 0; v < model->vertices.size(); v++) {
 
-		math::x_rotate(rotate_point, model->v[v], directions.x);
-		math::y_rotate(rotate_point, model->v[v], directions.y);
-		math::z_rotate(rotate_point, model->v[v], directions.z);
+		math::x_rotate(rotate_point, model->vertices[v], directions.x);
+		math::y_rotate(rotate_point, model->vertices[v], directions.y);
+		math::z_rotate(rotate_point, model->vertices[v], directions.z);
 
 	}
 

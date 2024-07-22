@@ -49,7 +49,7 @@ for (uint32_t s = 0; s < size; s++) {
 	}
 
 	if (obj_data[s] == 'f') {
-		obj->f.push_back(
+		obj->faces.push_back(
 			make_face(obj_data, s, size)
 		);
 	}
@@ -61,7 +61,7 @@ for (uint32_t s = 0; s < size; s++) {
 			switch (obj_data[s + 1]) {
 
 			case ' ': { // v
-				obj->v.push_back(
+				obj->vertices.push_back(
 					make_vertex(obj_data, s, size)
 				);
 			}
@@ -69,7 +69,7 @@ for (uint32_t s = 0; s < size; s++) {
 
 			case 't': { // vt
 				s += 1;
-				obj->vt.push_back(
+				obj->texture_coordinates.push_back(
 					make_vertex_texture(obj_data, s, size)
 				);
 			}
@@ -77,7 +77,7 @@ for (uint32_t s = 0; s < size; s++) {
 
 			case 'n': { // vn
 				s += 1;
-				obj->n.push_back(
+				obj->normals.push_back(
 					make_normal(obj_data, s, size)
 				);
 			}
@@ -255,7 +255,7 @@ static void extract_values(
 
 		// in case not ==> v//n
 		if (spaces[1] + 1 != spaces[2]) {
-			face[op].vt = uint32_t(
+			face[op].t = uint32_t(
 				std::stoul(std::string(obj_buffer + spaces[1], obj_buffer + spaces[2])) -1
 			);
 		}
@@ -271,7 +271,7 @@ static void extract_values(
 			std::stoul(std::string(obj_buffer + spaces[0], obj_buffer + spaces[1])) -1
 		);
 		
-		face[op].vt = uint32_t(
+		face[op].t = uint32_t(
 			std::stoul(std::string(obj_buffer + spaces[1], obj_buffer + spaces[3])) -1
 		);
 	}

@@ -46,17 +46,17 @@ typedef bgra8 scolor;
 
 // VECTORS
 typedef struct vec2d { sfloat x = 0; sfloat y = 0; };
-typedef struct vec3d { sfloat x = 0; sfloat y = 0; sfloat z = 0; sfloat w = 1};
+typedef struct vec3d { sfloat x = 0; sfloat y = 0; sfloat z = 0; sfloat w = 1; };
 typedef struct vec4d { sfloat x = 0; sfloat y = 0; sfloat z = 0; sfloat w = 1; };
 
 // textuer coordinates 
 typedef struct vec_uv { sfloat u = 0; sfloat v = 0; }; // 2D
 typedef struct vec_uvw{ sfloat u = 0; sfloat v = 0; sfloat w = 0; }; // 3D
 
-typedef struct indxs {
-	uint32_t v  = NULL; // vectex index
-	uint32_t vt = NULL; // textuer-coord index
-	uint32_t n  = NULL; // normal index
+typedef struct indexces {
+	int32_t v = -1; // vectex index
+	int32_t t = -1; // textuer-coord index
+	int32_t n = -1; // normal index
 };
 
 // 3D frustum
@@ -88,13 +88,6 @@ typedef std::chrono::duration<uint32_t, ms> uint32_t_duration;
 	===================================================
 	===================================================
 	===================================================
-*/
-
-
-/*
-	=================================================
-	=================== buffers =====================
-	=================================================
 */
 
 template<typename type> class buffer {
@@ -171,64 +164,43 @@ public:
 class face3 { // triangle face
 
 public:
-	indxs a = { NULL };
-	indxs b = { NULL };
-	indxs c = { NULL };
+	indexces a = { NULL };
+	indexces b = { NULL };
+	indexces c = { NULL };
 
 	// constructor's
 	face3() = default;
-	face3(indxs const& a, indxs const& b, indxs const& c);
+	face3(indexces const& a, indexces const& b, indexces const& c);
 	
 	// destructor
 	~face3() = default;
 
 	// operators
-	indxs& operator[](char vertex_name);
-	indxs& operator[](uint8_t vertex_index);
-
-};
-
-class face4 : public face3 { // quad face
-
-public:
-	indxs d = { NULL };
-
-	face4() = default;
-	face4(
-		indxs const& vertex_a, indxs const& vertex_b, 
-		indxs const& vertex_c, indxs const& vertex_d
-	);
-
-	~face4() = default;
-
-	indxs& operator[](char vertex_name);
-	indxs& operator[](uint8_t vertex_index);
+	indexces& operator[](char vertex_name);
+	indexces& operator[](uint8_t vertex_index);
 
 };
 
 
-/*
-	===========================================
-	=================== mesh ==================
-	===========================================
-*/
 class mesh {
 
 public:
-	// vertices
-	std::vector<vec3d>  v;
+	std::string name = "untitled";
 
-	// faces
-	std::vector<face3>  f;
+	// vertices
+	std::vector<vec3d>  vertices;
 
 	// normals
-	std::vector<vec3d>  n;
+	std::vector<vec3d>  normals;
 
 	// texture coordinates
-	std::vector<vec_uv> vt;
+	std::vector<vec_uv> texture_coordinates;
 
 	// for testing only
-	std::vector<scolor> c;
+	std::vector<scolor> colors;
+
+	// faces
+	std::vector<face3>  faces;
 
 	// constructor's
 	mesh() = default;
