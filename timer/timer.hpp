@@ -4,7 +4,7 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
-#include "../types/types.hpp"
+#include "types.hpp"
 
 // normal timer to calc taken time .
 class timer {

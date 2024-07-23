@@ -6,8 +6,8 @@
 #ifndef DRAW_HPP
 #define DRAW_HPP
 
-#include "../types/types.hpp"
-#include "../math/math.hpp"
+#include "types.hpp"
+#include "math.hpp"
 
 /*
 	here all the function for drawing 2d ,3d

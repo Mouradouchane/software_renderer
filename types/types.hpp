@@ -15,10 +15,9 @@
 #include <string>
 #include <vector>
 #include <initializer_list>
-
 #include <windows.h>
 
-#include "../macros/macros.hpp"
+#include "macros.hpp"
 
 /*
 	========================================

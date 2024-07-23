@@ -15,6 +15,6 @@
 #include <string>
 #include <windows.h>
 
-#include "application/application.hpp"
+#include "application.hpp"
 
 #endif

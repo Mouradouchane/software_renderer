@@ -8,7 +8,9 @@
 #ifndef CONFIGS_HPP
 #define CONFIGS_HPP
 
-#include "../includes.hpp"
+#include <cstdint>
+#include <string>
+#include "types.hpp"
 
 // program config
 namespace config {

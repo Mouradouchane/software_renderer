@@ -7,6 +7,8 @@ workspace("workspace")
 -- project setup
 project("software_renderer")
   
+  includedirs("./**")
+
   kind("WindowedApp")
   language "C++"
   

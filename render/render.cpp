@@ -5,7 +5,7 @@
 
 #include "render.hpp"
 
-namespace graphics {
+namespace renderer {
 
 // ===== rendering configs =====
 const sfloat min_fov = math::to_radian(20);
@@ -125,10 +125,8 @@ bool init() {
 	far_plus_near = view_frustum.f + view_frustum.n;
 	far_mult_near = -(view_frustum.f * view_frustum.n);
 
-	// setup models
-	meshes = files::load_3d_models(models_path);
-	alloc_meshes_for_projection(meshes);
-
+	// TODO : load models
+	
 	to_world_space();
 
 	clear_color.a = 255;
@@ -159,59 +157,34 @@ bool init() {
 		back_buffer->memory
 	);
 
-	SelectObject(graphics::bitmap_hdc, graphics::hbitmap);
+	SelectObject(renderer::bitmap_hdc, renderer::hbitmap);
 
 	return true;
 }
 
 void destroy() {
 
-	if (graphics::front_buffer != nullptr) {
-		graphics::front_buffer->~buffer();
-		graphics::front_buffer = nullptr;
+	if (renderer::front_buffer != nullptr) {
+		renderer::front_buffer->~buffer();
+		renderer::front_buffer = nullptr;
 	}
 
-	if (graphics::back_buffer != nullptr) {
-		graphics::back_buffer->~buffer();
-		graphics::back_buffer  = nullptr;
-	}
-
-}
-
-bool alloc_meshes_for_projection(std::vector<mesh*>* meshes_) {
-
-	if (meshes_ == nullptr || meshes_->size() == 0) return false;
-
-	// alloc vector for projection meshes
-	p_meshes = new std::vector<mesh*>(meshes->size());
-	mesh* pmodel;
-
-	uint32_t p = 0;
-	for (mesh* model : meshes[0]) {
-
-		pmodel = new mesh(model->vertices,model->faces,model->normals,model->texture_coordinates);
-		pmodel->colors = std::vector<scolor>(pmodel->faces.size());
-		
-		for (uint32_t c  = 0; c < pmodel->colors.size(); c++) {
-			pmodel->colors[c] = random_scolor();
-		}
-		
-
-		*(p_meshes->begin() + p) = pmodel;
-		p++;
+	if (renderer::back_buffer != nullptr) {
+		renderer::back_buffer->~buffer();
+		renderer::back_buffer  = nullptr;
 	}
 
 }
 
 void to_world_space() {
 	
-	if (meshes != nullptr) {
+	if (g_meshes != nullptr) {
 		int32_t z = -9;
 		float32 y = -1.5;
 		
-		for (uint32_t m = 0; m < meshes->size(); m++ ) {
+		for (uint32_t m = 0; m < g_meshes->size(); m++ ) {
 			
-			mesh* model = *(meshes->begin() + m);
+			mesh* model = *(g_meshes->begin() + m);
 
 			for (uint32_t i = 0; i < model->vertices.size(); i += 1) {
 				model->vertices[i].z += z;
@@ -226,12 +199,12 @@ void to_world_space() {
 
 void perspective_projection() {
 
-	if (meshes != nullptr) {
+	if (g_meshes != nullptr) {
 
-		for (uint32_t m = 0; m < meshes->size(); m++) {
+		for (uint32_t m = 0; m < g_meshes->size(); m++) {
 
-			mesh* model = *(meshes->begin() + m);
-			mesh* pmodel = *(p_meshes->begin() + m);
+			mesh* model = *(g_meshes->begin() + m);
+			mesh* pmodel = *(g_pmeshes->begin() + m);
 
 			for (uint32_t i = 0; i < model->vertices.size(); i += 1) {
 
@@ -293,11 +266,11 @@ point.x = ((point.x + 1) / 2).x * back_buffer->width;
 point.y = ((point.y + 1) / 2).y * back_buffer->height;
 */
 
-if (p_meshes != nullptr) {
+if (g_pmeshes != nullptr) {
 
-	for (uint32_t m = 0; m < p_meshes->size(); m++) {
+	for (uint32_t m = 0; m < g_pmeshes->size(); m++) {
 
-		mesh* pmodel = *(p_meshes->begin() + m);
+		mesh* pmodel = *(g_pmeshes->begin() + m);
 
 		for (uint32_t i = 0; i < pmodel->vertices.size(); i += 1){
 			// x = x * w + (w/2);
@@ -313,7 +286,7 @@ if (p_meshes != nullptr) {
 
 void draw_fps_info() {
 
-	fps_msg = "FPS : " + std::to_string(preformance::fps);
+	fps_msg = "FPS : " + std::to_string(fps);
 
 	DrawTextA(
 		bitmap_hdc,
@@ -323,7 +296,7 @@ void draw_fps_info() {
 		DT_LEFT
 	);
 
-	loop_msg = "LOOP TIME : " + std::to_string(preformance::total_taken_time) + "ms";
+	loop_msg = "LOOP TIME : " + std::to_string(total_taken_time) + "ms";
 
 	DrawTextA(
 		bitmap_hdc,
@@ -342,9 +315,9 @@ void rasterization() {
 	depth_buffer->fill(max_depth_value);
 
 	// draw to buffer
-	for (uint32_t m = 0; m < p_meshes->size(); m++) {
+	for (uint32_t m = 0; m < g_pmeshes->size(); m++) {
 
-		mesh* pmodel = *(p_meshes->begin() + m);
+		mesh* pmodel = *(g_pmeshes->begin() + m);
 		vec3d v;
 
 		for (uint32_t f = 0; f < pmodel->faces.size(); f++ ) {
@@ -411,9 +384,9 @@ void render() {
 	
 	// transform models
 	if (interval_transform_test) {
-		if (meshes->size() != 0) {
+		if (g_meshes->size() != 0) {
 			rotate_mesh(
-				*(meshes->begin()), vec3d{0,0,0}, vec3d{ -0.01,0.02,0.03 }
+				*(g_meshes->begin()), vec3d{0,0,0}, vec3d{ -0.01,0.02,0.03 }
 			);
 		}
 	}

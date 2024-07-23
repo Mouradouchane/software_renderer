@@ -17,7 +17,7 @@
 #include <random>
 #include <math.h>
 #include <iostream>
-#include "../types/types.hpp"
+#include "types.hpp"
 
 #endif
 

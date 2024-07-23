@@ -10,16 +10,17 @@
 #ifndef RENDER_HPP
 #define RENDER_HPP
 
-#include "../macros/macros.hpp"
-#include "../types/types.hpp"
-#include "../math/math.hpp"
-#include "../configs/configs.hpp"
-#include "../files/files.hpp"
-#include "../preformance/preformance.hpp"
-#include "../window/window.hpp"
+#include "macros.hpp"
+#include "types.hpp"
+#include "math.hpp"
+#include "configs.hpp"
+#include "preformance.hpp"
+#include "window.hpp"
+#include "global.hpp"
+
 #include "draw.hpp"
 
-namespace graphics {
+namespace renderer {
 
 	extern sfloat fov_deg; // filed of view "in deg" 
 	extern sfloat fov; // filed of view "in rad"

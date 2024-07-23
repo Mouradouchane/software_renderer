@@ -15,14 +15,14 @@ uint32_t application::init(HINSTANCE h_instance , int n_cmd_show) {
         return INIT_FAILED;
     }
 
-    if (graphics::init() == false) {
+    if (renderer::init() == false) {
         window::destroy();
 
         show_error(error_title, "failed to init renderer !");
         return INIT_FAILED;
     }
 
-    if (!preformance::init()) {
+    if (preformance::init() == false) {
 
         show_warn(warn_title, "unexpected error while setuping some preformance threads !");
         return INIT_FAILED;
@@ -37,44 +37,45 @@ void application::run() {
     periodic_timer fps_pt;
 
     // main loop 
-    while (running) {
+    while (g_running) {
 
         fps_pt.update();
-        preformance::main_timer.start();
+        main_timer.start();
 
         // window message + inputs
         window::process_messages();
 
         // rendering
         InvalidateRect(window::handle, 0, 0);
-        graphics::render();
+        renderer::render();
         UpdateWindow(window::handle);
 
         // calc time stuff
-        preformance::frames += 1;
+        frames += 1;
 
         if (fps_pt.is_time_for_work()) {
-            preformance::fps = preformance::frames;
-            preformance::frames = 0;
+            fps = frames;
+            frames = 0;
         }
 
-        preformance::total_taken_time = preformance::main_timer.stop();
+        total_taken_time = main_timer.stop();
 
         // sleep between frames if needed for stable frame rate
-        if (preformance::total_taken_time < preformance::frame_time) {
-            Sleep(preformance::frame_time - preformance::total_taken_time);
+        if (total_taken_time < frame_time) {
+            Sleep(frame_time - total_taken_time);
         }
 
     }
-    // main loop end
+    // main-loop end
 
 }
+
 
 void application::clean() {
 
     // free resources
     preformance::destroy();
-    graphics::destroy();
+    renderer::destroy();
     window::destroy();
 
 }

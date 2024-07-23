@@ -7,34 +7,23 @@
 
 #pragma once 
 
+#ifndef WINDOW_HPP
+#define WINDOW_HPP
+
 #ifndef UNICODE
 #define UNICODE
 #endif
 
-// winapi
-#ifndef WINDOWS_H
-#define WINDOWS_H
-	#include <windows.h>
-#endif
+#include <windows.h>
+#include <wingdi.h>
+#include <string>
 
-#ifndef GDI_H
-#define GDI_H
-	#include <wingdi.h>
-#endif
-
-#ifndef STRING_H
-#define STRING_H
-	#include <string>
-#endif
-
-#include "../configs/configs.hpp"
-#include "../types/types.hpp"
-#include "../math/math.hpp"
-#include "../exceptions/exceptions.hpp"
-#include "../render/render.hpp"
-
-#ifndef WINDOW_HPP
-#define WINDOW_HPP
+#include "global.hpp"
+#include "types.hpp"
+#include "exceptions.hpp"
+//#include "configs.hpp"
+//#include "math.hpp"
+//#include "render.hpp"
 
 namespace window {
 
@@ -85,8 +74,8 @@ namespace window {
 /* 
 //  TODO : in futuer
 	void on_resize();
-	void on_keypressed();
-	void on_mouseclick();
+	void on_key_pressed();
+	void on_mouse_click();
 */
 
 	void process_messages();

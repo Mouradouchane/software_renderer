@@ -169,7 +169,7 @@ LRESULT CALLBACK proc(
 
         case WM_DESTROY: {
 
-            running = false;
+            g_running = false;
             PostQuitMessage(0);
 
             return 0;

@@ -68,7 +68,7 @@ scolor blend(scolor const& back_color, scolor const& front_color) {
 }
 
 void set_pixel(uint16_t x, uint16_t y , scolor& color) {
-	graphics::back_buffer->set(x, y, color);
+	renderer::back_buffer->set(x, y, color);
 }
 
 scolor random_scolor(bool random_alpha) {
@@ -108,19 +108,19 @@ void draw_line_over_x(vec3d& p1, vec3d& p2, sfloat slope, scolor const& color){
 	if (color.a < UINT8_MAX) {
 		for (   ; x <= p2.x; x += 1) {
 			y = (int32_t)math::y_intercept_2d(x, slope, Y_intercept);
-			index = graphics::back_buffer->width * y + x;
+			index = renderer::back_buffer->width * y + x;
 
-			graphics::back_buffer->memory[ index ] = blend(
-				graphics::back_buffer->memory[ index ] , color
+			renderer::back_buffer->memory[ index ] = blend(
+				renderer::back_buffer->memory[ index ] , color
 			);
 		}
 	}
 	else {
 		for (   ; x <= p2.x ; x += 1 ) {
 			y = (int32_t)math::y_intercept_2d(x, slope, Y_intercept);
-			index = graphics::back_buffer->width * y + x;
+			index = renderer::back_buffer->width * y + x;
 
-			graphics::back_buffer->memory[index] = color;
+			renderer::back_buffer->memory[index] = color;
 		}
 	}
 
@@ -138,19 +138,19 @@ void draw_line_over_y(vec3d& p1, vec3d& p2, sfloat slope, scolor const& color){
 	if (color.a < UINT8_MAX) {
 		for (   ; y <= p2.y; y += 1) {
 			x = (uint32_t)math::x_intercept_2d(y, slope, Y_intercept);
-			index = graphics::back_buffer->width * y + x;
+			index = renderer::back_buffer->width * y + x;
 
-			graphics::back_buffer->memory[index] = blend(
-				graphics::back_buffer->memory[index], color
+			renderer::back_buffer->memory[index] = blend(
+				renderer::back_buffer->memory[index], color
 			);
 		}
 	}
 	else {
 		for (   ; y <= p2.y ; y += 1 ) {
 			x = (uint32_t)math::x_intercept_2d(y, slope, Y_intercept);
-			index = graphics::back_buffer->width * y + x;
+			index = renderer::back_buffer->width * y + x;
 
-			graphics::back_buffer->memory[index] = color;
+			renderer::back_buffer->memory[index] = color;
 		}
 	}
 
@@ -159,18 +159,18 @@ void draw_line_over_y(vec3d& p1, vec3d& p2, sfloat slope, scolor const& color){
 void draw_horizontal_line(int32_t x_start , int32_t x_end , int32_t Y , scolor const& color) {
 
 	if (x_start > x_end) std::swap(x_start, x_end);
-	uint32_t buffer_row = graphics::back_buffer->width * Y;
+	uint32_t buffer_row = renderer::back_buffer->width * Y;
 
 	if (color.a < UINT8_MAX) {
 		for (	; x_start <= x_end; x_start += 1) {
-			graphics::back_buffer->memory[buffer_row + x_start] = blend (
-				graphics::back_buffer->memory[buffer_row + x_start] , color
+			renderer::back_buffer->memory[buffer_row + x_start] = blend (
+				renderer::back_buffer->memory[buffer_row + x_start] , color
 			);
 		}
 	}
 	else {
 		for (   ; x_start <= x_end; x_start += 1) {
-			graphics::back_buffer->memory[buffer_row + x_start] = color;
+			renderer::back_buffer->memory[buffer_row + x_start] = color;
 		}
 	}
 
@@ -182,14 +182,14 @@ void draw_vertical_line(int32_t y_start, int32_t y_end, int32_t X, scolor const&
 	
 	if (color.a < UINT8_MAX) {
 		for (   ; y_start <= y_end; y_start += 1) {
-			graphics::back_buffer->memory[graphics::back_buffer->width * y_start + X] = blend(
-				graphics::back_buffer->memory[graphics::back_buffer->width * y_start + X] , color
+			renderer::back_buffer->memory[renderer::back_buffer->width * y_start + X] = blend(
+				renderer::back_buffer->memory[renderer::back_buffer->width * y_start + X] , color
 			);
 		}
 	}
 	else {
 		for (   ; y_start <= y_end; y_start += 1) {
-			graphics::back_buffer->memory[graphics::back_buffer->width * y_start + X] = color;
+			renderer::back_buffer->memory[renderer::back_buffer->width * y_start + X] = color;
 		}
 	}
 
@@ -246,7 +246,7 @@ void fill_row(int32_t x_start, int32_t x_end, int32_t Y, sfloat z_start, sfloat 
 	sfloat B = math::y_intercept_at_x0_2d( vec2d{(sfloat)x_start,z_start} , m );
 	sfloat z = 0;
 	
-	uint32_t buffer_row = graphics::back_buffer->width * Y, buffer_index = 0;
+	uint32_t buffer_row = renderer::back_buffer->width * Y, buffer_index = 0;
 
 	if (color.a < UINT8_MAX) { // do alpha blending
 
@@ -255,9 +255,9 @@ void fill_row(int32_t x_start, int32_t x_end, int32_t Y, sfloat z_start, sfloat 
 			buffer_index = buffer_row + X;
 
 			// depth test
-			if (z > graphics::depth_buffer->memory[buffer_index]) {
-				graphics::back_buffer->memory[buffer_index]  = blend(graphics::back_buffer->memory[buffer_index], color);
-				graphics::depth_buffer->memory[buffer_index] = z;
+			if (z > renderer::depth_buffer->memory[buffer_index]) {
+				renderer::back_buffer->memory[buffer_index]  = blend(renderer::back_buffer->memory[buffer_index], color);
+				renderer::depth_buffer->memory[buffer_index] = z;
 			}
 		}
 
@@ -269,9 +269,9 @@ void fill_row(int32_t x_start, int32_t x_end, int32_t Y, sfloat z_start, sfloat 
 			buffer_index = buffer_row + X;
 
 			// depth test
-			if ( z > graphics::depth_buffer->memory[buffer_index] ) {
-				graphics::back_buffer->memory[buffer_index]  = color;
-				graphics::depth_buffer->memory[buffer_index] = z;
+			if ( z > renderer::depth_buffer->memory[buffer_index] ) {
+				renderer::back_buffer->memory[buffer_index]  = color;
+				renderer::depth_buffer->memory[buffer_index] = z;
 			}
 		}
 	}
@@ -432,16 +432,16 @@ void fill_circle_row(int32_t x_start, int32_t x_end, int32_t Y, scolor const& co
 		std::swap(x_start, x_end);
 	}
 
-	uint32_t y_row = graphics::back_buffer->width * Y;
+	uint32_t y_row = renderer::back_buffer->width * Y;
 
 	if (color.a < UINT8_MAX) {
 		for (; x_start <= x_end; x_start++) {
-			graphics::back_buffer->memory[y_row + x_start] = blend(graphics::back_buffer->memory[y_row + x_start] , color);
+			renderer::back_buffer->memory[y_row + x_start] = blend(renderer::back_buffer->memory[y_row + x_start] , color);
 		}
 	}
 	else {
 		for (	; x_start <= x_end ; x_start++ ) {
-			graphics::back_buffer->memory[y_row + x_start] = color;
+			renderer::back_buffer->memory[y_row + x_start] = color;
 		}
 	}
 
