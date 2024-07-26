@@ -6,8 +6,11 @@
 
 #include "application.hpp"
 
-
 uint32_t application::init(HINSTANCE h_instance , int n_cmd_show) {
+
+    if (loader::load_models() == OPEN_OBJ_FAILED) {
+        return INIT_FAILED;
+    }
 
     if (window::init(h_instance, n_cmd_show) == false) {
         

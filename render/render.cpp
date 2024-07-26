@@ -320,33 +320,24 @@ void rasterization() {
 		mesh* pmodel = *(g_pmeshes->begin() + m);
 		vec3d v;
 
-		for (uint32_t f = 0; f < pmodel->faces.size(); f++ ) {
+		for (uint32_t f = 0; f < (pmodel->indeces.size() - 3); f+=3 ) {
 
 			draw::draw_line(
-				pmodel->vertices[pmodel->faces[f].a.v],
-				pmodel->vertices[pmodel->faces[f].b.v], 
+				pmodel->vertices[pmodel->indeces[f].v],
+				pmodel->vertices[pmodel->indeces[f+1].v], 
 				{ 255,0,255,255 }
 			);
 			draw::draw_line(
-				pmodel->vertices[pmodel->faces[f].a.v],
-				pmodel->vertices[pmodel->faces[f].c.v],
+				pmodel->vertices[pmodel->indeces[f+1].v],
+				pmodel->vertices[pmodel->indeces[f+2].v],
 				{ 255,0,255,255 }
 			);
 			draw::draw_line(
-				pmodel->vertices[pmodel->faces[f].b.v],
-				pmodel->vertices[pmodel->faces[f].c.v],
+				pmodel->vertices[pmodel->indeces[f+2].v],
+				pmodel->vertices[pmodel->indeces[f].v],
 				{ 255,0,255,255 }
 			);
-			/*
-			v = pmodel->v[pmodel->f[f].a.v];
-			draw::fill_circle(v.x, v.y, 1, scolor{ 255,255,0,255 });
-
-			v = pmodel->v[pmodel->f[f].b.v];
-			draw::fill_circle(v.x, v.y, 1, scolor{ 255,255,0,255 });
-			
-			v = pmodel->v[pmodel->f[f].c.v];
-			draw::fill_circle(v.x, v.y, 1, scolor{ 255,255,0,255 });
-			*/
+	
 		}
 	
 	}

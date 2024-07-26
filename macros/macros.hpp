@@ -21,4 +21,7 @@
 	#define PAINTING   1
 	#define SHADING    2
 
+	#define OPEN_OBJ_FAILED  0
+	#define OPEN_OBJ_SUCCESS 1
+
 #endif

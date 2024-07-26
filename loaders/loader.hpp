@@ -5,9 +5,12 @@
 #define LOADER_HPP
 
 #include <string>
+#include "global.hpp"
 #include "types.hpp"
 
 namespace loader{
+
+	int8_t load_models();
 
 	int8_t load_obj_file(std::string const& file_name , mesh* destination);
 

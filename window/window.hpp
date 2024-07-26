@@ -20,7 +20,6 @@
 
 #include "global.hpp"
 #include "types.hpp"
-#include "exceptions.hpp"
 //#include "configs.hpp"
 //#include "math.hpp"
 //#include "render.hpp"

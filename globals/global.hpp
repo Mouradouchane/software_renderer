@@ -1,7 +1,7 @@
 
 /*
 
-	all the "global variables" def's here
+	all the global "variables / functions" should be here
 	
 */
 
@@ -10,16 +10,26 @@
 #ifndef GLOBAL_HPP
 #define GLOBAL_HPP
 
-#include "timer.hpp"
-#include "types.hpp"
+#include <string>
+#include <windows.h>
 
-// global variables
+#include "types.hpp"
+#include "timer.hpp"
+#include "configs.hpp"
+
+/*
+	=================================
+          	global variables
+	=================================
+*/ 
+
 extern std::vector<mesh*>* g_meshes;
 extern std::vector<mesh*>* g_pmeshes; // projected meshes
 
 extern bool g_running;
 
-extern std::initializer_list<std::string> meshes_paths;
+extern std::string g_models_path;
+extern std::initializer_list<std::string> g_obj_files_list;
 
 extern timer main_timer;
 
@@ -47,5 +57,16 @@ extern std::string loop_msg;
 extern RECT		   loop_msg_rect;
 
 
+/*
+	=================================
+			global functions
+	=================================
+*/
+
+std::string get_last_error_window();
+
+void show_error(std::string const& title, std::string const& message, bool sound = true);
+
+void show_warn(std::string const& title, std::string const& message, bool sound = true);
 
 #endif

@@ -12,18 +12,17 @@
 #include <string>
 #include <vector>
 #include <initializer_list>
-//#include <mutex>
-//#include <thread>
 
 #include "macros.hpp"
 #include "global.hpp"
 #include "configs.hpp"
 
-#include "preformance.hpp"
+#include "loader.hpp"
 #include "types.hpp"
 #include "timer.hpp"
 #include "render.hpp"
 #include "window.hpp"
+#include "preformance.hpp"
 
 namespace application {
 	

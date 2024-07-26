@@ -356,14 +356,21 @@ struct index_t {
 
 struct mesh_t {
   std::vector<index_t> indices;
-  std::vector<unsigned int>
-      num_face_vertices;          // The number of vertices per
-                                  // face. 3 = triangle, 4 = quad, ...
-  std::vector<int> material_ids;  // per-face material ID
-  std::vector<unsigned int> smoothing_group_ids;  // per-face smoothing group
-                                                  // ID(0 = off. positive value
-                                                  // = group id)
-  std::vector<tag_t> tags;                        // SubD tag
+  
+  // The number of vertices per
+  // face. 3 = triangle, 4 = quad, ...
+  std::vector<unsigned int> number_of_vertices_per_face;          
+
+  // per-face material ID
+  std::vector<int> material_ids; 
+
+  // per-face smoothing group
+  // ID(0 = off. positive value = group id)
+  std::vector<unsigned int> smoothing_group_ids;
+
+  // SubD tag
+  std::vector<tag_t> tags;
+
 };
 
 // struct path_t {
@@ -389,6 +396,7 @@ struct shape_t {
 
 // Vertex attributes
 struct attrib_t {
+
   std::vector<real_t> vertices;  // 'v'(xyz)
 
   // For backward compatibility, we store vertex weight in separate array.
@@ -466,7 +474,7 @@ class MaterialReader {
 
   virtual bool operator()(const std::string &matId,
                           std::vector<material_t> *materials,
-                          std::map<std::string, int> *matMap, std::string *warn,
+                          std::map<std::string, int> *matMap, std::string *show_warn,
                           std::string *err) = 0;
 };
 
@@ -481,7 +489,7 @@ class MaterialFileReader : public MaterialReader {
   virtual ~MaterialFileReader() TINYOBJ_OVERRIDE {}
   virtual bool operator()(const std::string &matId,
                           std::vector<material_t> *materials,
-                          std::map<std::string, int> *matMap, std::string *warn,
+                          std::map<std::string, int> *matMap, std::string *show_warn,
                           std::string *err) TINYOBJ_OVERRIDE;
 
  private:
@@ -498,7 +506,7 @@ class MaterialStreamReader : public MaterialReader {
   virtual ~MaterialStreamReader() TINYOBJ_OVERRIDE {}
   virtual bool operator()(const std::string &matId,
                           std::vector<material_t> *materials,
-                          std::map<std::string, int> *matMap, std::string *warn,
+                          std::map<std::string, int> *matMap, std::string *show_warn,
                           std::string *err) TINYOBJ_OVERRIDE;
 
  private:
@@ -606,7 +614,7 @@ class ObjReader {
 /// Option 'default_vcols_fallback' specifies whether vertex colors should
 /// always be defined, even if no colors are given (fallback to white).
 bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
-             std::vector<material_t> *materials, std::string *warn,
+             std::vector<material_t> *materials, std::string *show_warn,
              std::string *err, const char *filename,
              const char *mtl_basedir = NULL, bool triangulate = true,
              bool default_vcols_fallback = true);
@@ -620,14 +628,14 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
 bool LoadObjWithCallback(std::istream &inStream, const callback_t &callback,
                          void *user_data = NULL,
                          MaterialReader *readMatFn = NULL,
-                         std::string *warn = NULL, std::string *err = NULL);
+                         std::string *show_warn = NULL, std::string *err = NULL);
 
 /// Loads object from a std::istream, uses `readMatFn` to retrieve
 /// std::istream for materials.
 /// Returns true when loading .obj become success.
 /// Returns warning and error message into `err`
 bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
-             std::vector<material_t> *materials, std::string *warn,
+             std::vector<material_t> *materials, std::string *show_warn,
              std::string *err, std::istream *inStream,
              MaterialReader *readMatFn = NULL, bool triangulate = true,
              bool default_vcols_fallback = true);
@@ -1605,8 +1613,8 @@ static bool exportGroupsToShape(shape_t *shape, const PrimGroup &prim_group,
           }
 
           // Two triangle faces
-          shape->mesh.num_face_vertices.push_back(3);
-          shape->mesh.num_face_vertices.push_back(3);
+          shape->mesh.number_of_vertices_per_face.push_back(3);
+          shape->mesh.number_of_vertices_per_face.push_back(3);
 
           shape->mesh.material_ids.push_back(material_id);
           shape->mesh.material_ids.push_back(material_id);
@@ -1916,7 +1924,7 @@ static bool exportGroupsToShape(shape_t *shape, const PrimGroup &prim_group,
               shape->mesh.indices.push_back(idx1);
               shape->mesh.indices.push_back(idx2);
 
-              shape->mesh.num_face_vertices.push_back(3);
+              shape->mesh.number_of_vertices_per_face.push_back(3);
               shape->mesh.material_ids.push_back(material_id);
               shape->mesh.smoothing_group_ids.push_back(
                   face.smoothing_group_id);
@@ -1954,7 +1962,7 @@ static bool exportGroupsToShape(shape_t *shape, const PrimGroup &prim_group,
               shape->mesh.indices.push_back(idx1);
               shape->mesh.indices.push_back(idx2);
 
-              shape->mesh.num_face_vertices.push_back(3);
+              shape->mesh.number_of_vertices_per_face.push_back(3);
               shape->mesh.material_ids.push_back(material_id);
               shape->mesh.smoothing_group_ids.push_back(
                   face.smoothing_group_id);
@@ -1971,7 +1979,7 @@ static bool exportGroupsToShape(shape_t *shape, const PrimGroup &prim_group,
           shape->mesh.indices.push_back(idx);
         }
 
-        shape->mesh.num_face_vertices.push_back(
+        shape->mesh.number_of_vertices_per_face.push_back(
             static_cast<unsigned int>(npolys));
         shape->mesh.material_ids.push_back(material_id);  // per face
         shape->mesh.smoothing_group_ids.push_back(

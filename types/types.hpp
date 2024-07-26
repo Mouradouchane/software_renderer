@@ -186,19 +186,16 @@ class mesh {
 public:
 	std::string name = "untitled";
 
-	// vertices
 	std::vector<vec3d>  vertices;
 
-	// normals
 	std::vector<vec3d>  normals;
 
-	// texture coordinates
 	std::vector<vec_uv> texture_coordinates;
 
-	// for testing only
 	std::vector<scolor> colors;
 
-	// faces
+	std::vector<indexces> indeces;
+	
 	std::vector<face3>  faces;
 
 	// constructor's
