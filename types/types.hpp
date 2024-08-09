@@ -184,8 +184,10 @@ public:
 class mesh {
 
 public:
+
 	std::string name = "untitled";
 
+	vec3d pivot = { 0,0,0 };
 	std::vector<vec3d>  vertices;
 
 	std::vector<vec3d>  normals;

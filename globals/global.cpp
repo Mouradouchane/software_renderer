@@ -28,10 +28,11 @@ std::vector<mesh*>* g_pmeshes = nullptr;
 
 std::string g_models_path = "./models/";
 std::initializer_list<std::string> g_obj_files_list = {
+	"./models/Porsche_911_GT2.obj",
+    /*
+	"./models/stanford-bunny.obj",
     "./models/teapot.obj",
     "./models/bunny.obj",
-	/*
-	"./models/stanford-bunny.obj",
 	"./models/test.obj",
 	*/
 };

@@ -55,7 +55,24 @@ HDC        bitmap_hdc = NULL;
 
 scolor clear_color = { 0,0,0,0 };
 
-bool alloc_meshes_for_projection( std::vector<mesh*>* meshes_ );
+
+mesh* model_pointer(uint32_t index) {
+	
+	if (g_meshes == nullptr || g_meshes->size() <= index) {
+		return nullptr;
+	}
+
+	return (*g_meshes)[index];
+}
+
+mesh* pmodel_pointer(uint32_t index) {
+
+	if (g_pmeshes == nullptr || g_pmeshes->size() <= index) {
+		return nullptr;
+	}
+
+	return (*g_pmeshes)[index];
+}
 
 bool init() {
 
@@ -126,8 +143,8 @@ bool init() {
 	far_mult_near = -(view_frustum.f * view_frustum.n);
 
 	// TODO : load models
-	
-	to_world_space();
+	to_world_space(model_pointer(0), { 0,-0.2,-5 }, { 0,0,0 });
+	to_world_space(model_pointer(1), { 0,0,-12 }, { 0,0,0 });
 
 	clear_color.a = 255;
 
@@ -176,50 +193,96 @@ void destroy() {
 
 }
 
-void to_world_space() {
+// NOTE : copy only vertices , normals , indeces
+int8_t copy_mesh(uint32_t index) {
+
+	mesh*  model = model_pointer(index);
+
+	if (model == nullptr) {
+		return INVALID_MESH;
+	}
+
+	// try to delete old copy "cleaning"
+	if ((*g_pmeshes)[index] != nullptr) {
+		delete ((*g_pmeshes)[index]);
+	}
 	
-	if (g_meshes != nullptr) {
-		int32_t z = -9;
-		float32 y = -1.5;
+	(*g_pmeshes)[index] = new mesh();
+	mesh* pmodel = pmodel_pointer(index);
+
+	if (pmodel != nullptr) {
+
+		// coping process
+		pmodel->vertices = model->vertices;
+		pmodel->normals  = model->normals;
+		pmodel->indeces  = model->indeces;
+
+		return COPY_MESH_SUCCESSED;
+	}
+
+	return COPY_MESHES_FAILED;
+}
+
+int8_t copy_meshes_for_rendering() {
+
+	for (uint32_t i = 0; i < g_meshes->size(); i++) {
+
+		if (copy_mesh(i) != COPY_MESH_SUCCESSED) {
+
+			return COPY_MESHES_FAILED;
+		}
+
+	}
+
+	return COPY_MESHES_SUCCESSED;
+}
+
+// TODO : implement rotate_by
+void to_world_space(
+	mesh* model , vec3d const& move_by , vec3d const& rotate_by 
+) {
+	
+	if (model != nullptr) {
 		
-		for (uint32_t m = 0; m < g_meshes->size(); m++ ) {
-			
-			mesh* model = *(g_meshes->begin() + m);
+		model->pivot.x += move_by.x;
+		model->pivot.y += move_by.y;
+		model->pivot.z += move_by.z;
 
-			for (uint32_t i = 0; i < model->vertices.size(); i += 1) {
-				model->vertices[i].z += z;
-				model->vertices[i].y += y;
-			}
-
+		for (vec3d& vertex : model->vertices) {
+			vertex.x += move_by.x;
+			vertex.y += move_by.y;
+			vertex.z += move_by.z;
 		}
 
 	}
 
 }
 
+// TODO : implement camera
+void to_camera_space() {
+	
+
+}
+
 void perspective_projection() {
 
-	if (g_meshes != nullptr) {
+	if (g_pmeshes != nullptr) {
+		
+		for (mesh* pmodel : *g_pmeshes) {
 
-		for (uint32_t m = 0; m < g_meshes->size(); m++) {
-
-			mesh* model = *(g_meshes->begin() + m);
-			mesh* pmodel = *(g_pmeshes->begin() + m);
-
-			for (uint32_t i = 0; i < model->vertices.size(); i += 1) {
+			for (vec3d& vertex : pmodel->vertices) {
 
 				// perspective transformation
-				pmodel->vertices[i].x = model->vertices[i].x * perpsective_x_factor;
-				pmodel->vertices[i].y = model->vertices[i].y * perspective_y_factor;
-				pmodel->vertices[i].w = model->vertices[i].z;
-				pmodel->vertices[i].z = model->vertices[i].z * z_factor + zn_factor;
+				vertex.x = vertex.x * perpsective_x_factor;
+				vertex.y = vertex.y * perspective_y_factor;
+				vertex.w = vertex.z;
+				vertex.z = vertex.z * z_factor + zn_factor;
 
 				// perspective divide "go to NDC"
-				if (pmodel->vertices[i].w != 0) {
-
-					pmodel->vertices[i].x /= -pmodel->vertices[i].w;
-					pmodel->vertices[i].y /= -pmodel->vertices[i].w;
-					pmodel->vertices[i].z /= -pmodel->vertices[i].w;
+				if (vertex.w != 0) {
+					vertex.x /= -vertex.w;
+					vertex.y /= -vertex.w;
+					vertex.z /= -vertex.w;
 				}
 
 			}
@@ -227,6 +290,7 @@ void perspective_projection() {
 		}
 
 	}
+
 }
 
 // todo : add orthographic projection
@@ -268,14 +332,12 @@ point.y = ((point.y + 1) / 2).y * back_buffer->height;
 
 if (g_pmeshes != nullptr) {
 
-	for (uint32_t m = 0; m < g_pmeshes->size(); m++) {
+	for (mesh* pmodel : *g_pmeshes) {
 
-		mesh* pmodel = *(g_pmeshes->begin() + m);
-
-		for (uint32_t i = 0; i < pmodel->vertices.size(); i += 1){
+		for (vec3d& vertex : pmodel->vertices) {
 			// x = x * w + (w/2);
-			pmodel->vertices[i].x = pmodel->vertices[i].x * back_buffer->width + half_screen_width;
-			pmodel->vertices[i].y = pmodel->vertices[i].y * back_buffer->height + half_screen_height;
+			vertex.x = vertex.x * back_buffer->width + half_screen_width;
+			vertex.y = vertex.y * back_buffer->height + half_screen_height;
 		}
 
 	}
@@ -315,31 +377,17 @@ void rasterization() {
 	depth_buffer->fill(max_depth_value);
 
 	// draw to buffer
-	for (uint32_t m = 0; m < g_pmeshes->size(); m++) {
+	if (g_pmeshes != nullptr) {
 
-		mesh* pmodel = *(g_pmeshes->begin() + m);
-		vec3d v;
+		for (mesh* pmodel : *g_pmeshes) {
 
-		for (uint32_t f = 0; f < (pmodel->indeces.size() - 3); f+=3 ) {
+			for (vec3d& vertex : pmodel->vertices) {
 
-			draw::draw_line(
-				pmodel->vertices[pmodel->indeces[f].v],
-				pmodel->vertices[pmodel->indeces[f+1].v], 
-				{ 255,0,255,255 }
-			);
-			draw::draw_line(
-				pmodel->vertices[pmodel->indeces[f+1].v],
-				pmodel->vertices[pmodel->indeces[f+2].v],
-				{ 255,0,255,255 }
-			);
-			draw::draw_line(
-				pmodel->vertices[pmodel->indeces[f+2].v],
-				pmodel->vertices[pmodel->indeces[f].v],
-				{ 255,0,255,255 }
-			);
-	
+				draw::fill_circle(vertex.x, vertex.y, 1, { 255,0,255,255 });
+			}
+
 		}
-	
+
 	}
 
 	// update bitmap buffer address
@@ -370,26 +418,46 @@ void rasterization() {
 	std::swap(front_buffer, back_buffer);
 }
 
-bool interval_transform_test = false;
+bool interval_transform_test = true;
 void render() {
 	
 	// transform models
 	if (interval_transform_test) {
+
 		if (g_meshes->size() != 0) {
 			rotate_mesh(
-				*(g_meshes->begin()), vec3d{0,0,0}, vec3d{ -0.01,0.02,0.03 }
+				*(g_meshes->begin()), (*g_meshes->begin())->pivot , vec3d{ -0.00,0.01,0.0 }
 			);
 		}
+
 	}
 
-	// project models
+	// some transformation in world space
+	
+	// copy meshes for rendering
+	if (copy_meshes_for_rendering() != COPY_MESHES_SUCCESSED) {
+
+		// force stop something went wrong
+		g_running = false;
+		return;
+	}
+
+	// camera transforamtion
+	
+	// culling stage 
+	
+	// projection stage 
 	projection();
 
+	// clipping stage 
+	
 	// move projected models to screen space
 	to_screen_space();
 
-	// "draw or shade or ..." => projected models
+	// rendering stage
 	rasterization();
+
+	// delete copies
 
 }
 

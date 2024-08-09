@@ -3,6 +3,8 @@
 	this header file include all the macros for everthing
 */
 
+#pragma once 
+
 #ifndef MACROS_HPP
 #define MACROS_HPP
 
@@ -23,5 +25,12 @@
 
 	#define OPEN_OBJ_FAILED  0
 	#define OPEN_OBJ_SUCCESS 1
+	#define MESH_DESTINIATION_NULLPTR 3
+	
+	#define INVALID_MESH 0
+	#define COPY_MESH_SUCCESSED 1
+	
+	#define COPY_MESHES_FAILED 0
+	#define COPY_MESHES_SUCCESSED 1
 
 #endif

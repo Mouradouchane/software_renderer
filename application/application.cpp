@@ -8,7 +8,7 @@
 
 uint32_t application::init(HINSTANCE h_instance , int n_cmd_show) {
 
-    if (loader::load_models() == OPEN_OBJ_FAILED) {
+    if (loader::load_models() != OPEN_OBJ_SUCCESS) {
         return INIT_FAILED;
     }
 

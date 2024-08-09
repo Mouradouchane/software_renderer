@@ -45,15 +45,23 @@ namespace renderer {
 	extern HDC        bitmap_hdc;
 	extern BITMAPINFO bitmap_info;
 
-	bool alloc_meshes_for_projection(
-		std::vector<mesh*>* meshes_
-	);
-
 	bool init();
 	void destroy();
 
 	// transform meshes from "model space" to "world space"
-	void to_world_space();
+	void to_world_space(
+		mesh* model, vec3d const& move_by, vec3d const& rotate_by
+	);
+
+	mesh*  model_pointer(uint32_t index);
+	mesh* pmodel_pointer(uint32_t index);
+
+	// copy meshes from g_mesh to g_pmesh
+	// NOTE : copy only vertices , normals , indeces
+	int8_t copy_mesh(uint32_t index);
+	int8_t copy_meshes_for_rendering();
+
+	void to_camera_space();
 
 	void orthographic_projection();
 	void perspective_projection();
