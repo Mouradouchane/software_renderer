@@ -17,12 +17,10 @@
 #include <windows.h>
 #include <wingdi.h>
 #include <string>
+#include <wchar.h>
 
 #include "global.hpp"
 #include "types.hpp"
-//#include "configs.hpp"
-//#include "math.hpp"
-//#include "render.hpp"
 
 namespace window {
 

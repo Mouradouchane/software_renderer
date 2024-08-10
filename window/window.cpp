@@ -177,7 +177,17 @@ LRESULT CALLBACK proc(
 
         case WM_KEYDOWN: {
 
-        }
+            wchar_t msg[32];
+            OutputDebugStringW(msg);
+        
+        } break;
+
+        case WM_KEYUP: {
+
+            wchar_t msg[32];
+            OutputDebugStringW(msg);
+
+        } break;
 
         case WM_PAINT: {
             return 0;
