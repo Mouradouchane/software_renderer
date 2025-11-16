@@ -11,9 +11,9 @@ namespace renderer {
 const sfloat min_fov = math::to_radian(20);
 const sfloat max_fov = math::to_radian(160);
 
-sfloat fov_deg = 100; // degree
-sfloat fov  = math::to_radian(fov_deg);
-sfloat hfov = 1 / std::tanf(fov / 2);
+sfloat fov_deg = 100;
+sfloat fov     = math::to_radian(fov_deg);
+sfloat hfov    = 1 / std::tanf(fov / 2);
 
 sfloat aspect_ratio = NULL;
 
@@ -49,8 +49,8 @@ buffer<scolor>* back_buffer  = nullptr;
 sfloat max_depth_value = -(std::numeric_limits<float>::infinity());
 
 //BITMAPINFO bitmap_info = { 0 };
-BITMAP     bitmap = { 0 };
-HBITMAP    hbitmap = NULL;
+BITMAP     bitmap     = { 0 };
+HBITMAP    hbitmap    = NULL;
 HDC        bitmap_hdc = NULL;
 
 scolor clear_color = { 0,0,0,0 };
@@ -196,7 +196,7 @@ void destroy() {
 // NOTE : copy only vertices , normals , indeces
 int8_t copy_mesh(uint32_t index) {
 
-	mesh*  model = model_pointer(index);
+	mesh* model = model_pointer(index);
 
 	if (model == nullptr) {
 		return INVALID_MESH;
@@ -379,13 +379,12 @@ void rasterization() {
 	// draw to buffer
 	if (g_pmeshes != nullptr) {
 
+		scolor color{ 255,255,255,255};
+
 		for (mesh* pmodel : *g_pmeshes) {
-
 			for (vec3d& vertex : pmodel->vertices) {
-
-				draw::fill_circle(vertex.x, vertex.y, 1, { 255,0,255,255 });
+				draw::set_pixel(vertex.x, vertex.y, color);
 			}
-
 		}
 
 	}

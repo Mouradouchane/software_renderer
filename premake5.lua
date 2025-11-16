@@ -23,5 +23,6 @@ project("software_renderer")
 
   filter("configurations:Release")
   defines {"NDEBUG"}
+  symbols("Off")
   optimize "Off"
  

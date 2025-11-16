@@ -67,13 +67,16 @@ int8_t loader::load_obj_file(
 		from tiny_obj_loader library
 	*/
 
-	auto& attrib = reader.GetAttrib();
-	auto& shapes = reader.GetShapes();
+	auto& attrib = reader.GetAttrib(); // contains : vertices , normals , uvs 
+	auto& shapes = reader.GetShapes(); // contains meshes faces indexces
 	auto& materials = reader.GetMaterials();
 
+	/* 
+	 // note: just i disabled this warn messagebox temporary !
 	if (shapes.size() > 1) {
 		show_warn(loader_warn_title, "obj file with multiple meshes is not supported");
 	}
+	*/
 
 	destination->name = shapes[0].name;
 
@@ -83,6 +86,7 @@ int8_t loader::load_obj_file(
 	destination->texture_coordinates = std::vector<vec_uv>( size_t(attrib.texcoords.size() / 2) );
 	destination->indeces = std::vector<indexces>(shapes[0].mesh.indices.size());
 
+	// todo: multi-threaded copying
 	// copying vertices to model
 	for (size_t v = 0 , V = 0; v < (attrib.vertices.size() - 3) && V < destination->vertices.size() ; v += 3 , V += 1) {
 
@@ -94,6 +98,7 @@ int8_t loader::load_obj_file(
 
 	}
 
+	// todo: multi-threaded copying
 	// copying normals to model
 	for (size_t n = 0 , N = 0; n < (attrib.normals.size() - 3) && N < destination->normals.size(); n += 3 , N += 1) {
 
@@ -105,6 +110,7 @@ int8_t loader::load_obj_file(
 
 	}
 
+	// todo: multi-threaded copying
 	// copying textuer-coordinates
 	for (size_t t = 0 , T = 0; t < (attrib.texcoords.size() - 2) && T < destination->texture_coordinates.size(); t += 2 , T += 1) {
 
@@ -115,6 +121,7 @@ int8_t loader::load_obj_file(
 
 	}
 
+	// todo: multi-threaded copying
 	// copying indeces
 	for (size_t s = 0; s < shapes[0].mesh.indices.size(); s++) {
 

@@ -53,7 +53,7 @@ void application::run() {
         renderer::render();
         UpdateWindow(window::handle);
 
-        // calc time stuff
+        // calc time difference
         frames += 1;
 
         if (fps_pt.is_time_for_work()) {
